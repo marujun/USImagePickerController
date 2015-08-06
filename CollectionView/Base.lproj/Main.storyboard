@@ -120,49 +120,9 @@
                     <view key="view" contentMode="scaleToFill" id="5mb-yA-aEX">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Syl-Pz-USM">
-                                <rect key="frame" x="0.0" y="184" width="320" height="200"/>
-                                <color key="backgroundColor" red="0.87364067690000002" green="1" blue="0.99925395650000004" alpha="1" colorSpace="calibratedRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="200" id="rza-F4-I9Z"/>
-                                </constraints>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="IcV-J6-a7V" customClass="ImagePreviewFlowLayout">
-                                    <size key="itemSize" width="50" height="50"/>
-                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                </collectionViewFlowLayout>
-                                <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PickerCollectionCell" id="Ku5-hH-r6G">
-                                        <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        </view>
-                                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                    </collectionViewCell>
-                                </cells>
-                                <connections>
-                                    <outlet property="dataSource" destination="5gC-0E-X54" id="sID-dg-T5U"/>
-                                    <outlet property="delegate" destination="5gC-0E-X54" id="Ljn-88-hqz"/>
-                                </connections>
-                            </collectionView>
-                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstAttribute="centerY" secondItem="Syl-Pz-USM" secondAttribute="centerY" id="Oon-yf-Cwp"/>
-                            <constraint firstItem="Syl-Pz-USM" firstAttribute="leading" secondItem="5mb-yA-aEX" secondAttribute="leading" id="hM9-Ig-zYj"/>
-                            <constraint firstAttribute="trailing" secondItem="Syl-Pz-USM" secondAttribute="trailing" id="vf7-I6-92y"/>
-                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="LCS-Lu-r6n"/>
-                    <connections>
-                        <outlet property="_collectionView" destination="Syl-Pz-USM" id="xEq-gN-rPF"/>
-                        <outlet property="_imageLayout" destination="IcV-J6-a7V" id="umG-Zw-DXA"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Tmz-Io-3lw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

@@ -68,7 +68,6 @@ static const NSInteger unionSize = 20;
 
 #pragma mark - Init
 - (void)commonInit {
-    _randomFirstShortSection = YES;
     _scale = [UIScreen mainScreen].bounds.size.width/320;
     _sectionInset = UIEdgeInsetsZero;
 }
@@ -153,11 +152,11 @@ static const NSInteger unionSize = 20;
  */
 - (void)setLayoutTemplate:(NSArray *)array
 {
-    _templateArray = array;
-    if (!_templateArray) {
+    if (_templateArray == array) {
         return;
     }
     
+    _templateArray = array;
     _layoutArray = [NSMutableArray array];
     _layoutClassify = [NSMutableDictionary dictionary];
     

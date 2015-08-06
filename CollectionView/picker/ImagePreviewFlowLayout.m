@@ -39,10 +39,11 @@
 
 - (void)setShowsSupplementaryViews:(BOOL)showsSupplementaryViews
 {
-    if (showsSupplementaryViews) {
+    _showsSupplementaryViews = showsSupplementaryViews;
+    
+    if (_showsSupplementaryViews) {
         [self invalidateLayout];
     }
-    _showsSupplementaryViews = showsSupplementaryViews;
 }
 
 - (CGSize)collectionViewContentSize
@@ -102,15 +103,25 @@
     return [super targetContentOffsetForProposedContentOffset:contentOffset];
 }
 
-//- (NSArray *)layoutAttributesForElementsInRect:(CGRect)rect
-//{
-//    return layoutAttributes.filter { CGRectIntersectsRect(rect, $0.frame) }.reduce([UICollectionViewLayoutAttributes]()) { memo, attributes in
-//        let supplementaryAttributes = layoutAttributesForSupplementaryViewOfKind(UICollectionElementKindSectionHeader, atIndexPath: attributes.indexPath)
-//        return memo + [attributes, supplementaryAttributes]
-//    }
-//    
-//    UICollectionViewLayoutAttributes *supplementaryAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MCCollectionElementKindSectionHeader withIndexPath:attributes.indexPath];
-//}
+- (NSArray *)layoutAttributesForElementsInRect:(CGRect)rect
+{
+    NSMutableArray *filteredArray = [NSMutableArray array];
+    [_layoutAttributes enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *attributes, NSUInteger idx, BOOL *stop) {
+        if(CGRectIntersectsRect(attributes.frame, rect)){
+            [filteredArray addObject:attributes];
+        }
+    }];
+    
+    NSMutableArray *reducedArray = [NSMutableArray array];
+    [filteredArray enumerateObjectsUsingBlock:^(UICollectionViewLayoutAttributes *attributes, NSUInteger idx, BOOL *stop) {
+        [reducedArray addObject:attributes];
+        
+        attributes = [self layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionHeader atIndexPath:attributes.indexPath];
+        [reducedArray addObject:attributes];
+    }];
+    
+    return reducedArray;
+}
 
 - (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath
 {

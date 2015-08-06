@@ -32,7 +32,7 @@ extern NSString *const MCCollectionActivityKindSectionFooter;
 @property (nonatomic, assign) UIEdgeInsets headerInset;
 @property (nonatomic, assign) UIEdgeInsets footerInset;
 
-/** 第一组数据相对较少时是否随机选择样式，默认YES */
+/** 第一组数据相对较少时是否随机选择样式，默认NO */
 @property (nonatomic, assign) BOOL randomFirstShortSection;
 
 /** 最后一组数据不足时是否随机选择样式，默认NO */

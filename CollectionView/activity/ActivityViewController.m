@@ -38,37 +38,26 @@ static NSString *const footerIdentifier = @"ActivityFooterView";
     NSString *jsonPath = [[NSBundle mainBundle] pathForResource:@"activity_layout" ofType:@"json"];
     NSArray *templateArray = [NSJSONSerialization JSONObjectWithData:[NSData dataWithContentsOfFile:jsonPath] options:kNilOptions error:NULL];
     
-//    _activityLayout = [[MCActivityCollectionLayout alloc] init];
 //    _activityLayout.loopitemSpace = 10;
 //    _activityLayout.randomLastShortSection = YES;
 //    _activityLayout.interitemSpace = 10;
 //    _activityLayout.sectionInset = UIEdgeInsetsMake(10, 10, 10, 10);
     _activityLayout.headerHeight = 50;
-    _activityLayout.footerHeight = 30;
+//    _activityLayout.footerHeight = 30;
 //    _activityLayout.headerInset = UIEdgeInsetsMake(20, 0, 0, 0);
 //    _activityLayout.footerInset = UIEdgeInsetsMake(0, 0, 10, 0);
     
     [_activityLayout setLayoutTemplate:templateArray];
     _dataSource = [_activityLayout dataSourceWithArray:_originalArray];
     
-    [self initializeUserInterface];
-}
-
-- (void)initializeUserInterface
-{
-//    CGFloat width = CGRectGetWidth([UIScreen mainScreen].bounds);
-//    CGFloat hight = CGRectGetHeight([UIScreen mainScreen].bounds);
-//    _collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, width, hight) collectionViewLayout:_activityLayout];
-//    _collectionView.backgroundColor = [UIColor clearColor];
-//    _collectionView.delegate = self;
-//    _collectionView.dataSource = self;
-//    [self.view addSubview:_collectionView];
+    UINib *nib = [UINib nibWithNibName:cellIdentifier bundle:nil];
+    [_collectionView registerNib:nib forCellWithReuseIdentifier:cellIdentifier];
     
-    [_collectionView registerNib:[UINib nibWithNibName:cellIdentifier bundle:nil] forCellWithReuseIdentifier:cellIdentifier];
-    [_collectionView registerNib:[UINib nibWithNibName:headerIdentifier bundle:nil] forSupplementaryViewOfKind:MCCollectionActivityKindSectionHeader
-             withReuseIdentifier:headerIdentifier];
-    [_collectionView registerNib:[UINib nibWithNibName:footerIdentifier bundle:nil] forSupplementaryViewOfKind:MCCollectionActivityKindSectionFooter
-             withReuseIdentifier:footerIdentifier];
+    nib = [UINib nibWithNibName:headerIdentifier bundle:nil];
+    [_collectionView registerNib:nib forSupplementaryViewOfKind:MCCollectionActivityKindSectionHeader withReuseIdentifier:headerIdentifier];
+    
+    nib = [UINib nibWithNibName:footerIdentifier bundle:nil];
+    [_collectionView registerNib:nib forSupplementaryViewOfKind:MCCollectionActivityKindSectionFooter withReuseIdentifier:footerIdentifier];
 }
 
 #pragma mark - UICollectionViewDataSource

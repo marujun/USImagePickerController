@@ -7,12 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ImagePreviewFlowLayout.h"
 
-@interface PickerDemoViewController : UIViewController <UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
-{
-    __weak IBOutlet UICollectionView *_collectionView;
-    __weak IBOutlet ImagePreviewFlowLayout *_imageLayout;
-    
-}
+@interface PickerDemoViewController : UIViewController
+
 @end

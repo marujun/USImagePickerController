@@ -7,6 +7,7 @@
 //
 
 #import "PickerDemoViewController.h"
+#import "ImagePickerSheetController.h"
 
 @interface PickerDemoViewController ()
 
@@ -19,29 +20,17 @@
     // Do any additional setup after loading the view.
     
     self.title = @"图片选择器";
-    _imageLayout.sectionInset = UIEdgeInsetsMake(10, 10, 10, 0);
+    
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(presentImagePickerSheet:)];
+    [self.view addGestureRecognizer:tapGesture];
 }
 
-
-#pragma mark -  UICollectionViewDataSource,UICollectionViewDelegate
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
+- (void)presentImagePickerSheet:(UITapGestureRecognizer *)gestureRecognizer
 {
-    return 30;
-}
-
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{
-    return 1;
-}
-
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    return [collectionView dequeueReusableCellWithReuseIdentifier:@"PickerCollectionCell" forIndexPath:indexPath];
-}
-
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    return CGSizeMake(100, 100);
+    ImagePickerSheetController *controller = [[ImagePickerSheetController alloc] init];
+    [controller addAction:[[ImageAction alloc] init]];
+    
+    [self presentViewController:controller animated:true completion:nil];
 }
 
 @end
