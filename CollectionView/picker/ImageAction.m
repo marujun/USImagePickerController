@@ -13,10 +13,10 @@
 - (void)handle:(NSInteger)numberOfImages
 {
     if (numberOfImages > 0) {
-        _secondaryHandler(self, numberOfImages);
+        _secondaryHandler?_secondaryHandler(self, numberOfImages):nil;
     }
     else{
-        _handler(self);
+        _handler?_handler(self):nil;
     }
 }
 

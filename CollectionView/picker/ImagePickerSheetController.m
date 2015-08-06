@@ -131,14 +131,26 @@
 - (void)cancel
 {
     [self.presentingViewController dismissViewControllerAnimated:true completion:nil];
-    
-    
+}
+
+- (NSArray *)selectedImageAssets
+{
+    NSMutableArray *array = [NSMutableArray array];
+    for (NSNumber *section in _selectedImageIndices) {
+        [array addObject:[_assets objectAtIndex:section.intValue]];
+    }
+    return [NSArray arrayWithArray:array];
+}
+
+- (NSInteger)numberOfSelectedImages
+{
+    return _selectedImageIndices.count;
 }
 
 - (void)fetchAssets
 {
     ALAssetsGroupEnumerationResultsBlock groupBlock = ^(ALAsset *asset, NSUInteger index, BOOL *stop) {
-        if (index == 50) {
+        if (index == 30) {
             *stop = YES;
         }
         
@@ -225,14 +237,18 @@
         return cell;
     }
     
-//    ImageAction *action = _actions[indexPath.row];
-//    
+    ImageAction *action = _actions[indexPath.row];
+
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([UITableViewCell class]) forIndexPath:indexPath];
-//    cell.textLabel.textAlignment = NSTextAlignmentCenter;
-//    cell.textLabel.textColor = tableView.tintColor;
-//    cell.textLabel.font = [UIFont systemFontOfSize:21];
-//    cell.textLabel.text = _selectedImageIndices.count>0 ? action.secondaryTitle(_numberOfSelectedImages) : action.title;
-//    cell.layoutMargins = UIEdgeInsetsZero;
+    cell.textLabel.textAlignment = NSTextAlignmentCenter;
+    cell.textLabel.textColor = tableView.tintColor;
+    cell.textLabel.font = [UIFont systemFontOfSize:21];
+    if (_selectedImageIndices.count==0 || action.style == ImageActionStyleCancel || !action.secondaryTitle) {
+        cell.textLabel.text = action.title;
+    }else{
+        cell.textLabel.text = action.secondaryTitle(self.numberOfSelectedImages);
+    }
+    cell.layoutMargins = UIEdgeInsetsZero;
     
     return cell;
 }
@@ -248,7 +264,22 @@
     
     [self.presentingViewController dismissViewControllerAnimated:true completion:nil];
     
-    [_actions[indexPath.row] handle:_numberOfSelectedImages];
+    [_actions[indexPath.row] handle:self.numberOfSelectedImages];
+    
+    _actions = nil;
+}
+
+- (UIImage *)imageForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    UIImage *image = _imageManager[@(indexPath.section)];
+    if (!image) {
+        ALAsset *asset = _assets[indexPath.section];
+        image = [UIImage imageWithCGImage:asset.aspectRatioThumbnail];
+        
+        [_imageManager setObject:image forKey:@(indexPath.section)];
+    }
+    
+    return image;
 }
 
 #pragma mark - UICollectionViewDataSource
@@ -266,13 +297,7 @@
 {
     ImageCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([ImageCollectionViewCell class]) forIndexPath:indexPath];
     
-    cell.imageView.image = [_imageManager objectForKey:@(indexPath.section)];
-    if (!cell.imageView.image) {
-        ALAsset *asset = _assets[indexPath.section];
-        cell.imageView.image = [UIImage imageWithCGImage:asset.aspectRatioThumbnail];
-    }
-    
-    cell.backgroundColor = [UIColor lightGrayColor];
+    cell.imageView.image = [self imageForItemAtIndexPath:indexPath];
     cell.selected = [_selectedImageIndices containsObject:@(indexPath.section)];
     
     return cell;
@@ -308,22 +333,42 @@
 }
 
 #pragma mark - UICollectionViewDelegate
-
-- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (!_imageManager[@(indexPath.section)]) {
-        ALAsset *asset = _assets[indexPath.section];
-        [_imageManager setObject:[UIImage imageWithCGImage:asset.aspectRatioThumbnail] forKey:@(indexPath.section)];
-    }
-}
-
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (_maximumSelection && _selectedImageIndices.count >= _maximumSelection && _selectedImageIndices.count) {
-        NSNumber *previousItemIndex = [_selectedImageIndices firstObject];
-        [_supplementaryViews[previousItemIndex] setSelected:false];
+    [self handelCollectionViewItemTap:indexPath];
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self handelCollectionViewItemTap:indexPath];
+}
+
+- (void)handelCollectionViewItemTap:(NSIndexPath *)indexPath
+{
+    if ([_selectedImageIndices containsObject:@(indexPath.section)]) {
+        //取消选择
+        [_selectedImageIndices removeObject:@(indexPath.section)];
+        [self reloadButtons];
         
-        [_selectedImageIndices removeObjectAtIndex:0];
+        [_supplementaryViews[@(indexPath.section)] setSelected:false];
+        
+        return;
+    }
+    
+    //选择某种照片
+    if (_maximumSelection && _selectedImageIndices.count >= _maximumSelection) {
+//        NSNumber *previousItemIndex = [_selectedImageIndices firstObject];
+//        [_supplementaryViews[previousItemIndex] setSelected:false];
+//        
+//        [_selectedImageIndices removeObjectAtIndex:0];
+        
+        [[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"最多选择%@张照片",@(_maximumSelection)]
+                                    message:nil
+                                   delegate:nil
+                          cancelButtonTitle:@"知道了"
+                          otherButtonTitles:nil, nil] show];
+        return;
+        
     }
     
     [_selectedImageIndices addObject:@(indexPath.section)];
@@ -342,17 +387,18 @@
             [self.view layoutIfNeeded];
         } completion:^(BOOL finished) {
             [self reloadButtons];
+            
             _collectionView.imagePreviewLayout.showsSupplementaryViews = true;
         }];
     }
     else {
         UICollectionViewCell *cell = [self collectionView:_collectionView cellForItemAtIndexPath:indexPath];
         if (cell) {
-            CGPoint contentOffset = CGPointMake(CGRectGetMidX(cell.frame)-collectionView.frame.size.width/2.0, 0.0);
-            contentOffset.x = MAX(contentOffset.x, -collectionView.contentInset.left);
-            contentOffset.x = MIN(contentOffset.x, collectionView.contentSize.width - collectionView.frame.size.width + collectionView.contentInset.right);
+            CGPoint contentOffset = CGPointMake(CGRectGetMidX(cell.frame)-_collectionView.frame.size.width/2.0, 0.0);
+            contentOffset.x = MAX(contentOffset.x, -_collectionView.contentInset.left);
+            contentOffset.x = MIN(contentOffset.x, _collectionView.contentSize.width - _collectionView.frame.size.width + _collectionView.contentInset.right);
             
-            [collectionView setContentOffset:contentOffset animated:true];
+            [_collectionView setContentOffset:contentOffset animated:true];
         }
         [self reloadButtons];
     }
@@ -390,6 +436,18 @@
 - (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed
 {
     return (id)[[AnimationController alloc] init:self presenting:false];
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    
+    [_imageManager removeAllObjects];
+}
+
+- (void)dealloc
+{
+    NSLog(@"%@ dealloc!",NSStringFromClass([self class]));
 }
 
 @end

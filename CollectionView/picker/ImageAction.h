@@ -25,7 +25,6 @@ typedef enum {
 
 @property (nonatomic, copy) void (^secondaryHandler)(ImageAction *, NSInteger);
 
-
 - (void)handle:(NSInteger)numberOfImages;
 
 @end

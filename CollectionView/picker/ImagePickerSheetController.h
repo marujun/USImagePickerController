@@ -25,7 +25,7 @@
 
 @property (nonatomic, assign) NSInteger maximumSelection;
 @property (nonatomic, assign) NSInteger numberOfSelectedImages;
-@property (nonatomic, strong) NSMutableArray *selectedImageAssets;
+@property (nonatomic, strong) NSArray *selectedImageAssets;
 
 - (void)addAction:(ImageAction *)action;
 
