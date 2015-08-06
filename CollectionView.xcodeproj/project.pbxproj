@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A7F76651B72E769000332A1 /* DBObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7F76641B72E769000332A1 /* DBObject.m */; };
+		0A7F76691B72E82C000332A1 /* ActivityHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7F76671B72E82C000332A1 /* ActivityHeaderView.m */; };
+		0A7F766A1B72E82C000332A1 /* ActivityHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0A7F76681B72E82C000332A1 /* ActivityHeaderView.xib */; };
+		0A7F766E1B72E845000332A1 /* ActivityFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7F766C1B72E845000332A1 /* ActivityFooterView.m */; };
+		0A7F766F1B72E845000332A1 /* ActivityFooterView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0A7F766D1B72E845000332A1 /* ActivityFooterView.xib */; };
+		0A7F76731B72E887000332A1 /* ActivityCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7F76711B72E887000332A1 /* ActivityCollectionCell.m */; };
+		0A7F76741B72E887000332A1 /* ActivityCollectionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0A7F76721B72E887000332A1 /* ActivityCollectionCell.xib */; };
+		0A7F76761B72E8FD000332A1 /* activity_layout.json in Resources */ = {isa = PBXBuildFile; fileRef = 0A7F76751B72E8FD000332A1 /* activity_layout.json */; };
 		0AC5AA981B723B07007F2DB3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC5AA971B723B07007F2DB3 /* main.m */; };
 		0AC5AA9B1B723B07007F2DB3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC5AA9A1B723B07007F2DB3 /* AppDelegate.m */; };
 		0AC5AAA11B723B07007F2DB3 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC5AAA01B723B07007F2DB3 /* ViewController.m */; };
@@ -31,6 +39,18 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0A7F76631B72E769000332A1 /* DBObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBObject.h; sourceTree = "<group>"; };
+		0A7F76641B72E769000332A1 /* DBObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBObject.m; sourceTree = "<group>"; };
+		0A7F76661B72E82C000332A1 /* ActivityHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActivityHeaderView.h; sourceTree = "<group>"; };
+		0A7F76671B72E82C000332A1 /* ActivityHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActivityHeaderView.m; sourceTree = "<group>"; };
+		0A7F76681B72E82C000332A1 /* ActivityHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ActivityHeaderView.xib; sourceTree = "<group>"; };
+		0A7F766B1B72E845000332A1 /* ActivityFooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ActivityFooterView.h; path = ../../ActivityFooterView.h; sourceTree = "<group>"; };
+		0A7F766C1B72E845000332A1 /* ActivityFooterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ActivityFooterView.m; path = ../../ActivityFooterView.m; sourceTree = "<group>"; };
+		0A7F766D1B72E845000332A1 /* ActivityFooterView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ActivityFooterView.xib; path = ../../ActivityFooterView.xib; sourceTree = "<group>"; };
+		0A7F76701B72E887000332A1 /* ActivityCollectionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActivityCollectionCell.h; sourceTree = "<group>"; };
+		0A7F76711B72E887000332A1 /* ActivityCollectionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActivityCollectionCell.m; sourceTree = "<group>"; };
+		0A7F76721B72E887000332A1 /* ActivityCollectionCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ActivityCollectionCell.xib; sourceTree = "<group>"; };
+		0A7F76751B72E8FD000332A1 /* activity_layout.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = activity_layout.json; sourceTree = "<group>"; };
 		0AC5AA921B723B07007F2DB3 /* CollectionView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CollectionView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0AC5AA961B723B07007F2DB3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0AC5AA971B723B07007F2DB3 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -95,6 +115,8 @@
 			children = (
 				0AC5AA991B723B07007F2DB3 /* AppDelegate.h */,
 				0AC5AA9A1B723B07007F2DB3 /* AppDelegate.m */,
+				0A7F76631B72E769000332A1 /* DBObject.h */,
+				0A7F76641B72E769000332A1 /* DBObject.m */,
 				0AC5AA9F1B723B07007F2DB3 /* ViewController.h */,
 				0AC5AAA01B723B07007F2DB3 /* ViewController.m */,
 				0AC5AABF1B723D8E007F2DB3 /* picker */,
@@ -136,8 +158,18 @@
 		0AC5AABE1B723D87007F2DB3 /* activity */ = {
 			isa = PBXGroup;
 			children = (
+				0A7F76661B72E82C000332A1 /* ActivityHeaderView.h */,
+				0A7F76671B72E82C000332A1 /* ActivityHeaderView.m */,
+				0A7F76681B72E82C000332A1 /* ActivityHeaderView.xib */,
+				0A7F766B1B72E845000332A1 /* ActivityFooterView.h */,
+				0A7F766C1B72E845000332A1 /* ActivityFooterView.m */,
+				0A7F766D1B72E845000332A1 /* ActivityFooterView.xib */,
+				0A7F76701B72E887000332A1 /* ActivityCollectionCell.h */,
+				0A7F76711B72E887000332A1 /* ActivityCollectionCell.m */,
+				0A7F76721B72E887000332A1 /* ActivityCollectionCell.xib */,
 				0AC5AAC01B723DC2007F2DB3 /* ActivityViewController.h */,
 				0AC5AAC11B723DC2007F2DB3 /* ActivityViewController.m */,
+				0A7F76751B72E8FD000332A1 /* activity_layout.json */,
 				0AC5AAC51B723E82007F2DB3 /* MCActivityCollectionLayout.h */,
 				0AC5AAC61B723E82007F2DB3 /* MCActivityCollectionLayout.m */,
 			);
@@ -235,9 +267,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A7F76761B72E8FD000332A1 /* activity_layout.json in Resources */,
+				0A7F76741B72E887000332A1 /* ActivityCollectionCell.xib in Resources */,
+				0A7F766A1B72E82C000332A1 /* ActivityHeaderView.xib in Resources */,
 				0AC5AAA41B723B07007F2DB3 /* Main.storyboard in Resources */,
 				0AC5AAA91B723B07007F2DB3 /* LaunchScreen.xib in Resources */,
 				0AC5AAA61B723B07007F2DB3 /* Images.xcassets in Resources */,
+				0A7F766F1B72E845000332A1 /* ActivityFooterView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -255,8 +291,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A7F76691B72E82C000332A1 /* ActivityHeaderView.m in Sources */,
 				0AC5AAC71B723E82007F2DB3 /* MCActivityCollectionLayout.m in Sources */,
+				0A7F766E1B72E845000332A1 /* ActivityFooterView.m in Sources */,
 				0AC5AA9B1B723B07007F2DB3 /* AppDelegate.m in Sources */,
+				0A7F76651B72E769000332A1 /* DBObject.m in Sources */,
+				0A7F76731B72E887000332A1 /* ActivityCollectionCell.m in Sources */,
 				0AC5AACA1B7242CA007F2DB3 /* ImagePreviewFlowLayout.m in Sources */,
 				0AC5AAA11B723B07007F2DB3 /* ViewController.m in Sources */,
 				0AC5AA981B723B07007F2DB3 /* main.m in Sources */,
@@ -458,6 +498,7 @@
 				0AC5AABA1B723B07007F2DB3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		0AC5AABB1B723B07007F2DB3 /* Build configuration list for PBXNativeTarget "CollectionViewTests" */ = {
 			isa = XCConfigurationList;
@@ -466,6 +507,7 @@
 				0AC5AABD1B723B07007F2DB3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

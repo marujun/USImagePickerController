@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "MCActivityCollectionLayout.h"
 
-@interface ActivityViewController : UIViewController
+@interface ActivityViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, MCActivityLayoutDelegate>
 {
     __weak IBOutlet UICollectionView *_collectionView;
     __weak IBOutlet MCActivityCollectionLayout *_activityLayout;

@@ -76,8 +76,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Tej-8e-QgD">
-                                <rect key="frame" x="0.0" y="-8" width="320" height="568"/>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Tej-8e-QgD">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="zk1-id-sHU" customClass="MCActivityCollectionLayout">
                                     <size key="itemSize" width="50" height="50"/>
@@ -92,6 +92,12 @@
                             </collectionView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="Tej-8e-QgD" firstAttribute="leading" secondItem="KpN-0a-S3I" secondAttribute="leading" id="0YJ-hh-nLF"/>
+                            <constraint firstItem="QJH-qL-7J9" firstAttribute="top" secondItem="Tej-8e-QgD" secondAttribute="bottom" id="3oG-4R-dhE"/>
+                            <constraint firstAttribute="trailing" secondItem="Tej-8e-QgD" secondAttribute="trailing" id="Pj2-fa-Jk5"/>
+                            <constraint firstItem="Tej-8e-QgD" firstAttribute="top" secondItem="KpN-0a-S3I" secondAttribute="top" id="QgM-z8-yVR"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="kwc-zL-bgy"/>
                     <connections>

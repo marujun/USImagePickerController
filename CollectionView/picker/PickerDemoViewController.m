@@ -18,6 +18,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    self.title = @"图片选择器";
     _imageLayout.sectionInset = UIEdgeInsetsMake(10, 10, 10, 0);
 }
 

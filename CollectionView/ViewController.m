@@ -18,18 +18,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-//    UINavigationController *nav
+    self.title = @"首页";
     // Do any additional setup after loading the view, typically from a nib.
-}
-
-- (IBAction)activityButtonAction:(UIButton *)sender
-{
-    ActivityViewController *vc = [[ActivityViewController alloc] initWithNibName:nil bundle:nil];
-    
-}
-
-- (IBAction)imagePickerButtonAction:(UIButton *)sender
-{
 }
 
 
