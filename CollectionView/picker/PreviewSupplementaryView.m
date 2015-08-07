@@ -81,7 +81,13 @@
 + (UIImage *)checkmarkImage
 {
     NSBundle *bundle = [NSBundle bundleForClass:[ImagePickerSheetController class]];
-    UIImage *image = [UIImage imageNamed:@"PreviewSupplementaryView-Checkmark" inBundle:bundle compatibleWithTraitCollection:nil];
+    
+    UIImage *image = nil;
+    if ([[UIImage class] respondsToSelector:@selector(imageNamed:inBundle:compatibleWithTraitCollection:)]) {
+        image = [UIImage imageNamed:@"PreviewSupplementaryView-Checkmark" inBundle:bundle compatibleWithTraitCollection:nil];
+    } else {
+        image = [UIImage imageNamed:@"PreviewSupplementaryView-Checkmark"];
+    }
     
     return [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 }
@@ -89,7 +95,13 @@
 + (UIImage *)selectedCheckmarkImage
 {
     NSBundle *bundle = [NSBundle bundleForClass:[ImagePickerSheetController class]];
-    UIImage *image = [UIImage imageNamed:@"PreviewSupplementaryView-Checkmark-Selected" inBundle:bundle compatibleWithTraitCollection:nil];
+    
+    UIImage *image = nil;
+    if ([[UIImage class] respondsToSelector:@selector(imageNamed:inBundle:compatibleWithTraitCollection:)]) {
+        image = [UIImage imageNamed:@"PreviewSupplementaryView-Checkmark-Selected" inBundle:bundle compatibleWithTraitCollection:nil];
+    } else {
+        image = [UIImage imageNamed:@"PreviewSupplementaryView-Checkmark-Selected"];
+    }
     
     return [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 }

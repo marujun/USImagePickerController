@@ -11,18 +11,13 @@
 #import "PreviewSupplementaryView.h"
 #import "ImagePickerCollectionView.h"
 
-@interface ImagePickerSheetController : UIViewController <UITableViewDataSource, UITableViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIViewControllerTransitioningDelegate>
-{
-    CGFloat _tableViewPreviewRowHeight;
-    CGFloat _tableViewEnlargedPreviewRowHeight;
-    CGFloat _collectionViewInset;
-    CGFloat _collectionViewCheckmarkInset;
-}
+@interface ImagePickerSheetController : UIViewController 
 
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) UIView *backgroundView;
 @property (nonatomic, strong) ImagePickerCollectionView *collectionView;
 
+@property (nonatomic, assign) BOOL displaySelectMaxLimit;
 @property (nonatomic, assign) NSInteger maximumSelection;
 @property (nonatomic, assign) NSInteger numberOfSelectedImages;
 @property (nonatomic, strong) NSArray *selectedImageAssets;

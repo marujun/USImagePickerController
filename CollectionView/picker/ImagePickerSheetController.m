@@ -10,8 +10,15 @@
 #import "ImageCollectionViewCell.h"
 #import "ImagePreviewTableViewCell.h"
 #import "AnimationController.h"
+#import <AVFoundation/AVFoundation.h>
 
-@interface ImagePickerSheetController ()
+@interface ImagePickerSheetController () <UITableViewDataSource, UITableViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIViewControllerTransitioningDelegate>
+{
+    CGFloat _tableViewPreviewRowHeight;
+    CGFloat _tableViewEnlargedPreviewRowHeight;
+    CGFloat _collectionViewInset;
+    CGFloat _collectionViewCheckmarkInset;
+}
 
 @property (nonatomic, strong) NSMutableArray *actions;
 @property (nonatomic, strong) NSMutableArray *assets;
@@ -60,6 +67,11 @@
     self.modalPresentationStyle = UIModalPresentationCustom;
     self.transitioningDelegate = self;
     
+    ALAuthorizationStatus status = [ALAssetsLibrary authorizationStatus];
+    if(status == ALAuthorizationStatusNotDetermined && NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1 ) {
+        [self updateSubviewsLayout];
+    }
+    
     [self fetchAssets];
 }
 
@@ -72,7 +84,9 @@
     _tableView.dataSource = self;
     _tableView.delegate = self;
     _tableView.alwaysBounceVertical = false;
-    _tableView.layoutMargins = UIEdgeInsetsZero;
+    if ([_tableView respondsToSelector:@selector(setLayoutMargins:)]) {
+        _tableView.layoutMargins = UIEdgeInsetsZero;
+    }
     _tableView.separatorInset = UIEdgeInsetsZero;
     [_tableView registerClass:[ImagePreviewTableViewCell class] forCellReuseIdentifier:NSStringFromClass([ImagePreviewTableViewCell class])];
     [_tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:NSStringFromClass([UITableViewCell class])];
@@ -130,6 +144,8 @@
 
 - (void)cancel
 {
+    _actions = nil;
+    
     [self.presentingViewController dismissViewControllerAnimated:true completion:nil];
 }
 
@@ -150,7 +166,7 @@
 - (void)fetchAssets
 {
     ALAssetsGroupEnumerationResultsBlock groupBlock = ^(ALAsset *asset, NSUInteger index, BOOL *stop) {
-        if (index == 30) {
+        if (_assets.count == 30) {
             *stop = YES;
         }
         
@@ -165,6 +181,10 @@
             [group setAssetsFilter:assetsFilter];
             if (group.numberOfAssets){
                 [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:groupBlock];
+                [self updateSubviewsLayout];
+                
+                [_tableView reloadData];
+                [_collectionView reloadData];
             }
             *stop = YES;
         }
@@ -173,7 +193,7 @@
     _assetsLibrary = [[ALAssetsLibrary alloc] init];
     [_assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos
                                  usingBlock:libraryBlock
-                               failureBlock:nil];
+                                failureBlock:nil];
 }
 
 - (void)reloadButtons
@@ -248,7 +268,9 @@
     }else{
         cell.textLabel.text = action.secondaryTitle(self.numberOfSelectedImages);
     }
-    cell.layoutMargins = UIEdgeInsetsZero;
+    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+        cell.layoutMargins = UIEdgeInsetsZero;
+    }
     
     return cell;
 }
@@ -357,18 +379,19 @@
     
     //选择某种照片
     if (_maximumSelection && _selectedImageIndices.count >= _maximumSelection) {
-//        NSNumber *previousItemIndex = [_selectedImageIndices firstObject];
-//        [_supplementaryViews[previousItemIndex] setSelected:false];
-//        
-//        [_selectedImageIndices removeObjectAtIndex:0];
-        
-        [[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"最多选择%@张照片",@(_maximumSelection)]
-                                    message:nil
-                                   delegate:nil
-                          cancelButtonTitle:@"知道了"
-                          otherButtonTitles:nil, nil] show];
-        return;
-        
+        if (_displaySelectMaxLimit) {
+            [[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"最多选择%@张照片",@(_maximumSelection)]
+                                        message:nil
+                                       delegate:nil
+                              cancelButtonTitle:@"知道了"
+                              otherButtonTitles:nil, nil] show];
+            return;
+        } else {
+            NSNumber *previousItemIndex = [_selectedImageIndices firstObject];
+            [_supplementaryViews[previousItemIndex] setSelected:false];
+            
+            [_selectedImageIndices removeObjectAtIndex:0];
+        }
     }
     
     [_selectedImageIndices addObject:@(indexPath.section)];
@@ -411,6 +434,11 @@
 {
     [super viewDidLayoutSubviews];
     
+    [self updateSubviewsLayout];
+}
+
+- (void)updateSubviewsLayout
+{
     _backgroundView.frame = self.view.bounds;
     
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
