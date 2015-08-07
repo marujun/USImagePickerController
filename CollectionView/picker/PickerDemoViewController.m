@@ -46,7 +46,8 @@
 - (void)presentImagePickerSheet:(UITapGestureRecognizer *)gestureRecognizer
 {
     ImagePickerSheetController *controller = [[ImagePickerSheetController alloc] init];
-    controller.maximumSelection = 3;
+    controller.maximumSelection = 8;
+    controller.displaySelectMaxLimit = YES;
     
     ImageAction *action = [[ImageAction alloc] init];
     action.title = @"照片图库";
