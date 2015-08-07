@@ -166,7 +166,7 @@
 - (void)fetchAssets
 {
     ALAssetsGroupEnumerationResultsBlock groupBlock = ^(ALAsset *asset, NSUInteger index, BOOL *stop) {
-        if (_assets.count == 50) {
+        if (_assets.count == 49) {
             *stop = YES;
         }
         
