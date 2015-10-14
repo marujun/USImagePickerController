@@ -11,7 +11,33 @@
 #import "ActivityFooterView.h"
 #import "ActivityCollectionCell.h"
 
-@interface ActivityViewController ()
+@interface ActivityCollectionHeaderView : UICollectionReusableView
+@end
+@implementation ActivityCollectionHeaderView
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        self.backgroundColor = [UIColor redColor];
+    }
+    return self;
+}
+@end
+
+@interface ActivityCollectionFooterView : UICollectionReusableView
+@end
+@implementation ActivityCollectionFooterView
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        self.backgroundColor = [UIColor greenColor];
+    }
+    return self;
+}
+@end
+
+@interface ActivityViewController () <USActivityListLayoutDelegate>
 
 @property (strong, nonatomic) NSMutableArray *originalArray;
 @property (strong, nonatomic) NSMutableArray *dataSource;
@@ -19,8 +45,10 @@
 @end
 
 static NSString *const cellIdentifier = @"ActivityCollectionCell";
-static NSString *const headerIdentifier = @"ActivityHeaderView";
-static NSString *const footerIdentifier = @"ActivityFooterView";
+static NSString *const sectionHeaderIdentifier = @"ActivityHeaderView";
+static NSString *const sectionFooterIdentifier = @"ActivityFooterView";
+static NSString *const collectionHeaderIdentifier = @"ActivityCollectionHeaderView";
+static NSString *const collectionFooterIdentifier = @"ActivityCollectionFooterView";
 
 @implementation ActivityViewController
 
@@ -31,33 +59,34 @@ static NSString *const footerIdentifier = @"ActivityFooterView";
     self.title = @"活动模板";
     
     _originalArray = [NSMutableArray array];
-    for (int i=0; i<32; i++) {
+    for (int i=0; i<64; i++) {
         [_originalArray addObject:@(i)];
     }
     
-    NSString *jsonPath = [[NSBundle mainBundle] pathForResource:@"activity_layout" ofType:@"json"];
-    NSArray *templateArray = [NSJSONSerialization JSONObjectWithData:[NSData dataWithContentsOfFile:jsonPath] options:kNilOptions error:NULL];
+    NSString *jsonPath = [[NSBundle mainBundle] pathForResource:@"event_layout" ofType:@"json"];
+    NSDictionary *template = [NSJSONSerialization JSONObjectWithData:[NSData dataWithContentsOfFile:jsonPath] options:kNilOptions error:NULL];
     
-//    _activityLayout.loopitemSpace = 10;
-//    _activityLayout.randomLastShortSection = YES;
-//    _activityLayout.interitemSpace = 10;
-//    _activityLayout.sectionInset = UIEdgeInsetsMake(10, 10, 10, 10);
-    _activityLayout.headerHeight = 50;
-//    _activityLayout.footerHeight = 30;
-//    _activityLayout.headerInset = UIEdgeInsetsMake(20, 0, 0, 0);
-//    _activityLayout.footerInset = UIEdgeInsetsMake(0, 0, 10, 0);
+    _activityLayout.collectionHeaderHeight = 50;
+    _activityLayout.collectionFooterHeight = 80;
+    _activityLayout.randomLastShortSection = YES;
+    [_activityLayout setLayoutTemplate:template];
     
-    [_activityLayout setLayoutTemplate:templateArray];
     _dataSource = [_activityLayout dataSourceWithArray:_originalArray];
     
     UINib *nib = [UINib nibWithNibName:cellIdentifier bundle:nil];
     [_collectionView registerNib:nib forCellWithReuseIdentifier:cellIdentifier];
     
-    nib = [UINib nibWithNibName:headerIdentifier bundle:nil];
-    [_collectionView registerNib:nib forSupplementaryViewOfKind:MCCollectionActivityKindSectionHeader withReuseIdentifier:headerIdentifier];
+    nib = [UINib nibWithNibName:sectionHeaderIdentifier bundle:nil];
+    [_collectionView registerNib:nib forSupplementaryViewOfKind:MCCollectionActivityKindSectionHeader withReuseIdentifier:sectionHeaderIdentifier];
     
-    nib = [UINib nibWithNibName:footerIdentifier bundle:nil];
-    [_collectionView registerNib:nib forSupplementaryViewOfKind:MCCollectionActivityKindSectionFooter withReuseIdentifier:footerIdentifier];
+    nib = [UINib nibWithNibName:sectionFooterIdentifier bundle:nil];
+    [_collectionView registerNib:nib forSupplementaryViewOfKind:MCCollectionActivityKindSectionFooter withReuseIdentifier:sectionFooterIdentifier];
+    
+    [_collectionView registerClass:[ActivityCollectionHeaderView class] forSupplementaryViewOfKind:MCCollectionActivityKindCollectionHeader
+               withReuseIdentifier:collectionHeaderIdentifier];
+    
+    [_collectionView registerClass:[ActivityCollectionFooterView class] forSupplementaryViewOfKind:MCCollectionActivityKindCollectionFooter
+               withReuseIdentifier:collectionFooterIdentifier];
 }
 
 #pragma mark - UICollectionViewDataSource
@@ -69,6 +98,16 @@ static NSString *const footerIdentifier = @"ActivityFooterView";
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     return [_dataSource[section] count];
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView heightForHeaderInSection:(NSInteger)section
+{
+    return 60;
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView heightForFooterInSection:(NSInteger)section
+{
+    return 40;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
@@ -83,10 +122,20 @@ static NSString *const footerIdentifier = @"ActivityFooterView";
     UICollectionReusableView *reusableView;
     
     if([kind isEqual:MCCollectionActivityKindSectionHeader]) {
-        reusableView = [collectionView dequeueReusableSupplementaryViewOfKind:MCCollectionActivityKindSectionHeader withReuseIdentifier:headerIdentifier forIndexPath:indexPath];
+        reusableView = [collectionView dequeueReusableSupplementaryViewOfKind:MCCollectionActivityKindSectionHeader
+                                                          withReuseIdentifier:sectionHeaderIdentifier forIndexPath:indexPath];
     }
     else if([kind isEqual:MCCollectionActivityKindSectionFooter]) {
-        reusableView = [collectionView dequeueReusableSupplementaryViewOfKind:MCCollectionActivityKindSectionFooter withReuseIdentifier:footerIdentifier forIndexPath:indexPath];
+        reusableView = [collectionView dequeueReusableSupplementaryViewOfKind:MCCollectionActivityKindSectionFooter
+                                                          withReuseIdentifier:sectionFooterIdentifier forIndexPath:indexPath];
+    }
+    else if([kind isEqual:MCCollectionActivityKindCollectionHeader]) {
+        reusableView = [collectionView dequeueReusableSupplementaryViewOfKind:MCCollectionActivityKindCollectionHeader
+                                                          withReuseIdentifier:collectionHeaderIdentifier forIndexPath:indexPath];
+    }
+    else if([kind isEqual:MCCollectionActivityKindCollectionFooter]) {
+        reusableView = [collectionView dequeueReusableSupplementaryViewOfKind:MCCollectionActivityKindCollectionFooter
+                                                          withReuseIdentifier:collectionFooterIdentifier forIndexPath:indexPath];
     }
     return reusableView;
 }
@@ -115,9 +164,9 @@ static NSString *const footerIdentifier = @"ActivityFooterView";
 //    id obj = _dataSource[indexPath.section][indexPath.row];
 //    NSInteger index = [_originalArray indexOfObject:obj];
 //    [_originalArray removeObjectAtIndex:index];
-//
+//    
 //    _dataSource = [_activityLayout dataSourceWithArray:_originalArray];
-//    [_activityLayout invalidateLayout];
+//    [_collectionView reloadData];
 }
 
 @end

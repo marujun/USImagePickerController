@@ -11,6 +11,10 @@
 NSString *const MCCollectionActivityKindSectionHeader = @"MCCollectionActivityKindSectionHeader";
 NSString *const MCCollectionActivityKindSectionFooter = @"MCCollectionActivityKindSectionFooter";
 
+NSString *const MCCollectionActivityKindCollectionHeader = @"MCCollectionActivityKindCollectionHeader";
+NSString *const MCCollectionActivityKindCollectionFooter = @"MCCollectionActivityKindCollectionFooter";
+
+
 @interface MCItemLayout : DBObject
 
 @property (nonatomic, assign) CGFloat xOffset;
@@ -20,6 +24,8 @@ NSString *const MCCollectionActivityKindSectionFooter = @"MCCollectionActivityKi
 
 @property (nonatomic, assign) CGFloat rotate;
 @property (nonatomic, assign) CGFloat scale;
+@property (nonatomic, assign) CGFloat radius;
+@property (nonatomic, assign) BOOL animation;
 
 @end
 
@@ -28,7 +34,10 @@ NSString *const MCCollectionActivityKindSectionFooter = @"MCCollectionActivityKi
 
 @interface MCSectionLayout : DBObject
 
-@property (nonatomic, assign) UIEdgeInsets inset;
+@property (nonatomic, assign) CGRect header;
+@property (nonatomic, assign) CGRect footer;
+@property (nonatomic, assign) CGFloat height;
+
 @property (nonatomic, strong) NSArray *items;
 @property (nonatomic, assign) NSInteger itemCount;
 
@@ -42,8 +51,8 @@ NSString *const MCCollectionActivityKindSectionFooter = @"MCCollectionActivityKi
     float _scale;
 }
 
-/** 活动模板数组 */
-@property (nonatomic, strong) NSArray *templateArray;
+/** 活动模板 */
+@property (nonatomic, strong) NSDictionary *template;
 
 /** 通过模板生成的最终布局数组 */
 @property (nonatomic, strong) NSMutableArray *layoutArray;
@@ -51,11 +60,13 @@ NSString *const MCCollectionActivityKindSectionFooter = @"MCCollectionActivityKi
 /** 通过模板生成的最终布局分类 */
 @property (nonatomic, strong) NSMutableDictionary *layoutClassify;
 
-@property (nonatomic, weak) id <MCActivityLayoutDelegate> delegate;
+@property (nonatomic, weak) id <USActivityListLayoutDelegate> delegate;
 @property (nonatomic, strong) NSMutableArray *sectionItemAttributes;
 @property (nonatomic, strong) NSMutableArray *allItemAttributes;
 @property (nonatomic, strong) NSMutableDictionary *headersAttribute;
 @property (nonatomic, strong) NSMutableDictionary *footersAttribute;
+@property (nonatomic, strong) UICollectionViewLayoutAttributes *collectionHeaderAttributes;
+@property (nonatomic, strong) UICollectionViewLayoutAttributes *collectionFooterAttributes;
 @property (nonatomic, strong) NSMutableArray *unionRects;
 
 @end
@@ -69,7 +80,6 @@ static const NSInteger unionSize = 20;
 #pragma mark - Init
 - (void)commonInit {
     _scale = [UIScreen mainScreen].bounds.size.width/320;
-    _sectionInset = UIEdgeInsetsZero;
 }
 
 - (id)init {
@@ -86,43 +96,8 @@ static const NSInteger unionSize = 20;
     return self;
 }
 
-- (id <MCActivityLayoutDelegate> )delegate {
-    return (id <MCActivityLayoutDelegate> )self.collectionView.delegate;
-}
-
-- (void)setHeaderHeight:(CGFloat)headerHeight {
-    if (_headerHeight != headerHeight) {
-        _headerHeight = headerHeight;
-        [self invalidateLayout];
-    }
-}
-
-- (void)setFooterHeight:(CGFloat)footerHeight {
-    if (_footerHeight != footerHeight) {
-        _footerHeight = footerHeight;
-        [self invalidateLayout];
-    }
-}
-
-- (void)setHeaderInset:(UIEdgeInsets)headerInset {
-    if (!UIEdgeInsetsEqualToEdgeInsets(_headerInset, headerInset)) {
-        _headerInset = headerInset;
-        [self invalidateLayout];
-    }
-}
-
-- (void)setFooterInset:(UIEdgeInsets)footerInset {
-    if (!UIEdgeInsetsEqualToEdgeInsets(_footerInset, footerInset)) {
-        _footerInset = footerInset;
-        [self invalidateLayout];
-    }
-}
-
-- (void)setSectionInset:(UIEdgeInsets)sectionInset {
-    if (!UIEdgeInsetsEqualToEdgeInsets(_sectionInset, sectionInset)) {
-        _sectionInset = sectionInset;
-        [self invalidateLayout];
-    }
+- (id <USActivityListLayoutDelegate> )delegate {
+    return (id <USActivityListLayoutDelegate> )self.collectionView.delegate;
 }
 
 - (void)setRandomFirstShortSection:(BOOL)randomFirstShortSection {
@@ -150,52 +125,59 @@ static const NSInteger unionSize = 20;
 /**
  *  设置活动模板
  */
-- (void)setLayoutTemplate:(NSArray *)array
+- (void)setLayoutTemplate:(NSDictionary *)dictionary
 {
-    if (_templateArray == array) {
+    if (_template == dictionary) {
         return;
     }
     
-    _templateArray = array;
+    _template = dictionary;
     _layoutArray = [NSMutableArray array];
     _layoutClassify = [NSMutableDictionary dictionary];
     
-    for (NSDictionary *sectionItem in _templateArray) {
+    CGFloat baseWidth = [_template[@"width"] floatValue];
+    _scale = [UIScreen mainScreen].bounds.size.width/baseWidth;
+    
+    for (NSDictionary *sectionItem in _template[@"band"]) {
         
         MCSectionLayout *sectionLayout = [[MCSectionLayout alloc] init];
-        sectionLayout.inset = UIEdgeInsetsFromString(sectionItem[@"inset"]);
-        sectionLayout.inset = UIEdgeInsetsMake(sectionLayout.inset.top*_scale,
-                                               sectionLayout.inset.left*_scale,
-                                               sectionLayout.inset.bottom*_scale,
-                                               sectionLayout.inset.right*_scale);
+        sectionLayout.height = [sectionItem[@"height"] floatValue]*_scale;
+        for (NSDictionary *item in sectionItem[@"textbox"]) {
+            CGRect rect = CGRectZero;
+            rect.origin.x = [item[@"x"] floatValue]*_scale;
+            rect.origin.y = [item[@"y"] floatValue]*_scale;
+            rect.size.width = [item[@"width"] floatValue]*_scale;
+            rect.size.height = [item[@"height"] floatValue]*_scale;
+            
+            if ([item[@"id"] isEqualToString:@"header"]) {
+                sectionLayout.header = rect;
+            } else if ([item[@"id"] isEqualToString:@"footer"]) {
+                sectionLayout.footer = rect;
+            }
+        }
         
         NSMutableArray *scaleItems = [NSMutableArray array];
-        for (NSString *rectStr in sectionItem[@"items"]) {
-            NSArray *components = [rectStr componentsSeparatedByString:@"&"];
-            if (!components.count) {
-                continue;
-            }
+        for (NSDictionary *components in sectionItem[@"rect"]) {
             
             MCItemLayout *itemLayout = [[MCItemLayout alloc] init];
             
-            CGRect rect = CGRectFromString(components[0]);
-            itemLayout.xOffset = rect.origin.x*_scale;
-            itemLayout.yOffset = rect.origin.y*_scale;
-            itemLayout.width = rect.size.width*_scale;
-            itemLayout.height = rect.size.height*_scale;
+            itemLayout.xOffset = [components[@"x"] floatValue]*_scale;
+            itemLayout.yOffset = [components[@"y"] floatValue]*_scale;
+            itemLayout.width = [components[@"width"] floatValue]*_scale;
+            itemLayout.height = [components[@"height"] floatValue]*_scale;
             
             //缩放比例
-            if (components.count>1) {
-                itemLayout.scale = [components[1] floatValue];
-            }else{
-                itemLayout.scale = 1.0f;
-            }
+            itemLayout.scale = [components[@"scale"] floatValue];
             
             //旋转的角度
-            if (components.count>2) {
-                float angle = [components[2] floatValue];
-                itemLayout.rotate = M_PI*(angle/180.f);
-            }
+            float angle = [components[@"rotation"] floatValue];
+            itemLayout.rotate = M_PI*(angle/180.f);
+            
+            //圆角
+            itemLayout.radius = [components[@"round"] floatValue];
+            
+            //是否有动画
+            itemLayout.animation = [components[@"animation"] boolValue];
             
             [scaleItems addObject:itemLayout];
         }
@@ -274,7 +256,6 @@ static const NSInteger unionSize = 20;
     [super prepareLayout];
     
     _contentHeight = 0;
-    NSLog(@"prepareLayout");
     _unionRects = [NSMutableArray array];
     _sectionItemAttributes = [NSMutableArray array];
     _allItemAttributes = [NSMutableArray array];
@@ -289,6 +270,19 @@ static const NSInteger unionSize = 20;
     NSInteger allItemCount = 0;
     for (NSInteger i=0; i<numberOfSections; i++) {
         allItemCount += [self.collectionView numberOfItemsInSection:i];
+    }
+    
+    /*
+     * set collection view header
+     */
+    if (_collectionHeaderHeight > 0) {
+        _collectionHeaderAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MCCollectionActivityKindCollectionHeader
+                                                                                                     withIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
+        _collectionHeaderAttributes.frame = CGRectMake(0, 0, self.collectionView.bounds.size.width, _collectionHeaderHeight);
+        
+        [self.allItemAttributes addObject:_collectionHeaderAttributes];
+        
+        _contentHeight += _collectionHeaderHeight;
     }
     
     /**
@@ -307,12 +301,6 @@ static const NSInteger unionSize = 20;
         /*
          * 1. get section layout
          */
-        UIEdgeInsets sectionInset;
-        if ([self.delegate respondsToSelector:@selector(collectionView:insetForSectionAtIndex:)]) {
-            sectionInset = [self.delegate collectionView:self.collectionView insetForSectionAtIndex:section];
-        } else {
-            sectionInset = self.sectionInset;
-        }
         
         NSInteger itemCount = [self.collectionView numberOfItemsInSection:section];
         
@@ -326,9 +314,6 @@ static const NSInteger unionSize = 20;
             //sectionLayout = [lyArray objectAtIndex:(int)(arc4random() % lyArray.count)];
         }
         
-        if (!UIEdgeInsetsEqualToEdgeInsets(sectionLayout.inset, UIEdgeInsetsZero)) {
-            sectionInset = sectionLayout.inset;
-        }
         secTmpIdx ++;
         if (secTmpIdx >= _layoutArray.count) {
             secTmpIdx = 0;
@@ -337,111 +322,95 @@ static const NSInteger unionSize = 20;
         /*
          * 2. set section header
          */
+        CGRect headerRect = sectionLayout.header;
+        
         CGFloat headerHeight;
+        CGFloat headerOffset = 0.0;
+        
         if ([self.delegate respondsToSelector:@selector(collectionView:heightForHeaderInSection:)]) {
             headerHeight = [self.delegate collectionView:self.collectionView heightForHeaderInSection:section];
+            headerOffset = headerHeight - headerRect.size.height;
         } else {
-            headerHeight = self.headerHeight;
+            headerHeight = headerRect.size.height;
         }
         
-        UIEdgeInsets headerInset;
-        if ([self.delegate respondsToSelector:@selector(collectionView:insetForHeaderInSection:)]) {
-            headerInset = [self.delegate collectionView:self.collectionView insetForHeaderInSection:section];
-        } else {
-            headerInset = self.headerInset;
-        }
-        
-        _contentHeight += headerInset.top;
-        
-        if (headerHeight > 0) {
+        if (!CGRectEqualToRect(headerRect, CGRectZero)) {
             attributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MCCollectionActivityKindSectionHeader
                                                                                         withIndexPath:[NSIndexPath indexPathForItem:0 inSection:section]];
-            attributes.frame = CGRectMake(headerInset.left,
-                                          _contentHeight,
-                                          self.collectionView.bounds.size.width-(headerInset.left+headerInset.right),
+            attributes.frame = CGRectMake(headerRect.origin.x,
+                                          _contentHeight+headerRect.origin.y,
+                                          headerRect.size.width,
                                           headerHeight);
             
             self.headersAttribute[@(section)] = attributes;
             [self.allItemAttributes addObject:attributes];
-            
-            _contentHeight = CGRectGetMaxY(attributes.frame) + headerInset.bottom;
         }
-        
         
         /*
          * 3. set section items
          */
         NSMutableArray *itemAttributes = [NSMutableArray arrayWithCapacity:itemCount];
         
-        NSInteger itemIdx = 0;
-        CGFloat maxHeight = 0;
-        
-        //如果section里 给定元素数量大于模板元素数量 循环模板往下布局
-        CGFloat lineTop = 0;
-        
-        for (NSInteger idx = 0; idx < itemCount; idx++) {
+        for (NSInteger idx = 0; idx < MIN(itemCount, sectionLayout.itemCount) ; idx++) {
             
-            if (itemIdx >= sectionLayout.itemCount) {
-                itemIdx = 0;
-                lineTop = maxHeight+_loopitemSpace;
-            }
-            
-            MCItemLayout *itemLayout = sectionLayout.items[itemIdx];
+            MCItemLayout *itemLayout = sectionLayout.items[idx];
             
             NSIndexPath *indexPath = [NSIndexPath indexPathForItem:idx inSection:section];
             attributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
-            attributes.frame = CGRectMake(sectionInset.left+itemLayout.xOffset,
-                                          _contentHeight+itemLayout.yOffset+sectionInset.top+lineTop,
+            attributes.frame = CGRectMake(itemLayout.xOffset,
+                                          _contentHeight+itemLayout.yOffset+headerOffset,
                                           itemLayout.width,
                                           itemLayout.height);
             attributes.transform = CGAffineTransformMakeRotation(itemLayout.rotate);
             attributes.transform = CGAffineTransformScale(attributes.transform, itemLayout.scale, itemLayout.scale);
             
-            if (maxHeight < itemLayout.yOffset+itemLayout.height+lineTop) {
-                maxHeight = itemLayout.yOffset+itemLayout.height+lineTop;
-            }
-            
-            itemIdx ++;
-            
             [_allItemAttributes addObject:attributes];
             [itemAttributes addObject:attributes];
         }
-        _contentHeight += maxHeight+sectionInset.top+sectionInset.bottom;
         
         [_sectionItemAttributes addObject:itemAttributes];
         
         /*
          * 4. set section footer
          */
+        CGRect footerRect = sectionLayout.footer;
+        
         CGFloat footerHeight;
+        CGFloat footerOffset = 0.0;
+        
         if ([self.delegate respondsToSelector:@selector(collectionView:heightForFooterInSection:)]) {
             footerHeight = [self.delegate collectionView:self.collectionView heightForFooterInSection:section];
+            footerOffset = footerHeight - footerRect.size.height;
         } else {
-            footerHeight = self.footerHeight;
+            footerHeight = footerRect.size.height;
         }
         
-        UIEdgeInsets footerInset;
-        if ([self.delegate respondsToSelector:@selector( collectionView:insetForFooterInSection:)]) {
-            footerInset = [self.delegate collectionView:self.collectionView insetForFooterInSection:section];
-        } else {
-            footerInset = self.footerInset;
-        }
-        
-        _contentHeight += footerInset.top;
-        
-        if (footerHeight > 0) {
+        if (!CGRectEqualToRect(footerRect, CGRectZero)) {
             attributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MCCollectionActivityKindSectionFooter
                                                                                         withIndexPath:[NSIndexPath indexPathForItem:0 inSection:section]];
-            attributes.frame = CGRectMake(footerInset.left,
-                                          _contentHeight,
-                                          self.collectionView.bounds.size.width-(footerInset.left+footerInset.right),
+            attributes.frame = CGRectMake(footerRect.origin.x,
+                                          _contentHeight+footerRect.origin.y+headerOffset,
+                                          footerRect.size.width,
                                           footerHeight);
             
             self.footersAttribute[@(section)] = attributes;
             [self.allItemAttributes addObject:attributes];
-            
-            _contentHeight = CGRectGetMaxY(attributes.frame) + footerInset.bottom;
         }
+        
+        _contentHeight += sectionLayout.height+headerOffset+footerOffset;
+    }
+    
+    /*
+     * set collection view footer
+     */
+    if (_collectionFooterHeight > 0) {
+        _collectionFooterAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MCCollectionActivityKindCollectionFooter
+                                                                                                     withIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
+        _collectionFooterAttributes.frame = CGRectMake(0, _contentHeight, self.collectionView.bounds.size.width, _collectionFooterHeight);
+        
+        [self.allItemAttributes addObject:_collectionFooterAttributes];
+        
+        _contentHeight += _collectionFooterHeight;
     }
     
     // Build union rects
@@ -473,7 +442,15 @@ static const NSInteger unionSize = 20;
 
 - (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    return _sectionItemAttributes[indexPath.section][indexPath.row];
+    @try {
+        return _sectionItemAttributes[indexPath.section][indexPath.row];
+    }
+    @catch (NSException *exception) {
+        NSLog(@"request layoutAttributes not exist！");
+    }
+    @finally {
+        return [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
+    }
 }
 
 - (UICollectionViewLayoutAttributes *)layoutAttributesForSupplementaryViewOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
@@ -483,14 +460,16 @@ static const NSInteger unionSize = 20;
         attribute = _headersAttribute[@(indexPath.section)];
     } else if ([kind isEqualToString:MCCollectionActivityKindSectionFooter]) {
         attribute = _footersAttribute[@(indexPath.section)];
+    } else if ([kind isEqualToString:MCCollectionActivityKindCollectionHeader]) {
+        attribute = _collectionHeaderAttributes;
+    } else if ([kind isEqualToString:MCCollectionActivityKindCollectionFooter]) {
+        attribute = _collectionFooterAttributes;
     }
     return attribute;
 }
 
 - (NSArray *)layoutAttributesForElementsInRect:(CGRect)rect
 {
-    NSLog(@"layoutAttributesForElementsInRect %@",NSStringFromCGRect(rect));
-    
     NSInteger i;
     NSInteger begin = 0, end = _unionRects.count;
     NSMutableArray *attrs = [NSMutableArray array];

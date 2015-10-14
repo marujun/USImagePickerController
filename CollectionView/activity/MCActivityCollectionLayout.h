@@ -12,25 +12,20 @@
 extern NSString *const MCCollectionActivityKindSectionHeader;
 extern NSString *const MCCollectionActivityKindSectionFooter;
 
-@protocol MCActivityLayoutDelegate <UICollectionViewDelegate>
+extern NSString *const MCCollectionActivityKindCollectionHeader;
+extern NSString *const MCCollectionActivityKindCollectionFooter;
+
+@protocol USActivityListLayoutDelegate <UICollectionViewDelegate>
 @optional
 - (CGFloat)collectionView:(UICollectionView *)collectionView heightForHeaderInSection:(NSInteger)section;
 - (CGFloat)collectionView:(UICollectionView *)collectionView heightForFooterInSection:(NSInteger)section;
-- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView insetForSectionAtIndex:(NSInteger)section;
-- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView insetForHeaderInSection:(NSInteger)section;
-- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView insetForFooterInSection:(NSInteger)section;
 
 @end
 
 @interface MCActivityCollectionLayout : UICollectionViewLayout
 
-@property (nonatomic, assign) UIEdgeInsets sectionInset;
-
-@property (nonatomic, assign) CGFloat headerHeight;
-@property (nonatomic, assign) CGFloat footerHeight;
-
-@property (nonatomic, assign) UIEdgeInsets headerInset;
-@property (nonatomic, assign) UIEdgeInsets footerInset;
+@property (nonatomic, assign) CGFloat collectionHeaderHeight;
+@property (nonatomic, assign) CGFloat collectionFooterHeight;
 
 /** 第一组数据相对较少时是否随机选择样式，默认NO */
 @property (nonatomic, assign) BOOL randomFirstShortSection;
@@ -48,7 +43,7 @@ extern NSString *const MCCollectionActivityKindSectionFooter;
 @property (nonatomic, assign, readonly) CGFloat contentHeight;
 
 /** 设置活动模板 */
-- (void)setLayoutTemplate:(NSArray *)array;
+- (void)setLayoutTemplate:(NSDictionary *)dictionary;
 
 /** 把源数据(一维数组) 转换成 和模板对应的二维数组 */
 - (NSMutableArray *)dataSourceWithArray:(NSArray *)array;
