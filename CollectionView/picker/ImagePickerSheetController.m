@@ -10,7 +10,10 @@
 #import "ImageCollectionViewCell.h"
 #import "ImagePreviewTableViewCell.h"
 #import "AnimationController.h"
+#import <Photos/Photos.h>
 #import <AVFoundation/AVFoundation.h>
+
+#define PHPhotoLibraryClass NSClassFromString(@"PHPhotoLibrary")
 
 @interface ImagePickerSheetController () <UITableViewDataSource, UITableViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIViewControllerTransitioningDelegate>
 {
@@ -25,7 +28,10 @@
 @property (nonatomic, strong) NSMutableArray *selectedImageIndices;
 
 @property (nonatomic, strong) ALAssetsLibrary *assetsLibrary;
-@property (nonatomic, strong) NSMutableDictionary *imageManager;
+@property (nonatomic, strong) NSMutableDictionary *alImageManager;
+
+@property (nonatomic, strong) PHCachingImageManager *phImageManager;
+@property (nonatomic, strong) PHImageRequestOptions *requestOptions;
 
 @property (nonatomic, assign) BOOL enlargedPreviews;
 @property (nonatomic, strong) NSMutableDictionary *supplementaryViews;
@@ -56,7 +62,6 @@
     _assets = [NSMutableArray array];
     _selectedImageIndices = [NSMutableArray array];
     _supplementaryViews = [NSMutableDictionary dictionary];
-    _imageManager = [NSMutableDictionary dictionary];
     
     _enlargedPreviews = false;
     _tableViewPreviewRowHeight = 140.0;
@@ -165,14 +170,40 @@
 
 - (void)fetchAssets
 {
-    ALAssetsGroupEnumerationResultsBlock groupBlock = ^(ALAsset *asset, NSUInteger index, BOOL *stop) {
-        if (_assets.count == 49) {
-            *stop = YES;
+    NSInteger fetchLimit = 50;
+    
+    if (PHPhotoLibraryClass) {
+        _phImageManager = [[PHCachingImageManager alloc] init];
+        
+        PHFetchOptions *options = [[PHFetchOptions alloc] init];
+        options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"modificationDate" ascending:NO]];
+        options.predicate = [NSPredicate predicateWithFormat:@"mediaType = %d",PHAssetMediaTypeImage];
+        if ([options respondsToSelector:@selector(fetchLimit)]) {
+            options.fetchLimit =  fetchLimit;
         }
         
-        if (asset) {
-            [_assets addObject:asset];
-        }
+        PHFetchResult *result = [PHAsset fetchAssetsWithOptions:options];
+        
+        [result enumerateObjectsUsingBlock:^(PHAsset *asset, NSUInteger idx, BOOL * _Nonnull stop) {
+            if (_assets.count == (fetchLimit-1)) {
+                *stop = YES;
+            }
+            
+            if (asset && [asset isKindOfClass:[PHAsset class]]) {
+                [_assets addObject:asset];
+            }
+        }];
+        
+        return;
+    }
+    
+    _alImageManager = [NSMutableDictionary dictionary];
+    
+    //iOS7 以下使用
+    ALAssetsGroupEnumerationResultsBlock groupBlock = ^(ALAsset *asset, NSUInteger index, BOOL *stop) {
+        if (_assets.count == (fetchLimit-1)) *stop = YES;
+        
+        if (asset) [_assets addObject:asset];
     };
     
     ALAssetsFilter *assetsFilter =  [ALAssetsFilter allPhotos];
@@ -202,10 +233,15 @@
 }
 
 #pragma mark - Images
-- (CGSize)sizeForAsset:(ALAsset *)asset
+- (CGSize)sizeForAsset:(id)asset
 {
-    CGSize  size = asset.defaultRepresentation.dimensions;
-    CGFloat proportion = size.width/size.height;
+    CGFloat proportion = 1;
+    if ([asset isKindOfClass:[PHAsset class]]) {
+        proportion = (CGFloat)([asset pixelWidth])/(CGFloat)([asset pixelHeight]);
+    } else {
+        CGSize size = [asset defaultRepresentation].dimensions;
+        proportion = size.width/size.height;
+    }
     
     CGFloat rowHeight = _enlargedPreviews ? _tableViewEnlargedPreviewRowHeight :_tableViewPreviewRowHeight;
     CGFloat height = rowHeight - 2.0*_collectionViewInset;
@@ -291,19 +327,6 @@
     _actions = nil;
 }
 
-- (UIImage *)imageForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    UIImage *image = _imageManager[@(indexPath.section)];
-    if (!image) {
-        ALAsset *asset = _assets[indexPath.section];
-        image = [UIImage imageWithCGImage:asset.aspectRatioThumbnail];
-        
-        [_imageManager setObject:image forKey:@(indexPath.section)];
-    }
-    
-    return image;
-}
-
 #pragma mark - UICollectionViewDataSource
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
@@ -319,7 +342,27 @@
 {
     ImageCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([ImageCollectionViewCell class]) forIndexPath:indexPath];
     
-    cell.imageView.image = [self imageForItemAtIndexPath:indexPath];
+    id asset = _assets[indexPath.section];
+    
+    if ([asset isKindOfClass:[PHAsset class]]) {
+        cell.imageManager = _phImageManager;
+        
+        CGSize targetSize = [self targetSizeForAssetOfSize:[self sizeForAsset:asset]];
+        
+        [cell updateWithPHAsset:asset targetSize:targetSize];
+    }
+    else {
+        NSString *identifier = [asset defaultRepresentation].url.absoluteString;
+        
+        UIImage *image = _alImageManager[identifier];
+        if (!image) {
+            image = [UIImage imageWithCGImage:[asset aspectRatioThumbnail]];
+            [_alImageManager setObject:image forKey:identifier];
+        }
+        
+        cell.imageView.image = image;
+    }
+    
     cell.selected = [_selectedImageIndices containsObject:@(indexPath.section)];
     
     return cell;
@@ -388,7 +431,7 @@
             return;
         } else {
             NSNumber *previousItemIndex = [_selectedImageIndices firstObject];
-            [_supplementaryViews[previousItemIndex] setSelected:false];
+            [_supplementaryViews[previousItemIndex] setSelected:NO];
             
             [_selectedImageIndices removeObjectAtIndex:0];
         }
@@ -411,7 +454,8 @@
         } completion:^(BOOL finished) {
             [self reloadButtons];
             
-            _collectionView.imagePreviewLayout.showsSupplementaryViews = true;
+            [_collectionView reloadData];
+            _collectionView.imagePreviewLayout.showsSupplementaryViews = YES;
         }];
     }
     else {
@@ -470,11 +514,15 @@
 {
     [super didReceiveMemoryWarning];
     
-    [_imageManager removeAllObjects];
+    [_alImageManager removeAllObjects];
+    [_phImageManager stopCachingImagesForAllAssets];
 }
 
 - (void)dealloc
 {
+    [_alImageManager removeAllObjects];
+    [_phImageManager stopCachingImagesForAllAssets];
+    
     NSLog(@"%@ dealloc!",NSStringFromClass([self class]));
 }
 

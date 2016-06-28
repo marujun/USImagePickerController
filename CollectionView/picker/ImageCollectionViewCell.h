@@ -8,9 +8,14 @@
 
 #import <UIKit/UIKit.h>
 #import <AssetsLibrary/AssetsLibrary.h>
+#import <Photos/Photos.h>
 
 @interface ImageCollectionViewCell : UICollectionViewCell
 
 @property (nonatomic, strong) UIImageView *imageView;
+
+@property (nonatomic, weak) PHCachingImageManager *imageManager;
+
+- (void)updateWithPHAsset:(PHAsset *)phAsset targetSize:(CGSize)targetSize;
 
 @end
