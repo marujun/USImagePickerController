@@ -11,7 +11,6 @@
 @interface ImageCollectionViewCell ()
 
 @property (nonatomic, assign) PHImageRequestID requestID;
-@property (nonatomic, strong) PHImageRequestOptions *requestOptions;
 
 @end
 
@@ -43,6 +42,7 @@
 {
     _imageView = [[UIImageView alloc] init];
     _imageView.contentMode = UIViewContentModeScaleAspectFill;
+    _imageView.clipsToBounds = YES;
     
     [self addSubview:_imageView];
 }
@@ -51,12 +51,6 @@
 {
     NSInteger tag = self.tag + 1;
     self.tag = tag;
-    
-    if (!_requestOptions) {
-        _requestOptions = [[PHImageRequestOptions alloc] init];
-        _requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
-        _requestOptions.resizeMode = PHImageRequestOptionsResizeModeFast;
-    }
     
     [_imageManager cancelImageRequest:self.requestID];
     

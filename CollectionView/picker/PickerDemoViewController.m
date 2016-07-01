@@ -59,7 +59,7 @@
         [self presentImagePickerController:UIImagePickerControllerSourceTypePhotoLibrary];
     }];
     [action setSecondaryHandler:^(ImageAction *action, NSInteger num) {
-        
+        NSLog(@"controller.selectedImageAssets %@", controller.selectedImageAssets);
     }];
     [controller addAction:action];
     

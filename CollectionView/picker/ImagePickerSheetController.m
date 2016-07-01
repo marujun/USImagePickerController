@@ -174,6 +174,9 @@
     
     if (PHPhotoLibraryClass) {
         _phImageManager = [[PHCachingImageManager alloc] init];
+        _requestOptions = [[PHImageRequestOptions alloc] init];
+        _requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
+        _requestOptions.resizeMode = PHImageRequestOptionsResizeModeFast;
         
         PHFetchOptions *options = [[PHFetchOptions alloc] init];
         options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"modificationDate" ascending:NO]];
@@ -235,6 +238,11 @@
 #pragma mark - Images
 - (CGSize)sizeForAsset:(id)asset
 {
+    return [self sizeForAsset:asset enlarged:_enlargedPreviews];
+}
+
+- (CGSize)sizeForAsset:(id)asset enlarged:(BOOL)enlarged
+{
     CGFloat proportion = 1;
     if ([asset isKindOfClass:[PHAsset class]]) {
         proportion = (CGFloat)([asset pixelWidth])/(CGFloat)([asset pixelHeight]);
@@ -243,7 +251,7 @@
         proportion = size.width/size.height;
     }
     
-    CGFloat rowHeight = _enlargedPreviews ? _tableViewEnlargedPreviewRowHeight :_tableViewPreviewRowHeight;
+    CGFloat rowHeight = enlarged ? _tableViewEnlargedPreviewRowHeight :_tableViewPreviewRowHeight;
     CGFloat height = rowHeight - 2.0*_collectionViewInset;
     
     return CGSizeMake((CGFloat)(floorf((float)(proportion*height))), height);
@@ -253,7 +261,7 @@
 {
     CGFloat scale = [UIScreen mainScreen].scale;
     
-    return CGSizeMake(scale*size.width, size.height);
+    return CGSizeMake(scale*size.width, scale*size.height);
 }
 
 #pragma mark - UITableViewDataSource
@@ -346,6 +354,7 @@
     
     if ([asset isKindOfClass:[PHAsset class]]) {
         cell.imageManager = _phImageManager;
+        cell.requestOptions = _requestOptions;
         
         CGSize targetSize = [self targetSizeForAssetOfSize:[self sizeForAsset:asset]];
         
