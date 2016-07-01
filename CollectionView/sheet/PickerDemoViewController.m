@@ -8,8 +8,9 @@
 
 #import "PickerDemoViewController.h"
 #import "ImagePickerSheetController.h"
+#import "USImagePickerController.h"
 
-@interface PickerDemoViewController () <UIImagePickerControllerDelegate,UINavigationControllerDelegate>
+@interface PickerDemoViewController () <UIImagePickerControllerDelegate,UINavigationControllerDelegate,USImagePickerControllerDelegate>
 
 @end
 
@@ -37,10 +38,15 @@
         return;
     }
     
-    UIImagePickerController *controller = [[UIImagePickerController alloc] init];
+    
+    USImagePickerController *controller = [[USImagePickerController alloc] init];
     controller.delegate = self;
-    controller.sourceType = sourceType;
     [self presentViewController:controller animated:true completion:nil];
+    
+//    UIImagePickerController *controller = [[UIImagePickerController alloc] init];
+//    controller.delegate = self;
+//    controller.sourceType = sourceType;
+//    [self presentViewController:controller animated:true completion:nil];
 }
 
 - (void)presentImagePickerSheet:(UITapGestureRecognizer *)gestureRecognizer
