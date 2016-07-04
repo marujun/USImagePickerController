@@ -12,11 +12,17 @@
 #define MinAssetItemLength     80.f
 #define AssetItemSpace         2.f
 
-@interface USAssetsViewController ()
+@interface USAssetsViewController () <USAssetCollectionCellDelegate>
 
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (weak, nonatomic) IBOutlet UICollectionViewFlowLayout *flowLayout;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *indicatorView;
+
+//底部状态栏
+@property (weak, nonatomic) IBOutlet UIView *bottomBar;
+@property (weak, nonatomic) IBOutlet UIButton *previewButton;
+@property (weak, nonatomic) IBOutlet UIButton *sendButton;
+@property (weak, nonatomic) IBOutlet UILabel *countLabel;
 
 @property (nonatomic, strong) NSMutableArray *allAssets;
 @property (nonatomic, assign) NSUInteger displaySelectedNum;
@@ -25,6 +31,8 @@
 @property (nonatomic, assign) CGRect previousPreheatRect;
 @property (nonatomic, assign) CGSize thumbnailTargetSize;
 @property (nonatomic, strong) PHImageRequestOptions *thumbnailRequestOptions;
+
+@property (nonatomic, strong) UITapGestureRecognizer *tapGestureRecognizer;
 
 @end
 
@@ -46,6 +54,11 @@
     [self resetCachedAssetImages];
     
     [self setupViews];
+    
+    if (self.allAssets.count) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.allAssets.count-1 inSection:0];
+        [self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionTop animated:NO];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -75,14 +88,15 @@
 
 - (void)refreshTitle
 {
-    if (self.picker.allowsMultipleSelection) {
-        if (self.selectedAssets.count) self.title = [NSString stringWithFormat:@"%zd张照片",self.selectedAssets.count];
-        else self.title = @"选择照片";
-    }
-    else {
-        if (self.assetCollection) self.title = self.assetCollection.localizedTitle;
-        else self.title = [self.assetsGroup valueForProperty:ALAssetsGroupPropertyName];
-    }
+    if (self.assetCollection) self.title = self.assetCollection.localizedTitle;
+    else self.title = [self.assetsGroup valueForProperty:ALAssetsGroupPropertyName];
+    
+    NSInteger count = self.selectedAssets.count;
+    self.countLabel.text = [NSString stringWithFormat:@"%zd",count];
+    self.countLabel.hidden = count?NO:YES;
+    self.sendButton.alpha = count?1:0.5;
+    self.previewButton.alpha = count?1:0.5;
+    self.bottomBar.userInteractionEnabled = count?YES:NO;
 }
 
 
@@ -96,7 +110,7 @@
     }
     lineMaxCount --;
     
-//    lineMaxCount = MAX(4, lineMaxCount);  //一排最少4个
+    lineMaxCount = MAX(4, lineMaxCount);  //一排最少4个
     CGFloat itemLength = ([[UIScreen mainScreen] bounds].size.width-AssetItemSpace*(lineMaxCount-1))/lineMaxCount;
     
     self.flowLayout.itemSize = CGSizeMake(itemLength, itemLength);
@@ -114,33 +128,40 @@
     }
     
     self.collectionView.backgroundColor = [UIColor clearColor];
-    [self.collectionView setContentInset:UIEdgeInsetsMake(64, 0, 0, 0)];
     
     NSString *identifier = NSStringFromClass([USAssetCollectionCell class]);
     UINib *cellNib = [UINib nibWithNibName:identifier bundle:nil];
     [self.collectionView registerNib:cellNib forCellWithReuseIdentifier:identifier];
     
-//    if(self.picker.allowsMultipleSelection){
-//        _rightNavButton = [UIButton newRoundButtonWithTitle:@"下一步" image:[UIImage imageNamed:@"pub_nav_next"]
-//                                                     target:self action:@selector(rightNavButtonAction:)];
-//        
-//        if (self.picker.enablePanSelect) {
-//            _panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
-//            _panGestureRecognizer.delegate = self;
-//            [self.view addGestureRecognizer:_panGestureRecognizer];
-//        }
-//        
-//        _tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
-//        [self.collectionView addGestureRecognizer:_tapGestureRecognizer];
-//        
-//        if (_panGestureRecognizer) {
-//            [_panGestureRecognizer requireGestureRecognizerToFail:_tapGestureRecognizer];
-//        }
-//    }
-//    else {
-//        _rightNavButton = [UIButton newRoundButtonWithTitle:@"取消" image:nil target:self action:@selector(rightNavButtonAction:)];
-//    }
-//    [self setNavigationRightView:_rightNavButton];
+    if(self.picker.allowsMultipleSelection){
+        _tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
+        [self.collectionView addGestureRecognizer:_tapGestureRecognizer];
+        
+        self.countLabel.backgroundColor = self.collectionView.tintColor;
+        self.countLabel.layer.cornerRadius = self.countLabel.frame.size.height/2.f;
+        self.countLabel.layer.masksToBounds = YES;
+        [self.sendButton setTitleColor:self.collectionView.tintColor forState:UIControlStateNormal];
+        [self.collectionView setContentInset:UIEdgeInsetsMake(64, 0, self.bottomBar.frame.size.height, 0)];
+    }
+    else {
+        self.bottomBar.hidden = YES;
+        [self.collectionView setContentInset:UIEdgeInsetsMake(64, 0, 0, 0)];
+    }
+    
+    UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithTitle:@"取消" style:UIBarButtonItemStylePlain
+                                                                  target:self action:@selector(rightNavButtonAction:)];
+    UIBarButtonItem *negativeSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    negativeSpacer.width = 2;  //向左移动2个像素
+    self.navigationItem.rightBarButtonItems = @[negativeSpacer,buttonItem];
+}
+
+- (void)rightNavButtonAction:(UIButton *)sender
+{
+    if (self.picker.delegate && [self.picker.delegate respondsToSelector:@selector(imagePickerControllerDidCancel:)]) {
+        [self.picker.delegate imagePickerControllerDidCancel:self.picker];
+    } else {
+        [self.picker.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    }
 }
 
 - (void)setupAssets
@@ -150,7 +171,7 @@
     if (self.assetCollection) {
         PHFetchOptions *options = [[PHFetchOptions alloc] init];
         options.predicate = [NSPredicate predicateWithFormat:@"mediaType == %d", PHAssetMediaTypeImage];
-        options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"modificationDate" ascending:NO]];
+        options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"modificationDate" ascending:YES]];
         
         PHAssetCollection *assetCollection = (PHAssetCollection *)self.assetCollection;
         PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:options];
@@ -165,7 +186,7 @@
     ALAssetsGroupEnumerationResultsBlock resultsBlock = ^(ALAsset *asset, NSUInteger index, BOOL *stop) {
         if (asset) {
             if ([[asset valueForProperty:ALAssetPropertyType] isEqualToString:ALAssetTypePhoto]) {
-                [self.allAssets insertObject:asset atIndex:0];
+                [self.allAssets addObject:asset];
             }
         }
         else {
@@ -196,6 +217,46 @@
     }
 }
 
+#pragma mark - UITapGestureRecognizer
+- (void)handleTapGesture: (UITapGestureRecognizer *)recognizer
+{
+    CGPoint point = [recognizer locationInView:self.collectionView];
+    NSIndexPath *indexPath = [self.collectionView indexPathForItemAtPoint:point];
+    if (!indexPath) return;
+    
+    USAssetCollectionCell *cell = (id)[self.collectionView cellForItemAtIndexPath:indexPath];
+    if (cell) {
+        [cell handleTapGestureAtPoint:[recognizer locationInView:cell]];
+    }
+}
+
+#pragma mark - USAssetCollectionCellDelegate
+- (void)photoDidClickedInCollectionCell:(USAssetCollectionCell *)collectionView
+{
+    
+}
+
+- (BOOL)collectionCell:(USAssetCollectionCell *)cell canSelect:(BOOL)selected
+{
+    if (selected && self.selectedAssets.count >= self.picker.maxSelectNumber) {
+        [[[UIAlertView alloc] initWithTitle:nil
+                                    message:[NSString stringWithFormat:@"你最多只能选择%zd张照片",self.picker.maxSelectNumber]
+                                   delegate:nil
+                          cancelButtonTitle:@"我知道了"
+                          otherButtonTitles:nil] show];
+        return NO;
+    }
+    return YES;
+}
+
+- (void)collectionCell:(USAssetCollectionCell *)cell didSelect:(BOOL)selected
+{
+    if (selected) [self.selectedAssets addObject:cell.asset];
+    else [self.selectedAssets removeObject:cell.asset];
+    
+    [self refreshTitle];
+}
+
 #pragma mark - UICollectionViewDataSource
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
@@ -207,58 +268,14 @@
 {
     NSString *identifier = NSStringFromClass([USAssetCollectionCell class]);
     USAssetCollectionCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
+    cell.delegate = self;
     cell.imageManager = self.imageManager;
-    cell.thumbnailTargetSize = _thumbnailTargetSize;
-    cell.thumbnailRequestOptions = _thumbnailRequestOptions;
+    cell.thumbnailTargetSize = self.thumbnailTargetSize;
+    cell.thumbnailRequestOptions = self.thumbnailRequestOptions;
+    cell.markView.hidden = !self.picker.allowsMultipleSelection;
     
-    [cell bind:[self assetAtIndexPath:indexPath] selected:YES];
-//    cell.indexPath = indexPath;
-//    cell.collectionView = collectionView;
-//    
-//    if (IsCameraItem(indexPath)) {
-//        [cell bind:nil selected:NO];
-//        cell.userInteractionEnabled = YES;
-//    }
-//    else {
-//        PHAsset *asset = [self assetAtIndexPath:indexPath];
-//        
-//        cell.selectedQueue = _selectedQueue;
-//        cell.imageManager = self.imageManager;
-//        cell.thumbnailTargetSize = _thumbnailTargetSize;
-//        cell.thumbnailRequestOptions = _thumbnailRequestOptions;
-//        
-//        //控制是否已上传此照片显示与否
-//        if (_dateSameDiff == 0) {
-//            cell.coverLabel.hidden = !self.picker.uploadedDateMapper || !self.picker.uploadedDateMapper[asset.modifiedDate];
-//        }
-//        else {
-//            __block BOOL hasSame = NO;
-//            NSDate *photo_date = asset.modifiedDate;
-//            
-//            [self.picker.uploadedDateMapper enumerateKeysAndObjectsUsingBlock:^(NSDate *date, id  _Nonnull obj, BOOL * _Nonnull stop) {
-//                double difference = fabs([photo_date timeIntervalSinceDate:date]*1000);
-//                if (difference <= _dateSameDiff) {
-//                    hasSame = YES;
-//                    *stop = YES;
-//                }
-//            }];
-//            
-//            cell.coverLabel.hidden = !hasSame;
-//        }
-//        
-//        [cell bind:asset selected:_selectedAssets[asset.localIdentifier]?YES:NO];
-//        
-//        if(self.picker.allowsMultipleSelection){
-//            cell.checkButton.hidden = NO;
-//            cell.checkButton.alpha = 1;
-//            cell.userInteractionEnabled = NO;
-//        } else {
-//            cell.checkButton.hidden = YES;
-//            cell.checkButton.alpha = 0;
-//            cell.userInteractionEnabled = YES;
-//        }
-//        cell.warningImageView.hidden = [self couldSelectImage:asset.dimensions];
-//    }
+    id asset = [self assetAtIndexPath:indexPath];
+    [cell bind:asset selected:[self.selectedAssets containsObject:asset]];
     
     return cell;
 }

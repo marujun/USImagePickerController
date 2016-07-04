@@ -40,8 +40,7 @@
     self.title = NSLocalizedString(@"相簿", nil);
     self.automaticallyAdjustsScrollViewInsets = NO;
     
-    _draftAssets = [[NSMutableDictionary alloc] init];
-    _selectedAssets = [[NSMutableDictionary alloc] init];
+    _selectedAssets = [[NSMutableSet alloc] init];
     
     [self setupViews];
     [self setupGroup];
@@ -52,6 +51,13 @@
     [super viewWillAppear:animated];
     
     [self.tableView reloadData];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    [_selectedAssets removeAllObjects];
 }
 
 #pragma mark - Setup
@@ -264,14 +270,6 @@
     return cell;
 }
 
-- (void)removeSelectedAssets
-{
-    [self.selectedAssets enumerateKeysAndObjectsUsingBlock:^(NSURL *key, id asset, BOOL * _Nonnull stop) {
-        [self.draftAssets setObject:asset forKey:key];
-    }];
-    [self.selectedAssets removeAllObjects];
-}
-
 #pragma mark - UITableView Delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -294,7 +292,6 @@
         _displayAssetsGroup = vc.assetsGroup;
     }
     
-    vc.draftAssets = self.draftAssets;
     vc.selectedAssets = self.selectedAssets;
     
     [self.navigationController pushViewController:vc animated:animation];

@@ -10,15 +10,13 @@
 
 @interface USAssetCollectionCell ()
 
-@property (weak, nonatomic) IBOutlet UIImageView *imageView;
 @property (weak, nonatomic) IBOutlet UIButton *imageButton;
+@property (weak, nonatomic) IBOutlet UIButton *checkButton;
 
 @property (nonatomic, strong) ALAsset *alAsset;
 
 @property (nonatomic, strong) PHAsset *phAsset;
 @property (nonatomic, assign) PHImageRequestID requestID;
-
-@property (nonatomic, copy) NSString *identifier;
 
 @end
 
@@ -27,10 +25,30 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     // Initialization code
+    
+    [self initialize];
+}
+
+- (void)initialize
+{
+    self.checkButton.tintColor = [UIColor whiteColor];
+    self.checkButton.layer.cornerRadius = CGRectGetHeight(self.checkButton.frame) / 2.0;
+    
+    UIImage *selectedImage = [[UIImage imageNamed:@"USPicker-Checkmark-Selected"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [self.checkButton setImage:selectedImage forState:UIControlStateNormal];
+    [self.checkButton setImage:selectedImage forState:UIControlStateSelected];
+    [self reloadCheckButtonBgColor];
+}
+
+- (void)reloadCheckButtonBgColor
+{
+    self.checkButton.backgroundColor = self.checkButton.selected ? self.tintColor : [UIColor colorWithRed:0 green:0 blue:0 alpha:0.2];
 }
 
 - (void)bind:(id)asset selected:(BOOL)selected
 {
+    _asset = asset;
+    
     if ([asset isKindOfClass:[PHAsset class]]) {
         self.phAsset = asset;
     } else {
@@ -57,12 +75,50 @@
         [self.imageButton setImage:[UIImage imageWithCGImage:self.alAsset.thumbnail] forState:UIControlStateNormal];
     }
     
-    self.identifier = [asset localIdentifier];
+    self.checkButton.selected = selected;
+    [self reloadCheckButtonBgColor];
 }
 
 - (IBAction)imageButtonAction:(UIButton *)sender
 {
+    if (!self.asset) return;
     
+    if (self.delegate && [self.delegate respondsToSelector:@selector(photoDidClickedInCollectionCell:)]) {
+        [self.delegate photoDidClickedInCollectionCell:self];
+    }
+}
+
+- (void)checkButtonAction:(UIButton *)sender
+{
+    if (!self.asset) return;
+    
+    BOOL selected = !sender.selected;
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(collectionCell:canSelect:)]) {
+        if (![self.delegate collectionCell:self canSelect:selected]) return;
+    }
+    
+    self.checkButton.selected = selected;
+    [self reloadCheckButtonBgColor];
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(collectionCell:didSelect:)]) {
+        [self.delegate collectionCell:self didSelect:selected];
+    }
+}
+
+- (void)handleTapGestureAtPoint:(CGPoint)point
+{
+    CGRect checkRect = self.checkButton.frame;
+    checkRect.origin.x -= 30;
+    checkRect.origin.y = 0;
+    checkRect.size.width += 30+10;
+    checkRect.size.height += 30;
+    
+    if (CGRectContainsPoint(checkRect, point)) {
+        [self checkButtonAction:self.checkButton];
+    } else {
+        [self imageButtonAction:self.imageButton];
+    }
 }
 
 @end

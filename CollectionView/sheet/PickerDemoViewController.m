@@ -41,6 +41,8 @@
     
     USImagePickerController *controller = [[USImagePickerController alloc] init];
     controller.delegate = self;
+    controller.allowsMultipleSelection = YES;
+    controller.maxSelectNumber = 9;
     [self presentViewController:controller animated:true completion:nil];
     
 //    UIImagePickerController *controller = [[UIImagePickerController alloc] init];

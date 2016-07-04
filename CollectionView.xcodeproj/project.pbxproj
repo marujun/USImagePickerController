@@ -15,9 +15,6 @@
 		0A7A613D1D26160100A8A07B /* USPicker-Checkmark-Selected.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A7A611D1D26160100A8A07B /* USPicker-Checkmark-Selected.png */; };
 		0A7A613E1D26160100A8A07B /* USPicker-Checkmark-Selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A7A611E1D26160100A8A07B /* USPicker-Checkmark-Selected@2x.png */; };
 		0A7A613F1D26160100A8A07B /* USPicker-Checkmark-Selected@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A7A611F1D26160100A8A07B /* USPicker-Checkmark-Selected@3x.png */; };
-		0A7A61401D26160100A8A07B /* USPicker-Checkmark.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A7A61201D26160100A8A07B /* USPicker-Checkmark.png */; };
-		0A7A61411D26160100A8A07B /* USPicker-Checkmark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A7A61211D26160100A8A07B /* USPicker-Checkmark@2x.png */; };
-		0A7A61421D26160100A8A07B /* USPicker-Checkmark@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A7A61221D26160100A8A07B /* USPicker-Checkmark@3x.png */; };
 		0A7A61431D26160100A8A07B /* AnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A61251D26160100A8A07B /* AnimationController.m */; };
 		0A7A61441D26160100A8A07B /* ImageAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A61271D26160100A8A07B /* ImageAction.m */; };
 		0A7A61451D26160100A8A07B /* ImageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A61291D26160100A8A07B /* ImageCollectionViewCell.m */; };
@@ -74,9 +71,6 @@
 		0A7A611D1D26160100A8A07B /* USPicker-Checkmark-Selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "USPicker-Checkmark-Selected.png"; sourceTree = "<group>"; };
 		0A7A611E1D26160100A8A07B /* USPicker-Checkmark-Selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "USPicker-Checkmark-Selected@2x.png"; sourceTree = "<group>"; };
 		0A7A611F1D26160100A8A07B /* USPicker-Checkmark-Selected@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "USPicker-Checkmark-Selected@3x.png"; sourceTree = "<group>"; };
-		0A7A61201D26160100A8A07B /* USPicker-Checkmark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "USPicker-Checkmark.png"; sourceTree = "<group>"; };
-		0A7A61211D26160100A8A07B /* USPicker-Checkmark@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "USPicker-Checkmark@2x.png"; sourceTree = "<group>"; };
-		0A7A61221D26160100A8A07B /* USPicker-Checkmark@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "USPicker-Checkmark@3x.png"; sourceTree = "<group>"; };
 		0A7A61241D26160100A8A07B /* AnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationController.h; sourceTree = "<group>"; };
 		0A7A61251D26160100A8A07B /* AnimationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnimationController.m; sourceTree = "<group>"; };
 		0A7A61261D26160100A8A07B /* ImageAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageAction.h; sourceTree = "<group>"; };
@@ -199,9 +193,6 @@
 				0A7A611E1D26160100A8A07B /* USPicker-Checkmark-Selected@2x.png */,
 				0A7A611F1D26160100A8A07B /* USPicker-Checkmark-Selected@3x.png */,
 				0A7A615A1D2633D800A8A07B /* USPicker-Assets-Locked@2x.png */,
-				0A7A61201D26160100A8A07B /* USPicker-Checkmark.png */,
-				0A7A61211D26160100A8A07B /* USPicker-Checkmark@2x.png */,
-				0A7A61221D26160100A8A07B /* USPicker-Checkmark@3x.png */,
 			);
 			path = images;
 			sourceTree = "<group>";
@@ -371,9 +362,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A7A61421D26160100A8A07B /* USPicker-Checkmark@3x.png in Resources */,
 				0A7A61641D26558F00A8A07B /* USAssetsViewController.xib in Resources */,
-				0A7A61401D26160100A8A07B /* USPicker-Checkmark.png in Resources */,
 				0A7A614C1D26160100A8A07B /* PreviewSupplementaryView-Checkmark-Selected@3x.png in Resources */,
 				0A7A616C1D267CE600A8A07B /* USAssetCollectionCell.xib in Resources */,
 				0A7A614B1D26160100A8A07B /* PreviewSupplementaryView-Checkmark-Selected@2x.png in Resources */,
@@ -391,7 +380,6 @@
 				0A7A614F1D26160100A8A07B /* PreviewSupplementaryView-Checkmark@3x.png in Resources */,
 				0A7A614A1D26160100A8A07B /* PreviewSupplementaryView-Checkmark-Selected.png in Resources */,
 				0AC5AAA61B723B07007F2DB3 /* Images.xcassets in Resources */,
-				0A7A61411D26160100A8A07B /* USPicker-Checkmark@2x.png in Resources */,
 				0A7A614E1D26160100A8A07B /* PreviewSupplementaryView-Checkmark@2x.png in Resources */,
 				0A7F766F1B72E845000332A1 /* ActivityFooterView.xib in Resources */,
 			);

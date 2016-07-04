@@ -12,7 +12,6 @@
 
 @interface USAssetGroupViewController : UIViewController
 
-@property (nonatomic, strong) NSMutableDictionary *draftAssets;
-@property (nonatomic, strong) NSMutableDictionary *selectedAssets;
+@property (nonatomic, strong) NSMutableSet *selectedAssets;
 
 @end

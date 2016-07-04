@@ -173,6 +173,18 @@
     NSInteger fetchLimit = 50;
     
     if (PHPhotoLibraryClass) {
+        // 获取当前应用对照片的访问授权状态
+        if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusNotDetermined) {
+            [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+                if (status == PHAuthorizationStatusAuthorized) {
+                    [self performSelectorOnMainThread:@selector(fetchAssets) withObject:nil waitUntilDone:NO];
+                } else {
+                    [self.presentingViewController dismissViewControllerAnimated:true completion:nil];
+                }
+            }];
+            return;
+        }
+        
         _phImageManager = [[PHCachingImageManager alloc] init];
         _requestOptions = [[PHImageRequestOptions alloc] init];
         _requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
@@ -227,7 +239,9 @@
     _assetsLibrary = [[ALAssetsLibrary alloc] init];
     [_assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos
                                  usingBlock:libraryBlock
-                                failureBlock:nil];
+                                failureBlock:^(NSError *error) {
+                                    [self.presentingViewController dismissViewControllerAnimated:true completion:nil];
+                                }];
 }
 
 - (void)reloadButtons
