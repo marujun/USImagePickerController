@@ -12,10 +12,8 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 
 @interface MCPhotoBrower ()
-{
-    NSMutableArray *_dataSource;
-}
 
+@property (nonatomic, strong) NSMutableArray *dataSource;
 @property (nonatomic, strong) ALAssetsLibrary *assetsLibrary;
 
 @end
@@ -87,15 +85,28 @@
                                 failureBlock:nil];
 }
 
+- (void)updateTitle:(NSInteger)index
+{
+    self.title = [NSString stringWithFormat:@"%@ / %@", @(index), @(_dataSource.count)];
+}
+
 - (void)pushAssetsPageViewController
 {
     USAssetsPageViewController *pageVC = [[USAssetsPageViewController alloc] initWithAssets:_dataSource];
-    pageVC.pageIndex = 0;
-//    [self.view addSubview:pageVC.view];
-//    [self addChildViewController:pageVC];
-//    [pageVC.view autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero];
+    pageVC.view.translatesAutoresizingMaskIntoConstraints = NO;
     
-    [self.navigationController pushViewController:pageVC animated:NO];
+    __weak typeof(self) weak_self = self;
+    [pageVC setIndexChangedHandler:^(NSInteger index) {
+        [weak_self updateTitle:index];
+    }];
+    pageVC.pageIndex = 0;
+    
+    [self.view addSubview:pageVC.view];
+    [self addChildViewController:pageVC];
+    
+    NSDictionary *views = @{@"view":pageVC.view};
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[view]-0-|" options:0 metrics:nil views:views]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[view]-0-|" options:0 metrics:nil views:views]];
 }
 
 @end

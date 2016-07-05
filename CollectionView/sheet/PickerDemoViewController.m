@@ -51,6 +51,13 @@
 //    [self presentViewController:controller animated:true completion:nil];
 }
 
+- (void)imagePickerController:(USImagePickerController *)picker didFinishPickingMediaWithArray:(NSArray *)mediaArray
+{
+    NSLog(@"didFinishPickingMediaWithArray %@",mediaArray);
+    
+    [picker dismissViewControllerAnimated:YES completion:nil];
+}
+
 - (void)presentImagePickerSheet:(UITapGestureRecognizer *)gestureRecognizer
 {
     ImagePickerSheetController *controller = [[ImagePickerSheetController alloc] init];

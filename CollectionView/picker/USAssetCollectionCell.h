@@ -34,7 +34,7 @@
 
 @required
 
-- (void)photoDidClickedInCollectionCell:(USAssetCollectionCell *)collectionView;
+- (void)photoDidClickedInCollectionCell:(USAssetCollectionCell *)cell;
 
 - (void)collectionCell:(USAssetCollectionCell *)cell didSelect:(BOOL)selected;
 

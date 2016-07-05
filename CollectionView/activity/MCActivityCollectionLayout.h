@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "DBObject.h"
 
 extern NSString *const MCCollectionActivityKindSectionHeader;
 extern NSString *const MCCollectionActivityKindSectionFooter;

@@ -33,8 +33,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-//    [self setNavigationBarHidden:YES animated:NO];
 }
 
 #pragma mark - ALAssetsLibrary

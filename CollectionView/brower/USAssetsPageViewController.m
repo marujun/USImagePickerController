@@ -53,22 +53,27 @@
 }
 
 #pragma mark - 单双击手势触发
-- (void)handleDoubleTap:(UITapGestureRecognizer*)tap
+- (void)handleDoubleTap:(UITapGestureRecognizer *)tap
 {
     CGPoint touchPoint = [tap locationInView:tap.view];
     
     [self.currentAssetItemViewController.scrollView doubleTapWithPoint:touchPoint];
 }
 
-- (void)handleSingleTap:(UITapGestureRecognizer*)tap
+- (void)handleSingleTap:(UITapGestureRecognizer *)tap
 {
+    if (_singleTapHandler) {
+        _singleTapHandler(self.pageIndex);
+        return;
+    }
+    
     if (self.navigationController.navigationBar.hidden) {
         [self.navigationController setNavigationBarHidden:NO animated:YES];//显示导航栏
-        [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];  // 显示状态栏
+        [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];  // 显示状态栏
     }
     else {
         [self.navigationController setNavigationBarHidden:YES animated:YES];//隐藏导航栏
-        [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];  // 隐藏状态栏
+        [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];  // 隐藏状态栏
     }
 }
 
@@ -94,7 +99,7 @@
                         animated:NO
                       completion:NULL];
         
-        [self updateTitle:pageIndex + 1];
+        [self updateTitle:pageIndex];
     }
 }
 
@@ -107,7 +112,9 @@
 
 - (void)updateTitle:(NSInteger)index
 {
-    self.title      = [NSString stringWithFormat:@"%@ / %@", @(index), @(self.assets.count)];
+    self.title      = [NSString stringWithFormat:@"%@ / %@", @(index+1), @(self.assets.count)];
+    
+    if (_indexChangedHandler) _indexChangedHandler(index);
 }
 
 #pragma mark - Page view controller data source
@@ -150,7 +157,7 @@
 {
     if (completed) {
         USAssetItemViewController *vc = (id)pageViewController.viewControllers[0];
-        NSInteger index = [self.assets indexOfObject:vc.asset] + 1;
+        NSInteger index = [self.assets indexOfObject:vc.asset];
         
         [self updateTitle:index];
     }
@@ -159,6 +166,14 @@
 - (void)pageViewController:(UIPageViewController *)pageViewController willTransitionToViewControllers:(NSArray *)pendingViewControllers
 {
     [self.navigationController setToolbarHidden:YES animated:YES];
+}
+
+- (void)dealloc
+{
+    _singleTapHandler = nil;
+    _indexChangedHandler = nil;
+    
+    NSLog(@"dealloc 释放类 %@",  NSStringFromClass([self class]));
 }
 
 @end

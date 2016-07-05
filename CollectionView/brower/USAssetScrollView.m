@@ -15,29 +15,42 @@
 @property (nonatomic, strong) id asset;
 @property (nonatomic, strong) UIImage *image;
 
-@property (nonatomic, assign) BOOL isLoading;
-
 @end
 
 @implementation USAssetScrollView
 
+- (id)init {
+    if (self = [super init]) {
+        [self initialize];
+    }
+    return self;
+}
+
 - (instancetype)initWithFrame:(CGRect)frame
 {
-    self = [super initWithFrame:frame];
-    
-    if (self)
-    {
-        self.showsVerticalScrollIndicator   = NO;
-        self.showsHorizontalScrollIndicator = NO;
-        self.bouncesZoom                    = YES;
-        self.backgroundColor                = [UIColor clearColor];
-        self.decelerationRate               = UIScrollViewDecelerationRateFast;
-        self.delegate                       = self;
-        
-        [self setupViews];
+    if (self = [super initWithFrame:frame]) {
+        [self initialize];
     }
-    
     return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    if (self = [super initWithCoder:aDecoder]) {
+        [self initialize];
+    }
+    return self;
+}
+
+- (void)initialize
+{
+    self.showsVerticalScrollIndicator   = NO;
+    self.showsHorizontalScrollIndicator = NO;
+    self.bouncesZoom                    = YES;
+    self.backgroundColor                = [UIColor clearColor];
+    self.decelerationRate               = UIScrollViewDecelerationRateFast;
+    self.delegate                       = self;
+    
+    [self setupViews];
 }
 
 #pragma mark - Setup
@@ -51,9 +64,17 @@
     [self addSubview:self.imageView];
     
     UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    activityView.translatesAutoresizingMaskIntoConstraints = NO;
     self.indicatorView = activityView;
     [self addSubview:self.indicatorView];
-    [self.indicatorView autoCenterInSuperview];
+    
+    NSDictionary *views = @{@"frameView":self.indicatorView, @"superView":self};
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[frameView]-(<=1)-[superView]"
+                                                                 options:NSLayoutFormatAlignAllCenterY
+                                                                 metrics:nil views:views]];
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[frameView]-(<=1)-[superView]"
+                                                                 options:NSLayoutFormatAlignAllCenterX
+                                                                 metrics:nil views:views]];
 }
 
 - (void)initWithImage:(UIImage *)image
@@ -75,18 +96,13 @@
     
     self.zoomScale = 1.0;
     
-    if ([self.asset isEqual:asset]) {
-        if (self.isLoading) return;
-        
-        if (self.image) {
-            [self initWithImage:self.image];
-            return;
-        }
+    if ([self.asset isEqual:asset] && self.image) {
+        [self initWithImage:self.image];
+        return;
     }
     
     self.image = nil;
     self.asset = asset;
-    self.isLoading = YES;
     
     [self.indicatorView startAnimating];
     
@@ -97,8 +113,6 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
             if (fullImage) {
-                weak_self.isLoading = NO;
-                
                 [weak_self initWithImage:fullImage];
                 [weak_self.indicatorView stopAnimating];
             }
@@ -112,29 +126,22 @@
     
     self.zoomScale = 1.0;
     
-    if ([self.asset isEqual:asset]) {
-        if (self.isLoading) return;
-        
-        if (self.image) {
-            [self initWithImage:self.image];
-            return;
-        }
+    if ([self.asset isEqual:asset] && self.image) {
+        [self initWithImage:self.image];
+        return;
     }
     
     self.image = nil;
     self.asset = asset;
-    self.isLoading = YES;
-    
-    [self.indicatorView startAnimating];
     
     __weak USAssetScrollView *weak_self = self;
     
     PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
     options.resizeMode   = PHImageRequestOptionsResizeModeExact;
     options.networkAccessAllowed = YES;
     
-    CGFloat scale =  MAX(1.0, MIN(asset.pixelWidth, asset.pixelHeight)/1500.f);
+    CGFloat scale =  MAX(1.0, MIN(asset.pixelWidth, asset.pixelHeight)/1800.f);
     CGSize retinaScreenSize = CGSizeMake(asset.pixelWidth/scale, asset.pixelHeight/scale);
     
     [[PHImageManager defaultManager] requestImageForAsset:asset
@@ -143,10 +150,7 @@
                                                   options:options
                                             resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
                                                 if (result) {
-                                                    weak_self.isLoading = NO;
-                                                    
                                                     [weak_self initWithImage:result];
-                                                    [weak_self.indicatorView stopAnimating];
                                                 }
                                             }];
 }

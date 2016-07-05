@@ -47,9 +47,13 @@
 
 - (void)setupViews
 {
-    _scrollView = [USAssetScrollView newAutoLayoutView];
+    _scrollView = [[USAssetScrollView alloc] init];
+    _scrollView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:_scrollView];
-    [self.scrollView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero];
+    
+    NSDictionary *views = NSDictionaryOfVariableBindings(_scrollView);
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[_scrollView]-0-|" options:0 metrics:nil views:views]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[_scrollView]-0-|" options:0 metrics:nil views:views]];
     
     self.view.backgroundColor = [UIColor clearColor];
     

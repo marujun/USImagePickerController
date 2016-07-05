@@ -15,7 +15,7 @@ NSString *const MCCollectionActivityKindCollectionHeader = @"MCCollectionActivit
 NSString *const MCCollectionActivityKindCollectionFooter = @"MCCollectionActivityKindCollectionFooter";
 
 
-@interface MCItemLayout : DBObject
+@interface MCItemLayout : NSObject
 
 @property (nonatomic, assign) CGFloat xOffset;
 @property (nonatomic, assign) CGFloat yOffset;
@@ -32,7 +32,7 @@ NSString *const MCCollectionActivityKindCollectionFooter = @"MCCollectionActivit
 @implementation MCItemLayout
 @end
 
-@interface MCSectionLayout : DBObject
+@interface MCSectionLayout : NSObject
 
 @property (nonatomic, assign) CGRect header;
 @property (nonatomic, assign) CGRect footer;

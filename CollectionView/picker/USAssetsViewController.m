@@ -8,11 +8,13 @@
 
 #import "USAssetsViewController.h"
 #import "USAssetCollectionCell.h"
+#import "USAssetsPageViewController.h"
+#import "USAssetsPreviewViewController.h"
 
 #define MinAssetItemLength     80.f
 #define AssetItemSpace         2.f
 
-@interface USAssetsViewController () <USAssetCollectionCellDelegate>
+@interface USAssetsViewController () <USAssetCollectionCellDelegate, USAssetsPreviewViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (weak, nonatomic) IBOutlet UICollectionViewFlowLayout *flowLayout;
@@ -23,15 +25,16 @@
 @property (weak, nonatomic) IBOutlet UIButton *previewButton;
 @property (weak, nonatomic) IBOutlet UIButton *sendButton;
 @property (weak, nonatomic) IBOutlet UILabel *countLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *countWidthConstraint;
 
 @property (nonatomic, strong) NSMutableArray *allAssets;
-@property (nonatomic, assign) NSUInteger displaySelectedNum;
 
 //PHAsset 生成缩略图及缓存时需要的数据
 @property (nonatomic, assign) CGRect previousPreheatRect;
 @property (nonatomic, assign) CGSize thumbnailTargetSize;
 @property (nonatomic, strong) PHImageRequestOptions *thumbnailRequestOptions;
 
+@property (nonatomic, assign) BOOL didLayoutSubviews;
 @property (nonatomic, strong) UITapGestureRecognizer *tapGestureRecognizer;
 
 @end
@@ -48,28 +51,24 @@
     
     self.automaticallyAdjustsScrollViewInsets = NO;
     
-    [self refreshTitle];
+    [self setupViews];
     
     [self setupAssets];
     [self resetCachedAssetImages];
     
-    [self setupViews];
-    
-    if (self.allAssets.count) {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.allAssets.count-1 inSection:0];
-        [self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionTop animated:NO];
-    }
+    [self refreshTitle];
 }
 
-- (void)viewWillAppear:(BOOL)animated
+- (void)viewDidLayoutSubviews
 {
-    [super viewWillAppear:animated];
+    [super viewDidLayoutSubviews];
     
-    if (_displaySelectedNum==_selectedAssets.count) return;
-    
-    [self.collectionView reloadData];
-    
-    [self refreshTitle];
+    if (!self.didLayoutSubviews && self.allAssets.count){
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.allAssets.count-1 inSection:0];
+        [self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionTop animated:NO];
+        
+        self.didLayoutSubviews = YES;
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -77,13 +76,6 @@
     [super viewDidAppear:animated];
     
     [self updateCachedAssetImages];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-    
-    _displaySelectedNum = _selectedAssets.count;
 }
 
 - (void)refreshTitle
@@ -137,10 +129,10 @@
         _tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
         [self.collectionView addGestureRecognizer:_tapGestureRecognizer];
         
-        self.countLabel.backgroundColor = self.collectionView.tintColor;
+        self.countLabel.backgroundColor = USPickerTintColor;
         self.countLabel.layer.cornerRadius = self.countLabel.frame.size.height/2.f;
         self.countLabel.layer.masksToBounds = YES;
-        [self.sendButton setTitleColor:self.collectionView.tintColor forState:UIControlStateNormal];
+        [self.sendButton setTitleColor:USPickerTintColor forState:UIControlStateNormal];
         [self.collectionView setContentInset:UIEdgeInsetsMake(64, 0, self.bottomBar.frame.size.height, 0)];
     }
     else {
@@ -198,6 +190,15 @@
     [self.assetsGroup enumerateAssetsUsingBlock:resultsBlock];
 }
 
+- (NSArray *)selectedAssetsArray
+{
+    NSMutableArray *tmpArray= [NSMutableArray array];
+    [_allAssets enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([_selectedAssets containsObject:obj]) [tmpArray addObject:obj];
+    }];
+    return tmpArray;
+}
+
 - (CGRect)imageRectWithIndex:(NSInteger)index
 {
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
@@ -217,6 +218,24 @@
     }
 }
 
+#pragma mark - BottomBar button action
+- (IBAction)previewButtonAction:(UIButton *)sender
+{
+    USAssetsPreviewViewController *previewVC = [[USAssetsPreviewViewController alloc] initWithAssets:self.selectedAssetsArray];
+    previewVC.selectedAssets = self.selectedAssets;
+    previewVC.delegate = self;
+    [self.navigationController pushViewController:previewVC animated:YES];
+}
+
+- (IBAction)sendButtonAction:(UIButton *)sender
+{
+    if (self.picker.delegate && [self.picker.delegate respondsToSelector:@selector(imagePickerController:didFinishPickingMediaWithArray:)]) {
+        [self.picker.delegate imagePickerController:self.picker didFinishPickingMediaWithArray:self.selectedAssetsArray];
+    } else {
+        [self.picker.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    }
+}
+
 #pragma mark - UITapGestureRecognizer
 - (void)handleTapGesture: (UITapGestureRecognizer *)recognizer
 {
@@ -231,9 +250,15 @@
 }
 
 #pragma mark - USAssetCollectionCellDelegate
-- (void)photoDidClickedInCollectionCell:(USAssetCollectionCell *)collectionView
+- (void)photoDidClickedInCollectionCell:(USAssetCollectionCell *)cell
 {
-    
+    if (self.picker.allowsMultipleSelection) {
+        USAssetsPreviewViewController *previewVC = [[USAssetsPreviewViewController alloc] initWithAssets:_allAssets];
+        previewVC.selectedAssets = self.selectedAssets;
+        previewVC.delegate = self;
+        previewVC.pageIndex = [_collectionView indexPathForCell:cell].row;
+        [self.navigationController pushViewController:previewVC animated:YES];
+    }
 }
 
 - (BOOL)collectionCell:(USAssetCollectionCell *)cell canSelect:(BOOL)selected
@@ -249,10 +274,30 @@
     return YES;
 }
 
+
 - (void)collectionCell:(USAssetCollectionCell *)cell didSelect:(BOOL)selected
 {
     if (selected) [self.selectedAssets addObject:cell.asset];
     else [self.selectedAssets removeObject:cell.asset];
+    
+    [self refreshTitle];
+}
+
+#pragma mark - USAssetsPreviewViewControllerDelegate
+
+- (BOOL)previewViewController:(USAssetsPreviewViewController *)vc canSelect:(BOOL)selected
+{
+    return [self collectionCell:nil canSelect:selected];
+}
+
+- (void)sendButtonClickedInPreviewViewController:(USAssetsPreviewViewController *)vc
+{
+    [self sendButtonAction:_sendButton];
+}
+
+- (void)previewViewController:(USAssetsPreviewViewController *)vc didSelect:(BOOL)selected
+{
+    [self.collectionView reloadData];
     
     [self refreshTitle];
 }
@@ -417,6 +462,8 @@
 - (void)dealloc
 {
     [self.imageManager stopCachingImagesForAllAssets];
+    
+    NSLog(@"dealloc 释放类 %@",  NSStringFromClass([self class]));
 }
 
 @end

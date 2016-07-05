@@ -10,6 +10,7 @@
                 <outlet property="bottomBar" destination="DDO-m3-NkI" id="xn1-nb-W2c"/>
                 <outlet property="collectionView" destination="IZM-1Q-bUu" id="iW6-aU-TLX"/>
                 <outlet property="countLabel" destination="7qn-KY-3V4" id="e2H-9f-jqR"/>
+                <outlet property="countWidthConstraint" destination="SGR-j9-KCN" id="Y3U-YG-Nq5"/>
                 <outlet property="flowLayout" destination="hvU-E5-yYv" id="aE6-nr-zNU"/>
                 <outlet property="indicatorView" destination="lkj-uA-eBZ" id="2Zs-tE-zso"/>
                 <outlet property="previewButton" destination="CBz-ja-8os" id="cX9-6v-bRC"/>
@@ -66,6 +67,9 @@
                             <state key="normal" title="预览">
                                 <color key="titleColor" red="0.098039215686274508" green="0.098039215686274508" blue="0.098039215686274508" alpha="1" colorSpace="calibratedRGB"/>
                             </state>
+                            <connections>
+                                <action selector="previewButtonAction:" destination="-1" eventType="touchUpInside" id="zrv-kY-YzE"/>
+                            </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gxp-aI-ikP">
                             <rect key="frame" x="265" y="1" width="55" height="44"/>
@@ -76,6 +80,9 @@
                             <state key="normal" title="发送">
                                 <color key="titleColor" red="0.098039215690000001" green="0.098039215690000001" blue="0.098039215690000001" alpha="1" colorSpace="calibratedRGB"/>
                             </state>
+                            <connections>
+                                <action selector="sendButtonAction:" destination="-1" eventType="touchUpInside" id="b5m-m4-2eo"/>
+                            </connections>
                         </button>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="9" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7qn-KY-3V4">
                             <rect key="frame" x="251" y="12" width="21" height="21"/>

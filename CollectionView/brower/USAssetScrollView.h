@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 #import <Photos/Photos.h>
 #import <AssetsLibrary/AssetsLibrary.h>
-#import "UIView+AutoLayout.h"
 
 @interface USAssetScrollView : UIScrollView
 

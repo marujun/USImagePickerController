@@ -54,10 +54,10 @@
 /** 当allowsEditing为NO时mediaImage为经过处理的【全屏图】 */
 - (void)imagePickerController:(USImagePickerController *)picker didFinishPickingMediaWithImage:(UIImage *)mediaImage;
 
-/** 当allowsEditing为NO时才会执行该代理函数并且mediaImage为【原始图片】 */
-//- (void)imagePickerController:(USImagePickerController *)picker didFinishPickingMediaWithImage:(UIImage *)mediaImage model:(AssetModel *)model;
-//
-//- (void)imagePickerController:(USImagePickerController *)picker didFinishPickingMediaWithArray:(NSArray<AssetModel *> *)mediaArray;
+/** 当allowsEditing为NO时才会执行该代理函数 */
+- (void)imagePickerController:(USImagePickerController *)picker didFinishPickingMediaWithAsset:(id)asset;
+
+- (void)imagePickerController:(USImagePickerController *)picker didFinishPickingMediaWithArray:(NSArray *)mediaArray;
 
 - (void)imagePickerControllerDidCancel:(USImagePickerController *)picker;
 
