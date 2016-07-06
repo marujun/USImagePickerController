@@ -10,6 +10,8 @@
 
 #define ScreenSize (((NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation))?CGSizeMake([UIScreen mainScreen].bounds.size.height, [UIScreen mainScreen].bounds.size.width):[UIScreen mainScreen].bounds.size)
 
+#define USFullScreenImageMinLength  1500.f
+
 @interface USAssetScrollView () <UIScrollViewDelegate>
 
 @property (nonatomic, strong) id asset;
@@ -141,7 +143,7 @@
     options.resizeMode   = PHImageRequestOptionsResizeModeExact;
     options.networkAccessAllowed = YES;
     
-    CGFloat scale =  MAX(1.0, MIN(asset.pixelWidth, asset.pixelHeight)/1800.f);
+    CGFloat scale =  MAX(1.0, MIN(asset.pixelWidth, asset.pixelHeight)/USFullScreenImageMinLength);
     CGSize retinaScreenSize = CGSizeMake(asset.pixelWidth/scale, asset.pixelHeight/scale);
     
     [[PHImageManager defaultManager] requestImageForAsset:asset

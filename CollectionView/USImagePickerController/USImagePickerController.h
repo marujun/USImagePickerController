@@ -40,6 +40,12 @@
 
 /*!
  @property
+ @brief 是否使用原图，默认为NO
+ */
+@property (nonatomic, assign, readonly) BOOL allowsOriginalImage;
+
+/*!
+ @property
  @brief 用户自定义flags
  */
 @property (nonatomic, assign) NSInteger flags;

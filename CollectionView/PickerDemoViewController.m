@@ -38,22 +38,23 @@
         return;
     }
     
-    
     USImagePickerController *controller = [[USImagePickerController alloc] init];
     controller.delegate = self;
     controller.allowsMultipleSelection = YES;
     controller.maxSelectNumber = 9;
     [self presentViewController:controller animated:true completion:nil];
-    
-//    UIImagePickerController *controller = [[UIImagePickerController alloc] init];
-//    controller.delegate = self;
-//    controller.sourceType = sourceType;
-//    [self presentViewController:controller animated:true completion:nil];
 }
 
 - (void)imagePickerController:(USImagePickerController *)picker didFinishPickingMediaWithArray:(NSArray *)mediaArray
 {
     NSLog(@"didFinishPickingMediaWithArray %@",mediaArray);
+    
+    [picker dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)imagePickerController:(USImagePickerController *)picker didFinishPickingMediaWithAsset:(id)asset
+{
+    NSLog(@"didFinishPickingMediaWithAsset\n %@",asset);
     
     [picker dismissViewControllerAnimated:YES completion:nil];
 }

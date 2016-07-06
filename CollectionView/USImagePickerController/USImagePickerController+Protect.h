@@ -6,8 +6,8 @@
 //  Copyright © 2016年 marujun. All rights reserved.
 //
 
-#import <AssetsLibrary/AssetsLibrary.h>
-#import <Photos/Photos.h>
+#import "PHAsset+ImagePicker.h"
+#import "ALAsset+ImagePicker.h"
 
 //8.3以下的系统获取不到相机胶卷，继续使用ALAssetsLibrary
 #define PHPhotoLibraryClass ((NSFoundationVersionNumber<NSFoundationVersionNumber_iOS_8_3)?nil:NSClassFromString(@"PHPhotoLibrary"))
@@ -26,6 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
  *  返回单例对象ALAssetsLibrary
  */
 + (ALAssetsLibrary *)defaultAssetsLibrary NS_DEPRECATED_IOS(4_0, 8_0, "Use PHImageManager instead");
+
+
+- (void)setAllowsOriginalImage:(BOOL)allowsOriginalImage;
 
 @end
 

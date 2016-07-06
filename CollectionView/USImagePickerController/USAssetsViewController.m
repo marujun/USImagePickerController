@@ -249,15 +249,35 @@
     }
 }
 
+- (void)oneAsset:(id)asset didSelect:(BOOL)selected
+{
+    if (selected) [self.selectedAssets addObject:asset];
+    else [self.selectedAssets removeObject:asset];
+    
+    [self refreshTitle];
+}
+
 #pragma mark - USAssetCollectionCellDelegate
 - (void)photoDidClickedInCollectionCell:(USAssetCollectionCell *)cell
 {
+    NSInteger itemIndex = [_collectionView indexPathForCell:cell].row;
+    
     if (self.picker.allowsMultipleSelection) {
         USAssetsPreviewViewController *previewVC = [[USAssetsPreviewViewController alloc] initWithAssets:_allAssets];
         previewVC.selectedAssets = self.selectedAssets;
         previewVC.delegate = self;
-        previewVC.pageIndex = [_collectionView indexPathForCell:cell].row;
+        previewVC.pageIndex = itemIndex;
         [self.navigationController pushViewController:previewVC animated:YES];
+    }
+    else if (!self.picker.allowsEditing) {
+        if (self.picker.delegate && [self.picker.delegate respondsToSelector:@selector(imagePickerController:didFinishPickingMediaWithAsset:)]) {
+            [self.picker.delegate imagePickerController:self.picker didFinishPickingMediaWithAsset:_allAssets[itemIndex]];
+        }
+        
+        if (self.picker.delegate && [self.picker.delegate respondsToSelector:@selector(imagePickerController:didFinishPickingMediaWithImage:)]) {
+            id asset = _allAssets[itemIndex];
+            [self.picker.delegate imagePickerController:self.picker didFinishPickingMediaWithImage:[asset fullScreenImage]];
+        }
     }
 }
 
@@ -277,10 +297,7 @@
 
 - (void)collectionCell:(USAssetCollectionCell *)cell didSelect:(BOOL)selected
 {
-    if (selected) [self.selectedAssets addObject:cell.asset];
-    else [self.selectedAssets removeObject:cell.asset];
-    
-    [self refreshTitle];
+    [self oneAsset:cell.asset didSelect:selected];
 }
 
 #pragma mark - USAssetsPreviewViewControllerDelegate
@@ -297,9 +314,9 @@
 
 - (void)previewViewController:(USAssetsPreviewViewController *)vc didSelect:(BOOL)selected
 {
-    [self.collectionView reloadData];
+    [self oneAsset:vc.asset didSelect:selected];
     
-    [self refreshTitle];
+    [self.collectionView reloadData];
 }
 
 #pragma mark - UICollectionViewDataSource

@@ -35,6 +35,11 @@
     [super viewDidLoad];
 }
 
+- (void)setAllowsOriginalImage:(BOOL)allowsOriginalImage
+{
+    _allowsOriginalImage = allowsOriginalImage;
+}
+
 #pragma mark - ALAssetsLibrary
 
 + (ALAssetsLibrary *)defaultAssetsLibrary

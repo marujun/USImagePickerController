@@ -13,6 +13,8 @@
 
 @interface USAssetsPreviewViewController : UIViewController
 
+@property (nonatomic, assign, readonly) id asset;
+
 @property (nonatomic, assign) NSInteger pageIndex;
 
 @property (nonatomic, strong) NSMutableSet *selectedAssets;

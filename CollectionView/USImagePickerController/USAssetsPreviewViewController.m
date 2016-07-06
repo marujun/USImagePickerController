@@ -20,8 +20,16 @@
 @property (weak, nonatomic) IBOutlet UILabel *countLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *topHeightConstraint;
 
+@property (weak, nonatomic) IBOutlet UIImageView *boxImageView;
+@property (weak, nonatomic) IBOutlet UILabel *boxFillLabel;
+@property (weak, nonatomic) IBOutlet UILabel *boxDescLabel;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *boxIndicatorView;
+
 @property (nonatomic, assign) BOOL pageSelected;
 @property (nonatomic, strong) NSMutableArray *dataSource;
+
+@property (nonatomic, assign) PHImageRequestID requestID;
+@property (nonatomic, strong) NSMutableDictionary *lengthMapper;
 
 @end
 
@@ -32,6 +40,7 @@
 {
     self = [super initWithNibName:@"USAssetsPreviewViewController" bundle:nil];
     if (self) {
+        self.lengthMapper    = [NSMutableDictionary dictionary];
         self.dataSource      = [NSMutableArray arrayWithArray:assets];
         self.automaticallyAdjustsScrollViewInsets = NO;
     }
@@ -66,6 +75,10 @@
     return (USImagePickerController *)self.navigationController;
 }
 
+- (id)asset {
+    return [_dataSource objectAtIndex:_pageIndex];
+}
+
 - (void)updateTitle:(NSInteger)index
 {
     _pageIndex = index;
@@ -73,13 +86,44 @@
     self.title = [NSString stringWithFormat:@"%@ / %@", @(index+1), @(_dataSource.count)];
     
     _pageSelected = [_selectedAssets containsObject:_dataSource[index]];
+    
+    [self updateDisplay];
+}
+
+- (void)updateDisplay
+{
     [self reloadCheckButtonBgColor];
     
     NSInteger count = self.selectedAssets.count;
     self.countLabel.text = [NSString stringWithFormat:@"%zd",count];
     self.countLabel.hidden = count?NO:YES;
-    self.sendButton.alpha = count?1:0.7;
-    self.bottomBar.userInteractionEnabled = count?YES:NO;
+    self.sendButton.alpha = count?1:0.5;
+    self.sendButton.userInteractionEnabled = count?YES:NO;
+    
+    if (self.picker.allowsOriginalImage) {
+        self.boxFillLabel.hidden = NO;
+        self.boxImageView.tintColor = RGBACOLOR(120, 120, 120, 1);
+        self.boxDescLabel.textColor = [UIColor whiteColor];
+        
+        NSNumber *length = _lengthMapper[@(_pageIndex)];
+        if (length) {
+            NSString *space = [NSByteCountFormatter stringFromByteCount:length.longLongValue countStyle:NSByteCountFormatterCountStyleBinary];
+            space = [space stringByReplacingOccurrencesOfString:@" " withString:@""];
+            space = [space stringByReplacingOccurrencesOfString:@"B" withString:@""];
+            
+            self.boxDescLabel.text = [NSString stringWithFormat:@"原图(%@)",space];
+            [self.boxIndicatorView stopAnimating];
+        } else {
+            [self requestImageDataLength];
+        }
+    }
+    else {
+        [self.boxIndicatorView stopAnimating];
+        self.boxFillLabel.hidden = YES;
+        self.boxImageView.tintColor = RGBACOLOR(70, 70, 70, 1);
+        self.boxDescLabel.textColor = self.boxImageView.tintColor;
+        self.boxDescLabel.text = @"原图";
+    }
 }
 
 - (void)handleSingleTap
@@ -88,39 +132,6 @@
     
     self.topBar.hidden = hidden;
     self.bottomBar.hidden = hidden;
-}
-
-- (IBAction)checkButtonAction:(UIButton *)sender
-{
-    if (self.delegate && [self.delegate respondsToSelector:@selector(previewViewController:canSelect:)]) {
-        if (![self.delegate previewViewController:self canSelect:!_pageSelected]) return;
-    }
-    
-    id asset = _dataSource[_pageIndex];
-    
-    _pageSelected = !_pageSelected;
-    [self reloadCheckButtonBgColor];
-    
-    if (_pageSelected) [self.selectedAssets addObject:asset];
-    else [self.selectedAssets removeObject:asset];
-    
-    [self updateTitle:_pageIndex];
-    
-    if (self.delegate && [self.delegate respondsToSelector:@selector(previewViewController:didSelect:)]) {
-        [self.delegate previewViewController:self didSelect:_pageSelected];
-    }
-}
-
-- (IBAction)leftNavButtonAction:(UIButton *)sender
-{
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
-- (IBAction)sendButtonAction:(UIButton *)sender
-{
-    if (self.delegate && [self.delegate respondsToSelector:@selector(sendButtonClickedInPreviewViewController:)]) {
-        [self.delegate sendButtonClickedInPreviewViewController:self];
-    }
 }
 
 #pragma mark - Setup
@@ -153,14 +164,89 @@
     
     self.checkImageView.tintColor = [UIColor whiteColor];
     self.checkImageView.layer.cornerRadius = CGRectGetHeight(self.checkImageView.frame) / 2.0;
-    UIImage *selectedImage = [[UIImage imageNamed:@"USPicker-Checkmark-Selected"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    [self.checkImageView setImage:selectedImage];
+    [self.checkImageView setImage:[[UIImage imageNamed:@"USPicker-Checkmark-Selected"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
     [self reloadCheckButtonBgColor];
+    
+    self.boxFillLabel.backgroundColor = USPickerTintColor;
+    self.boxFillLabel.layer.cornerRadius = CGRectGetHeight(self.boxFillLabel.frame)/2.f;
+    self.boxFillLabel.layer.masksToBounds = YES;
+    [self.boxImageView setImage:[[UIImage imageNamed:@"USPicker-Checkbox"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
 }
 
 - (void)reloadCheckButtonBgColor
 {
     self.checkImageView.backgroundColor = _pageSelected ? USPickerTintColor : [UIColor clearColor];
+}
+
+/** 右上角按钮的点击事件 */
+- (IBAction)checkButtonAction:(UIButton *)sender
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(previewViewController:canSelect:)]) {
+        if (![self.delegate previewViewController:self canSelect:!_pageSelected]) return;
+    }
+    
+    BOOL selected = !_pageSelected;
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(previewViewController:didSelect:)]) {
+        [self.delegate previewViewController:self didSelect:selected];
+    }
+    
+    [self updateTitle:_pageIndex];
+    
+    [self reloadCheckButtonBgColor];
+}
+
+/** 原图按钮的点击事件 */
+- (IBAction)boxButtonAction:(UIButton *)sender
+{
+    BOOL allows = !self.picker.allowsOriginalImage;
+    
+    self.picker.allowsOriginalImage = allows;
+    
+    if (!_pageSelected && allows) {
+        [self checkButtonAction:nil];
+    }
+    
+    [self updateDisplay];
+}
+
+- (void)requestImageDataLength
+{
+    if (PHPhotoLibraryClass) {
+        [self.boxIndicatorView startAnimating];
+        
+        [[PHImageManager defaultManager] cancelImageRequest:self.requestID];
+        
+        __weak typeof(self) weak_self = self;
+        
+        // get photo info from this asset
+        PHImageRequestOptions *imageRequestOptions = [[PHImageRequestOptions alloc] init];
+        imageRequestOptions.networkAccessAllowed = YES;
+        imageRequestOptions.progressHandler = ^(double progress, NSError *__nullable error, BOOL *stop, NSDictionary *__nullable info) {
+            NSLog(@"download image data from iCloud: %.1f%%", 100*progress);
+        };
+        self.requestID = [[PHImageManager defaultManager] requestImageDataForAsset:self.asset options:imageRequestOptions resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+            [weak_self.lengthMapper setObject:@(imageData.length) forKey:@(weak_self.pageIndex)];
+            [weak_self updateDisplay];
+        }];
+    }
+    else {
+        [_lengthMapper setObject:@([self.asset defaultRepresentation].size) forKey:@(_pageIndex)];
+    }
+}
+
+/** 返回按钮的点击事件 */
+- (IBAction)leftNavButtonAction:(UIButton *)sender
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+/** 发送按钮的点击事件 */
+- (IBAction)sendButtonAction:(UIButton *)sender
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(sendButtonClickedInPreviewViewController:)]) {
+        [self.delegate sendButtonClickedInPreviewViewController:self];
+    }
 }
 
 #pragma mark - 监控横竖屏切换
