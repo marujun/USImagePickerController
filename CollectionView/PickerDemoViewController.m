@@ -38,16 +38,25 @@
         return;
     }
     
-    USImagePickerController *controller = [[USImagePickerController alloc] init];
-    controller.delegate = self;
-    controller.allowsMultipleSelection = YES;
-    controller.maxSelectNumber = 9;
-    [self presentViewController:controller animated:true completion:nil];
+    if (sourceType == UIImagePickerControllerSourceTypeCamera) {
+        UIImagePickerController *controller = [[UIImagePickerController alloc] init];
+        controller.sourceType = sourceType;
+        [self presentViewController:controller animated:true completion:nil];
+    }
+    else {
+        USImagePickerController *controller = [[USImagePickerController alloc] init];
+        controller.delegate = self;
+//        controller.allowsEditing = YES;
+//        controller.cropMaskAspectRatio = 0.5;
+        controller.allowsMultipleSelection = YES;
+        controller.maxSelectNumber = 9;
+        [self presentViewController:controller animated:true completion:nil];
+    }
 }
 
 - (void)imagePickerController:(USImagePickerController *)picker didFinishPickingMediaWithArray:(NSArray *)mediaArray
 {
-    NSLog(@"didFinishPickingMediaWithArray %@",mediaArray);
+    NSLog(@"selectedOriginalImage %zd didFinishPickingMediaWithArray %@", picker.selectedOriginalImage, mediaArray);
     
     [picker dismissViewControllerAnimated:YES completion:nil];
 }
@@ -55,6 +64,13 @@
 - (void)imagePickerController:(USImagePickerController *)picker didFinishPickingMediaWithAsset:(id)asset
 {
     NSLog(@"didFinishPickingMediaWithAsset\n %@",asset);
+    
+    [picker dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)imagePickerController:(USImagePickerController *)picker didFinishPickingMediaWithImage:(UIImage *)mediaImage
+{
+    NSLog(@"didFinishPickingMediaWithImage %@",mediaImage);
     
     [picker dismissViewControllerAnimated:YES completion:nil];
 }

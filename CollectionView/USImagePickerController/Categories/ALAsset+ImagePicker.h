@@ -21,6 +21,8 @@
 
 - (UIImage *)aspectRatioThumbnailImage;
 
+- (UIImage *)aspectRatioHDImage;
+
 - (NSData *)originalImageData;
 
 /**

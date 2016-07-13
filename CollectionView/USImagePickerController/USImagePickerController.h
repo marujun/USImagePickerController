@@ -40,9 +40,9 @@
 
 /*!
  @property
- @brief 是否使用原图，默认为NO
+ @brief 是否已选择使用原图，默认为NO
  */
-@property (nonatomic, assign, readonly) BOOL allowsOriginalImage;
+@property (nonatomic, assign, readonly) BOOL selectedOriginalImage;
 
 /*!
  @property
@@ -57,14 +57,16 @@
 
 @optional
 
-/** 当allowsEditing为NO时mediaImage为经过处理的【全屏图】 */
+/** 当allowsEditing为NO时mediaImage为经过处理的 */
 - (void)imagePickerController:(USImagePickerController *)picker didFinishPickingMediaWithImage:(UIImage *)mediaImage;
 
 /** 当allowsEditing为NO时才会执行该代理函数 */
 - (void)imagePickerController:(USImagePickerController *)picker didFinishPickingMediaWithAsset:(id)asset;
 
+/** 当allowsMultipleSelection为YES时才会执行该代理函数 */
 - (void)imagePickerController:(USImagePickerController *)picker didFinishPickingMediaWithArray:(NSArray *)mediaArray;
 
+/** 点击取消按钮的时候执行该代理函数 */
 - (void)imagePickerControllerDidCancel:(USImagePickerController *)picker;
 
 @end

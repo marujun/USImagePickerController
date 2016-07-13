@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (ALAssetsLibrary *)defaultAssetsLibrary NS_DEPRECATED_IOS(4_0, 8_0, "Use PHImageManager instead");
 
 
-- (void)setAllowsOriginalImage:(BOOL)allowsOriginalImage;
+- (void)setSelectedOriginalImage:(BOOL)allowsOriginalImage;
 
 @end
 

@@ -8,7 +8,8 @@
 
 #import <Photos/Photos.h>
 
-#define USFullScreenImageMinLength  1500.f
+#define USFullScreenImageMinLength       1500.f
+#define USAspectRatioHDImageMaxLength    4000.f
 
 @interface PHAsset (ImagePicker)
 
@@ -19,6 +20,8 @@
 - (UIImage *)fullScreenImage;
 
 - (UIImage *)aspectRatioThumbnailImage;
+
+- (UIImage *)aspectRatioHDImage;
 
 - (NSData *)originalImageData;
 

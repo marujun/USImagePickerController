@@ -35,9 +35,9 @@
     [super viewDidLoad];
 }
 
-- (void)setAllowsOriginalImage:(BOOL)allowsOriginalImage
+- (void)setSelectedOriginalImage:(BOOL)selectedOriginalImage
 {
-    _allowsOriginalImage = allowsOriginalImage;
+    _selectedOriginalImage = selectedOriginalImage;
 }
 
 #pragma mark - ALAssetsLibrary

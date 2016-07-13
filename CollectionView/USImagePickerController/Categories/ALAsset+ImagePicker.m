@@ -37,6 +37,11 @@
     return [UIImage imageWithCGImage:self.aspectRatioThumbnail];
 }
 
+- (UIImage *)aspectRatioHDImage
+{
+    return [UIImage imageWithData:[self originalImageData]];
+}
+
 - (NSData *)originalImageData
 {
     NSData *data = nil;

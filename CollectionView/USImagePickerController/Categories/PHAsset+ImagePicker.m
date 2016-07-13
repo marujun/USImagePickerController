@@ -22,30 +22,10 @@
 
 - (UIImage *)fullScreenImage
 {
-    __block UIImage *image = nil;
-    
-    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-    options.synchronous  = YES;
-    options.resizeMode   = PHImageRequestOptionsResizeModeExact;
-    
-    options.networkAccessAllowed = YES;
-    options.progressHandler = ^(double progress, NSError *__nullable error, BOOL *stop, NSDictionary *__nullable info) {
-        NSLog(@"download image data from iCloud: %.1f%%", 100*progress);
-    };
-    
     CGFloat scale =  MAX(1.0, MIN(self.pixelWidth, self.pixelHeight)/USFullScreenImageMinLength);
     CGSize retinaScreenSize = CGSizeMake(self.pixelWidth/scale, self.pixelHeight/scale);
     
-    [[PHImageManager defaultManager] requestImageForAsset:self
-                                               targetSize:retinaScreenSize
-                                              contentMode:PHImageContentModeAspectFit
-                                                  options:options
-                                            resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
-                                                @autoreleasepool {
-                                                    image = result;
-                                                }
-                                            }];
-    return image;
+    return [self imageAspectFitWithSize:retinaScreenSize];
 }
 
 - (UIImage *)aspectRatioThumbnailImage
@@ -53,12 +33,42 @@
     return [self aspectRatioImage:200];
 }
 
+- (UIImage *)aspectRatioHDImage
+{
+    UIImage *image;
+    if (self.dimensions.height > self.dimensions.width) {
+        if (self.dimensions.height > USAspectRatioHDImageMaxLength) {
+            image = [self imageAspectFitWithSize:CGSizeMake(self.dimensions.width / self.dimensions.height * USAspectRatioHDImageMaxLength, USAspectRatioHDImageMaxLength)];
+        } else {
+            image = [UIImage imageWithData:[self originalImageData]];
+        }
+    }
+    else {
+        if (self.dimensions.width > USAspectRatioHDImageMaxLength) {
+            image = [self imageAspectFitWithSize:CGSizeMake(USAspectRatioHDImageMaxLength, self.dimensions.width / self.dimensions.height * USAspectRatioHDImageMaxLength)];
+        } else {
+            image = [UIImage imageWithData:[self originalImageData]];
+        }
+    }
+    
+    return image;
+}
+
 - (UIImage *)aspectRatioImage:(NSInteger)miniLength
+{
+    CGFloat scale = MIN(self.pixelWidth, self.pixelHeight)/(1.f*miniLength);
+    CGSize targetSize = CGSizeMake(MIN(self.pixelWidth/scale, miniLength*4.f), MIN(self.pixelHeight/scale, miniLength*4.f));
+    
+    return [self imageAspectFitWithSize:targetSize];
+}
+
+- (UIImage *)imageAspectFitWithSize:(CGSize)size
 {
     __block UIImage *image = nil;
     
     PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
     options.synchronous  = YES;
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
     options.resizeMode   = PHImageRequestOptionsResizeModeExact;
     
     options.networkAccessAllowed = YES;
@@ -66,11 +76,9 @@
         NSLog(@"download image data from iCloud: %.1f%%", 100*progress);
     };
     
-    CGFloat scale = MIN(self.pixelWidth, self.pixelHeight)/(1.f*miniLength);
-    CGSize targetSize = CGSizeMake(MIN(self.pixelWidth/scale, miniLength*4.f), MIN(self.pixelHeight/scale, miniLength*4.f));
     [[PHImageManager defaultManager] requestImageForAsset:self
-                                               targetSize:targetSize
-                                              contentMode:PHImageContentModeAspectFill
+                                               targetSize:size
+                                              contentMode:PHImageContentModeAspectFit
                                                   options:options
                                             resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
                                                 @autoreleasepool {

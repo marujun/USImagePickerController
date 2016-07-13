@@ -10,11 +10,12 @@
 #import "USAssetCollectionCell.h"
 #import "USAssetsPageViewController.h"
 #import "USAssetsPreviewViewController.h"
+#import "RSKImageCropViewController.h"
 
 #define MinAssetItemLength     80.f
 #define AssetItemSpace         2.f
 
-@interface USAssetsViewController () <USAssetCollectionCellDelegate, USAssetsPreviewViewControllerDelegate>
+@interface USAssetsViewController () <USAssetCollectionCellDelegate, USAssetsPreviewViewControllerDelegate, RSKImageCropViewControllerDelegate, RSKImageCropViewControllerDataSource>
 
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (weak, nonatomic) IBOutlet UICollectionViewFlowLayout *flowLayout;
@@ -257,6 +258,24 @@
     [self refreshTitle];
 }
 
+- (void)pushImageCropViewController:(id)asset
+{
+    RSKImageCropViewController *imageCropVC = [[RSKImageCropViewController alloc] initWithImage:[asset aspectRatioThumbnailImage]
+                                                                                       cropMode:RSKImageCropModeCustom];
+    imageCropVC.maskLayerStrokeColor = [[UIColor lightGrayColor] colorWithAlphaComponent:0.8];
+    imageCropVC.delegate = self;
+    imageCropVC.dataSource = self;
+    imageCropVC.avoidEmptySpaceAroundImage = YES;
+    [self.navigationController pushViewController:imageCropVC animated:YES];
+    
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        UIImage *hdImage = [asset aspectRatioHDImage];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            imageCropVC.originalImage = hdImage;
+        });
+    });
+}
+
 #pragma mark - USAssetCollectionCellDelegate
 - (void)photoDidClickedInCollectionCell:(USAssetCollectionCell *)cell
 {
@@ -269,14 +288,18 @@
         previewVC.pageIndex = itemIndex;
         [self.navigationController pushViewController:previewVC animated:YES];
     }
-    else if (!self.picker.allowsEditing) {
+    else if (self.picker.allowsEditing) {
+        id asset = _allAssets[itemIndex];
+        [self pushImageCropViewController:asset];
+    }
+    else {
         if (self.picker.delegate && [self.picker.delegate respondsToSelector:@selector(imagePickerController:didFinishPickingMediaWithAsset:)]) {
             [self.picker.delegate imagePickerController:self.picker didFinishPickingMediaWithAsset:_allAssets[itemIndex]];
         }
         
         if (self.picker.delegate && [self.picker.delegate respondsToSelector:@selector(imagePickerController:didFinishPickingMediaWithImage:)]) {
             id asset = _allAssets[itemIndex];
-            [self.picker.delegate imagePickerController:self.picker didFinishPickingMediaWithImage:[asset fullScreenImage]];
+            [self.picker.delegate imagePickerController:self.picker didFinishPickingMediaWithImage:[asset aspectRatioHDImage]];
         }
     }
 }
@@ -340,6 +363,82 @@
     [cell bind:asset selected:[self.selectedAssets containsObject:asset]];
     
     return cell;
+}
+
+
+#pragma mark - RSKImageCropViewControllerDelegate
+- (void)imageCropViewControllerDidCancelCrop:(RSKImageCropViewController *)controller
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)imageCropViewController:(RSKImageCropViewController *)controller didCropImage:(UIImage *)croppedImage usingCropRect:(CGRect)cropRect
+{
+    if (self.picker.delegate && [self.picker.delegate respondsToSelector:@selector(imagePickerController:didFinishPickingMediaWithImage:)]) {
+        [self.picker.delegate imagePickerController:self.picker didFinishPickingMediaWithImage:croppedImage];
+    } else {
+        [self.picker.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    }
+}
+
+
+#pragma mark - RSKImageCropViewControllerDataSource
+- (CGRect)imageCropViewControllerCustomMaskRect:(RSKImageCropViewController *)controller
+{
+    CGSize ssize = controller.view.bounds.size;
+    if (self.picker.cropMaskAspectRatio <= 0) self.picker.cropMaskAspectRatio = 1.f;
+    
+    CGFloat topEdge = 40.f;
+    CGFloat bottomEdge = 40.f;
+    if ([controller isPortraitInterfaceOrientation]) {
+        topEdge += controller.portraitMoveAndScaleLabelTopAndCropViewTopVerticalSpace;
+        bottomEdge += MAX(controller.portraitCropViewBottomAndCancelButtonBottomVerticalSpace, controller.portraitCropViewBottomAndChooseButtonBottomVerticalSpace);
+    } else {
+        topEdge += controller.landscapeMoveAndScaleLabelTopAndCropViewTopVerticalSpace;
+        bottomEdge += MAX(controller.landscapeCropViewBottomAndCancelButtonBottomVerticalSpace, controller.landscapeCropViewBottomAndChooseButtonBottomVerticalSpace);
+    }
+    
+    CGFloat maxWidth = ssize.width-controller.maskLayerLineWidth*2.f;
+    CGFloat maxHeight = ssize.height - topEdge - bottomEdge;
+    
+    CGFloat tmpWidth = maxHeight * self.picker.cropMaskAspectRatio;
+    
+    CGSize csize;
+    if (tmpWidth <= maxWidth) csize = CGSizeMake(tmpWidth, maxHeight);
+    else csize = CGSizeMake(maxWidth, maxWidth / self.picker.cropMaskAspectRatio);
+    
+    if ((csize.height/2.f + MAX(topEdge, bottomEdge)) < ssize.height/2.f) {
+        return CGRectMake((ssize.width-csize.width)/2.f, (ssize.height-csize.height)/2.f, csize.width, csize.height);
+    }
+    return CGRectMake((ssize.width-csize.width)/2.f, topEdge+(maxHeight-csize.height)/2.f, csize.width, csize.height);
+}
+
+// Returns a custom path for the mask.
+- (UIBezierPath *)imageCropViewControllerCustomMaskPath:(RSKImageCropViewController *)controller
+{
+    CGRect rect = [self imageCropViewControllerCustomMaskRect:controller];
+    CGFloat inset = controller.maskLayerLineWidth/2.f;
+    rect = CGRectMake(rect.origin.x-inset, rect.origin.y-inset, rect.size.width+2*inset, rect.size.height+2*inset);
+    
+    CGPoint point1 = CGPointMake(CGRectGetMinX(rect), CGRectGetMaxY(rect));
+    CGPoint point2 = CGPointMake(CGRectGetMaxX(rect), CGRectGetMaxY(rect));
+    CGPoint point3 = CGPointMake(CGRectGetMaxX(rect), CGRectGetMinY(rect));
+    CGPoint point4 = CGPointMake(CGRectGetMinX(rect), CGRectGetMinY(rect));
+    
+    UIBezierPath *triangle = [UIBezierPath bezierPath];
+    [triangle moveToPoint:point1];
+    [triangle addLineToPoint:point2];
+    [triangle addLineToPoint:point3];
+    [triangle addLineToPoint:point4];
+    [triangle closePath];
+    
+    return triangle;
+}
+
+// Returns a custom rect in which the image can be moved.
+- (CGRect)imageCropViewControllerCustomMovementRect:(RSKImageCropViewController *)controller
+{
+    return [self imageCropViewControllerCustomMaskRect:controller];
 }
 
 #pragma mark - Asset images caching

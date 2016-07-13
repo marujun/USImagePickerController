@@ -100,7 +100,7 @@
     self.sendButton.alpha = count?1:0.5;
     self.sendButton.userInteractionEnabled = count?YES:NO;
     
-    if (self.picker.allowsOriginalImage) {
+    if (self.picker.selectedOriginalImage) {
         self.boxFillLabel.hidden = NO;
         self.boxImageView.tintColor = RGBACOLOR(120, 120, 120, 1);
         self.boxDescLabel.textColor = [UIColor whiteColor];
@@ -199,9 +199,9 @@
 /** 原图按钮的点击事件 */
 - (IBAction)boxButtonAction:(UIButton *)sender
 {
-    BOOL allows = !self.picker.allowsOriginalImage;
+    BOOL allows = !self.picker.selectedOriginalImage;
     
-    self.picker.allowsOriginalImage = allows;
+    self.picker.selectedOriginalImage = allows;
     
     if (!_pageSelected && allows) {
         [self checkButtonAction:nil];
