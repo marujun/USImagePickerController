@@ -22,6 +22,11 @@
     return [self valueForProperty:ALAssetPropertyDate];;
 }
 
+- (NSString *)filename
+{
+    return self.defaultRepresentation.filename;
+}
+
 - (NSString *)localIdentifier
 {
     return self.defaultRepresentation.url.absoluteString;

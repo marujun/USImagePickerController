@@ -15,6 +15,8 @@
 
 - (NSDate *)modifiedDate;
 
+- (NSString *)filename;
+
 - (NSString *)localIdentifier;
 
 - (UIImage *)fullScreenImage;

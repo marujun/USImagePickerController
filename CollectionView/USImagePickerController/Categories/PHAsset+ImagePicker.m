@@ -20,6 +20,21 @@
     return [self creationDate];
 }
 
+- (NSString *)filename
+{
+    NSString *fname = nil;
+    
+    if (NSClassFromString(@"PHAssetResource")) {
+        NSArray *resources = [PHAssetResource assetResourcesForAsset:self];
+        fname = [(PHAssetResource *)[resources firstObject] originalFilename];
+    }
+    
+    if (!fname) {
+        fname = [self valueForKey:@"filename"];
+    }
+    return fname;
+}
+
 - (UIImage *)fullScreenImage
 {
     CGFloat scale =  MAX(1.0, MIN(self.pixelWidth, self.pixelHeight)/USFullScreenImageMinLength);

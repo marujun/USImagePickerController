@@ -17,6 +17,8 @@
 
 - (NSDate *)modifiedDate;
 
+- (NSString *)filename;
+
 - (UIImage *)fullScreenImage;
 
 - (UIImage *)aspectRatioThumbnailImage;
