@@ -54,7 +54,7 @@
 
 - (void)dealloc
 {
-    NSLog(@"dealloc 释放类 %@",  NSStringFromClass([self class]));
+    USPickerLog(@"dealloc 释放类 %@",  NSStringFromClass([self class]));
 }
 
 @end

@@ -177,6 +177,7 @@
 		0AE4662A1D37241500277357 /* USPicker-Empty-Album@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "USPicker-Empty-Album@3x.png"; sourceTree = "<group>"; };
 		0AE4662D1D372BAE00277357 /* USPicker-Assets-Locked@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "USPicker-Assets-Locked@2x.png"; sourceTree = "<group>"; };
 		0AE4662E1D372BAE00277357 /* USPicker-Assets-Locked@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "USPicker-Assets-Locked@3x.png"; sourceTree = "<group>"; };
+		0AE466311D373C4700277357 /* USImagePickerController+Macro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "USImagePickerController+Macro.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -293,6 +294,7 @@
 				0A7A61E11D2C998A00A8A07B /* Resource */,
 				0A7A61F71D2C998A00A8A07B /* USImagePickerController.h */,
 				0A7A61F81D2C998A00A8A07B /* USImagePickerController.m */,
+				0AE466311D373C4700277357 /* USImagePickerController+Macro.h */,
 				0A7A61F61D2C998A00A8A07B /* USImagePickerController+Protect.h */,
 				0A7A61EB1D2C998A00A8A07B /* USAssetGroupTableCell.h */,
 				0A7A61EC1D2C998A00A8A07B /* USAssetGroupTableCell.m */,

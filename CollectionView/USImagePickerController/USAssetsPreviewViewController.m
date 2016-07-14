@@ -224,7 +224,7 @@
         PHImageRequestOptions *imageRequestOptions = [[PHImageRequestOptions alloc] init];
         imageRequestOptions.networkAccessAllowed = YES;
         imageRequestOptions.progressHandler = ^(double progress, NSError *__nullable error, BOOL *stop, NSDictionary *__nullable info) {
-            NSLog(@"download image data from iCloud: %.1f%%", 100*progress);
+            USPickerLog(@"download image data from iCloud: %.1f%%", 100*progress);
         };
         self.requestID = [[PHImageManager defaultManager] requestImageDataForAsset:self.asset options:imageRequestOptions resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
             [weak_self.lengthMapper setObject:@(imageData.length) forKey:@(weak_self.pageIndex)];
@@ -268,7 +268,7 @@
 
 - (void)dealloc
 {
-    NSLog(@"dealloc 释放类 %@",  NSStringFromClass([self class]));
+    USPickerLog(@"dealloc 释放类 %@",  NSStringFromClass([self class]));
 }
 
 @end

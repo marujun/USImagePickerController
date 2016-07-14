@@ -7,6 +7,7 @@
 //
 
 #import "PHAsset+ImagePicker.h"
+#import "USImagePickerController+Macro.h"
 
 @implementation PHAsset (ImagePicker)
 
@@ -88,7 +89,7 @@
     
     options.networkAccessAllowed = YES;
     options.progressHandler = ^(double progress, NSError *__nullable error, BOOL *stop, NSDictionary *__nullable info) {
-        NSLog(@"download image data from iCloud: %.1f%%", 100*progress);
+        USPickerLog(@"download image data from iCloud: %.1f%%", 100*progress);
     };
     
     [[PHImageManager defaultManager] requestImageForAsset:self
@@ -111,7 +112,7 @@
     
     imageRequestOptions.networkAccessAllowed = YES;
     imageRequestOptions.progressHandler = ^(double progress, NSError *__nullable error, BOOL *stop, NSDictionary *__nullable info) {
-        NSLog(@"download image data from iCloud: %.1f%%", 100*progress);
+        USPickerLog(@"download image data from iCloud: %.1f%%", 100*progress);
     };
     
     [[PHImageManager defaultManager] requestImageDataForAsset:self

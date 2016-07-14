@@ -172,8 +172,6 @@
 {
     _singleTapHandler = nil;
     _indexChangedHandler = nil;
-    
-    NSLog(@"dealloc 释放类 %@",  NSStringFromClass([self class]));
 }
 
 @end
