@@ -15,7 +15,7 @@
 
 - (NSDate *)modifiedDate;
 
-- (NSString *)filename;
+- (NSString *)originalFilename;
 
 - (NSString *)localIdentifier;
 

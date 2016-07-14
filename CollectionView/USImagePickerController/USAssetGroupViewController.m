@@ -16,6 +16,7 @@
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *indicatorView;
 @property (weak, nonatomic) IBOutlet UIView *tipNoAssetsView;
 @property (weak, nonatomic) IBOutlet UIView *tipNotAllowedView;
+@property (weak, nonatomic) IBOutlet UIImageView *padlockImageView;
 
 @property (nonatomic, strong) ALAssetsLibrary *assetsLibrary;
 @property (nonatomic, strong) NSMutableArray *groups;
@@ -75,6 +76,9 @@
     self.navigationItem.leftBarButtonItems = @[negativeSpacer,buttonItem];
     
     [self.view layoutIfNeeded];
+    
+    _padlockImageView.tintColor = RGBACOLOR(110, 116, 130, 1);
+    _padlockImageView.image = [[UIImage imageNamed:@"USPicker-Assets-Locked"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 }
 
 - (void)setupPHGroup

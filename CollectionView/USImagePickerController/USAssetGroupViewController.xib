@@ -8,6 +8,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="USAssetGroupViewController">
             <connections>
                 <outlet property="indicatorView" destination="xkX-Mx-T9u" id="E4C-X1-2Fs"/>
+                <outlet property="padlockImageView" destination="mA9-hY-fXp" id="j4h-6g-sfk"/>
                 <outlet property="tableView" destination="Pt7-5R-3bu" id="dCK-ae-pRU"/>
                 <outlet property="tipNoAssetsView" destination="kDh-n6-Yo6" id="EdJ-sO-NoL"/>
                 <outlet property="tipNotAllowedView" destination="YYa-lZ-KfW" id="gcV-bU-7qs"/>
@@ -80,33 +81,33 @@
                     <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4ev-fr-dnP">
-                            <rect key="frame" x="0.0" y="164" width="320" height="240"/>
+                            <rect key="frame" x="0.0" y="182" width="320" height="205"/>
                             <subviews>
                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="USPicker-Assets-Locked.png" translatesAutoresizingMaskIntoConstraints="NO" id="mA9-hY-fXp" userLabel="padlock">
-                                    <rect key="frame" x="94" y="0.0" width="132" height="169"/>
+                                    <rect key="frame" x="105" y="0.0" width="110" height="140"/>
                                     <constraints>
-                                        <constraint firstAttribute="height" constant="169" id="pCe-uj-cKZ"/>
-                                        <constraint firstAttribute="width" constant="132" id="sCm-tI-U04"/>
+                                        <constraint firstAttribute="height" constant="140" id="pCe-uj-cKZ"/>
+                                        <constraint firstAttribute="width" constant="110" id="sCm-tI-U04"/>
                                     </constraints>
                                 </imageView>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="此应用无法使用您的照片或视频" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="kaa-Mu-fy0" userLabel="title">
-                                    <rect key="frame" x="20" y="191" width="280" height="20"/>
+                                    <rect key="frame" x="20" y="158" width="280" height="20"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="20" id="iZl-ow-pue"/>
                                         <constraint firstAttribute="width" constant="280" id="xwU-0w-mvD"/>
                                     </constraints>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
-                                    <color key="textColor" red="0.50588235294117645" green="0.53333333333333333" blue="0.58039215686274503" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="textColor" red="0.43137254901960786" green="0.45490196078431372" blue="0.50980392156862742" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="你可以在「隐私设置」中启用存取" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="UGk-gO-pqj" userLabel="message">
-                                    <rect key="frame" x="20" y="220" width="280" height="20"/>
+                                    <rect key="frame" x="20" y="187" width="280" height="20"/>
                                     <constraints>
                                         <constraint firstAttribute="width" constant="280" id="2YC-5z-dDm"/>
                                         <constraint firstAttribute="height" constant="20" id="TA1-0j-1F8"/>
                                     </constraints>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                    <color key="textColor" red="0.50588235290000005" green="0.53333333329999999" blue="0.58039215690000001" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="textColor" red="0.43137254901960786" green="0.45490196078431372" blue="0.50980392156862742" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                             </subviews>
@@ -114,12 +115,12 @@
                             <constraints>
                                 <constraint firstItem="mA9-hY-fXp" firstAttribute="top" secondItem="4ev-fr-dnP" secondAttribute="top" id="8Bt-VP-zuA"/>
                                 <constraint firstItem="kaa-Mu-fy0" firstAttribute="centerX" secondItem="mA9-hY-fXp" secondAttribute="centerX" id="AZG-s0-D7Y"/>
-                                <constraint firstAttribute="height" constant="240" id="D6H-5u-c7q"/>
+                                <constraint firstAttribute="height" constant="205" id="D6H-5u-c7q"/>
                                 <constraint firstItem="UGk-gO-pqj" firstAttribute="centerX" secondItem="mA9-hY-fXp" secondAttribute="centerX" id="DGf-Or-lxd"/>
                                 <constraint firstItem="mA9-hY-fXp" firstAttribute="centerX" secondItem="4ev-fr-dnP" secondAttribute="centerX" id="ehy-iA-xme"/>
                                 <constraint firstItem="UGk-gO-pqj" firstAttribute="top" secondItem="kaa-Mu-fy0" secondAttribute="bottom" constant="9" id="oDp-tg-C5g"/>
                                 <constraint firstAttribute="width" constant="320" id="skU-br-8cm"/>
-                                <constraint firstItem="kaa-Mu-fy0" firstAttribute="top" secondItem="mA9-hY-fXp" secondAttribute="bottom" constant="22" id="tij-el-vn2"/>
+                                <constraint firstItem="kaa-Mu-fy0" firstAttribute="top" secondItem="mA9-hY-fXp" secondAttribute="bottom" constant="18" id="tij-el-vn2"/>
                             </constraints>
                         </view>
                     </subviews>
@@ -152,6 +153,6 @@
         </view>
     </objects>
     <resources>
-        <image name="USPicker-Assets-Locked.png" width="132" height="169"/>
+        <image name="USPicker-Assets-Locked.png" width="110" height="140"/>
     </resources>
 </document>

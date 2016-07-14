@@ -38,6 +38,10 @@
     [self.checkButton setImage:selectedImage forState:UIControlStateNormal];
     [self.checkButton setImage:selectedImage forState:UIControlStateSelected];
     [self reloadCheckButtonBgColor];
+    
+    [self.imageButton.imageView setContentMode:UIViewContentModeScaleAspectFill];
+    [self.imageButton setContentHorizontalAlignment:UIControlContentHorizontalAlignmentFill];
+    [self.imageButton setContentVerticalAlignment:UIControlContentVerticalAlignmentFill];
 }
 
 - (void)reloadCheckButtonBgColor

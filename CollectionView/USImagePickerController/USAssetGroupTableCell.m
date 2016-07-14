@@ -29,8 +29,9 @@
         self.detailTextLabel.font = [UIFont systemFontOfSize:13];
         self.detailTextLabel.textColor = [UIColor blackColor];
         
-        self.imageView.bounds = CGRectMake(0, 0, kThumbnailLength, kThumbnailLength);
-        self.imageView.contentMode = UIViewContentModeScaleAspectFill;
+        self.imageView.tintColor = RGBACOLOR(151, 151, 151, 1);
+        self.imageView.backgroundColor = RGBACOLOR(230, 230, 230, 1);
+        
         self.imageView.clipsToBounds = YES;
     }
     
@@ -44,6 +45,7 @@
     
     self.textLabel.frame = CGRectMake(100, 26, 200, 19);
     self.detailTextLabel.frame = CGRectMake(100, 55, 200, 15);
+    self.imageView.frame = CGRectMake(15, 10, kThumbnailLength, kThumbnailLength);
 }
 
 
@@ -83,6 +85,16 @@
         options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"modificationDate" ascending:YES]];
         PHFetchResult *fetchResult = [PHAsset fetchKeyAssetsInAssetCollection:assetCollection options:options];
         
+        NSInteger tag = self.tag + 1;
+        self.tag = tag;
+        
+        if (!fetchResult.count) {
+            self.imageView.contentMode = UIViewContentModeCenter;
+            self.imageView.image = [[UIImage imageNamed:@"USPicker-Empty-Album"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            
+            return;
+        }
+        
         PHImageRequestOptions *requestOptions = [[PHImageRequestOptions alloc] init];
         requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
         requestOptions.resizeMode   = PHImageRequestOptionsResizeModeExact;
@@ -91,9 +103,6 @@
         CGSize retinaSquare = CGSizeMake(kThumbnailLength * retinaMultiplier, kThumbnailLength * retinaMultiplier);
         
         [[PHImageManager defaultManager] cancelImageRequest:_requestID];
-        
-        NSInteger tag = self.tag + 1;
-        self.tag = tag;
         
         _requestID = [[PHImageManager defaultManager] requestImageForAsset:fetchResult.firstObject
                                                                 targetSize:retinaSquare
@@ -108,6 +117,7 @@
                                                                      self.imageView.image   = [UIImage imageWithCGImage:posterImage
                                                                                                                   scale:scale
                                                                                                             orientation:UIImageOrientationUp];
+                                                                     self.imageView.contentMode = UIViewContentModeScaleAspectFill;
                                                                  }
                                                              }];
         return;

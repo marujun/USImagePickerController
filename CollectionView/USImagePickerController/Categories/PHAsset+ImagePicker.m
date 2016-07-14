@@ -20,7 +20,7 @@
     return [self creationDate];
 }
 
-- (NSString *)filename
+- (NSString *)originalFilename
 {
     NSString *fname = nil;
     

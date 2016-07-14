@@ -185,6 +185,8 @@
             return;
         }
         
+        if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusDenied) return;
+        
         _phImageManager = [[PHCachingImageManager alloc] init];
         _requestOptions = [[PHImageRequestOptions alloc] init];
         _requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;

@@ -114,6 +114,7 @@
             self.boxDescLabel.text = [NSString stringWithFormat:@"原图(%@)",space];
             [self.boxIndicatorView stopAnimating];
         } else {
+            self.boxDescLabel.text = @"原图";
             [self requestImageDataLength];
         }
     }

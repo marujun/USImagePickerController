@@ -22,7 +22,7 @@
     return [self valueForProperty:ALAssetPropertyDate];;
 }
 
-- (NSString *)filename
+- (NSString *)originalFilename
 {
     return self.defaultRepresentation.filename;
 }
