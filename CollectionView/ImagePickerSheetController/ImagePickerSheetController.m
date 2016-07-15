@@ -168,6 +168,14 @@
     return _selectedImageIndices.count;
 }
 
+- (void)reloadLayoutAndData
+{
+    [self updateSubviewsLayout];
+    
+    [_tableView reloadData];
+    [_collectionView reloadData];
+}
+
 - (void)fetchAssets
 {
     NSInteger fetchLimit = 50;
@@ -178,6 +186,7 @@
             [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
                 if (status == PHAuthorizationStatusAuthorized) {
                     [self performSelectorOnMainThread:@selector(fetchAssets) withObject:nil waitUntilDone:NO];
+                    [self performSelectorOnMainThread:@selector(reloadLayoutAndData) withObject:nil waitUntilDone:NO];
                 } else {
                     [self.presentingViewController dismissViewControllerAnimated:true completion:nil];
                 }
@@ -229,10 +238,8 @@
             [group setAssetsFilter:assetsFilter];
             if (group.numberOfAssets){
                 [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:groupBlock];
-                [self updateSubviewsLayout];
                 
-                [_tableView reloadData];
-                [_collectionView reloadData];
+                [self reloadLayoutAndData];
             }
             *stop = YES;
         }

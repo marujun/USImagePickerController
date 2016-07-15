@@ -23,8 +23,10 @@
 {
     USAssetGroupViewController *groupViewController = [[USAssetGroupViewController alloc] initWithNibName:@"USAssetGroupViewController" bundle:nil];
     if (self = [super initWithRootViewController:groupViewController]) {
-        _assetsFilter                  = [ALAssetsFilter allAssets];
-        _cropMaskAspectRatio           = 1.f;
+        if (!PHPhotoLibraryClass) {
+            _assetsFilter = [ALAssetsFilter allAssets];
+        }
+        _cropMaskAspectRatio = 1.f;
     }
     
     return self;
