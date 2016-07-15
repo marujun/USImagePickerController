@@ -6,8 +6,6 @@
 //  Copyright © 2016年 marujun. All rights reserved.
 //
 
-#import "PHAsset+ImagePicker.h"
-#import "ALAsset+ImagePicker.h"
 #import "USImagePickerController+Macro.h"
 
 NS_ASSUME_NONNULL_BEGIN
