@@ -66,7 +66,7 @@
 - (void)imagePickerController:(USImagePickerController *)picker didFinishPickingMediaWithAsset:(id)asset;
 
 /** 当allowsMultipleSelection为YES时才会执行该代理函数 */
-- (void)imagePickerController:(USImagePickerController *)picker didFinishPickingMediaWithArray:(NSArray *)mediaArray;
+- (void)imagePickerController:(USImagePickerController *)picker didFinishPickingMediaWithAssets:(NSArray *)assets;
 
 /** 点击取消按钮的时候执行该代理函数 */
 - (void)imagePickerControllerDidCancel:(USImagePickerController *)picker;

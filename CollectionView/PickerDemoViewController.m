@@ -54,7 +54,7 @@
     }
 }
 
-- (void)imagePickerController:(USImagePickerController *)picker didFinishPickingMediaWithArray:(NSArray *)mediaArray
+- (void)imagePickerController:(USImagePickerController *)picker didFinishPickingMediaWithAssets:(NSArray *)mediaArray
 {
     NSLog(@"selectedOriginalImage %zd didFinishPickingMediaWithArray %@", picker.selectedOriginalImage, mediaArray);
     

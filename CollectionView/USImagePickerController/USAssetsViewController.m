@@ -230,8 +230,8 @@
 
 - (IBAction)sendButtonAction:(UIButton *)sender
 {
-    if (self.picker.delegate && [self.picker.delegate respondsToSelector:@selector(imagePickerController:didFinishPickingMediaWithArray:)]) {
-        [self.picker.delegate imagePickerController:self.picker didFinishPickingMediaWithArray:self.selectedAssetsArray];
+    if (self.picker.delegate && [self.picker.delegate respondsToSelector:@selector(imagePickerController:didFinishPickingMediaWithAssets:)]) {
+        [self.picker.delegate imagePickerController:self.picker didFinishPickingMediaWithAssets:self.selectedAssetsArray];
     } else {
         [self.picker.presentingViewController dismissViewControllerAnimated:YES completion:nil];
     }
