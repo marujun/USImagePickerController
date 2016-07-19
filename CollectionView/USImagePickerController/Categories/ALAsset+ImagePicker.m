@@ -9,6 +9,7 @@
 #import "ALAsset+ImagePicker.h"
 #import "USImagePickerController.h"
 #import "USImagePickerController+Protect.h"
+#import "PHAsset+ImagePicker.m"
 
 @implementation ALAsset (ImagePicker)
 
@@ -44,7 +45,29 @@
 
 - (UIImage *)aspectRatioHDImage
 {
-    return [UIImage imageWithData:[self originalImageData]];
+    UIImage *lastImage = nil;
+    NSData *imageData = [self originalImageData];
+    
+    if (MAX(self.dimensions.width, self.dimensions.height) > USAspectRatioHDImageMaxLength) {
+        CGImageSourceRef src = CGImageSourceCreateWithData((__bridge CFDataRef) imageData, NULL);
+        if (src != NULL) {
+            CFDictionaryRef options = (__bridge CFDictionaryRef) @{
+                                                                   (id) kCGImageSourceCreateThumbnailWithTransform : @YES,
+                                                                   (id) kCGImageSourceCreateThumbnailFromImageAlways : @YES,
+                                                                   (id) kCGImageSourceThumbnailMaxPixelSize : @(USAspectRatioHDImageMaxLength)
+                                                                   };
+            CGImageRef thumbnail = CGImageSourceCreateThumbnailAtIndex(src, 0, options);
+            CFRelease(src);
+            
+            lastImage = [UIImage imageWithCGImage:thumbnail];
+            CGImageRelease(thumbnail);
+        }
+    }
+    
+    if (!lastImage) {
+        lastImage = [UIImage imageWithData:imageData];
+    }
+    return lastImage;
 }
 
 - (NSData *)originalImageData
