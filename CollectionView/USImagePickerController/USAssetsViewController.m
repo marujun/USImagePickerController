@@ -269,7 +269,7 @@
     [self.navigationController pushViewController:imageCropVC animated:YES];
     
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        UIImage *hdImage = [asset aspectRatioHDImage];
+        UIImage *hdImage = [asset fullScreenImage];
         dispatch_async(dispatch_get_main_queue(), ^{
             imageCropVC.originalImage = hdImage;
         });
@@ -299,7 +299,7 @@
         
         if (self.picker.delegate && [self.picker.delegate respondsToSelector:@selector(imagePickerController:didFinishPickingMediaWithImage:)]) {
             id asset = _allAssets[itemIndex];
-            [self.picker.delegate imagePickerController:self.picker didFinishPickingMediaWithImage:[asset aspectRatioHDImage]];
+            [self.picker.delegate imagePickerController:self.picker didFinishPickingMediaWithImage:[asset fullScreenImage]];
         }
     }
 }
