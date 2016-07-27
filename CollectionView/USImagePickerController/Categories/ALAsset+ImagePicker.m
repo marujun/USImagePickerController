@@ -43,13 +43,40 @@
     return [UIImage imageWithCGImage:self.aspectRatioThumbnail];
 }
 
+static size_t GetAssetBytesCallback(void *info, void *buffer, off_t position, size_t count) {
+    ALAssetRepresentation *rep = (__bridge id)info;
+    
+    NSError *error = nil;
+    size_t countRead = [rep getBytes:(uint8_t *)buffer fromOffset:position length:count error:&error];
+    
+    if (countRead == 0 && error) {
+        USPickerLog(@"thumbnail for asset got an error: %@", error);
+    }
+    return countRead;
+}
+
+static void ReleaseAssetCallback(void *info) {
+    CFRelease(info);
+}
+
 - (UIImage *)aspectRatioHDImage
 {
     UIImage *lastImage = nil;
-    NSData *imageData = [self originalImageData];
     
     if (MAX(self.dimensions.width, self.dimensions.height) > USAspectRatioHDImageMaxLength) {
-        CGImageSourceRef src = CGImageSourceCreateWithData((__bridge CFDataRef) imageData, NULL);
+        ALAssetRepresentation *rep = [self defaultRepresentation];
+        
+        CGDataProviderDirectCallbacks callbacks = {
+            .version = 0,
+            .getBytePointer = NULL,
+            .releaseBytePointer = NULL,
+            .getBytesAtPosition = GetAssetBytesCallback,
+            .releaseInfo = ReleaseAssetCallback,
+        };
+        
+        CGDataProviderRef provider = CGDataProviderCreateDirect((void *)CFBridgingRetain(rep), [rep size], &callbacks);
+        CGImageSourceRef src = CGImageSourceCreateWithDataProvider(provider, NULL);
+        
         if (src != NULL) {
             CFDictionaryRef options = (__bridge CFDictionaryRef) @{
                                                                    (id) kCGImageSourceCreateThumbnailWithTransform : @YES,
@@ -59,13 +86,16 @@
             CGImageRef thumbnail = CGImageSourceCreateThumbnailAtIndex(src, 0, options);
             CFRelease(src);
             
-            lastImage = [UIImage imageWithCGImage:thumbnail];
-            CGImageRelease(thumbnail);
+            if (thumbnail) {
+                lastImage = [UIImage imageWithCGImage:thumbnail];
+                CGImageRelease(thumbnail);
+            }
         }
+        CFRelease(provider);
     }
     
     if (!lastImage) {
-        lastImage = [UIImage imageWithData:imageData];
+        lastImage = [UIImage imageWithData:[self originalImageData]];
     }
     return lastImage;
 }
