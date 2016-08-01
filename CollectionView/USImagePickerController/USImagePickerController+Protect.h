@@ -6,7 +6,11 @@
 //  Copyright © 2016年 marujun. All rights reserved.
 //
 
+#import "USImagePickerController.h"
 #import "USImagePickerController+Macro.h"
+
+#define USFullScreenImageMaxPixelSize       2400.f
+#define USAspectRatioHDImageMaxPixelSize    4000.f
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,6 +25,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 - (void)setSelectedOriginalImage:(BOOL)allowsOriginalImage;
+
+@end
+
+
+@interface ALAsset (USImagePickerControllerProtectedMethods)
+
+- (UIImage *)thumbnailImageWithMaxPixelSize:(CGFloat)maxPixelSize;
+
+@end
+
+@interface PHAsset (USImagePickerControllerProtectedMethods)
+
+- (UIImage *)thumbnailImageWithMaxPixelSize:(CGFloat)maxPixelSize;
 
 @end
 

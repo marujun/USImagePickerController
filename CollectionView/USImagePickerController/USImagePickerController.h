@@ -59,7 +59,7 @@
 
 @optional
 
-/** 当allowsEditing为NO时mediaImage为经过处理的 */
+/** 当allowsEditing为NO时mediaImage为经过处理的高清图 */
 - (void)imagePickerController:(USImagePickerController *)picker didFinishPickingMediaWithImage:(UIImage *)mediaImage;
 
 /** 当allowsEditing为NO时才会执行该代理函数 */

@@ -8,9 +8,8 @@
 
 #import "PHAsset+ImagePicker.h"
 #import "USImagePickerController+Macro.h"
-
-#define USFullScreenImageMinLength       1500.f
-#define USAspectRatioHDImageMaxLength    4000.f
+#import "PHAsset+ImagePicker.m"
+#import "USImagePickerController+Protect.h"
 
 @implementation PHAsset (ImagePicker)
 
@@ -41,10 +40,7 @@
 
 - (UIImage *)fullScreenImage
 {
-    CGFloat scale =  MAX(1.0, MIN(self.pixelWidth, self.pixelHeight)/USFullScreenImageMinLength);
-    CGSize retinaScreenSize = CGSizeMake(self.pixelWidth/scale, self.pixelHeight/scale);
-    
-    return [self imageAspectFitWithSize:retinaScreenSize];
+    return [self thumbnailImageWithMaxPixelSize:USFullScreenImageMaxPixelSize];
 }
 
 - (UIImage *)aspectRatioThumbnailImage
@@ -54,23 +50,7 @@
 
 - (UIImage *)aspectRatioHDImage
 {
-    UIImage *image;
-    if (self.dimensions.height > self.dimensions.width) {
-        if (self.dimensions.height > USAspectRatioHDImageMaxLength) {
-            image = [self imageAspectFitWithSize:CGSizeMake(self.dimensions.width / self.dimensions.height * USAspectRatioHDImageMaxLength, USAspectRatioHDImageMaxLength)];
-        } else {
-            image = [UIImage imageWithData:[self originalImageData]];
-        }
-    }
-    else {
-        if (self.dimensions.width > USAspectRatioHDImageMaxLength) {
-            image = [self imageAspectFitWithSize:CGSizeMake(USAspectRatioHDImageMaxLength, self.dimensions.width / self.dimensions.height * USAspectRatioHDImageMaxLength)];
-        } else {
-            image = [UIImage imageWithData:[self originalImageData]];
-        }
-    }
-    
-    return image;
+    return [self thumbnailImageWithMaxPixelSize:USAspectRatioHDImageMaxPixelSize];
 }
 
 - (UIImage *)aspectRatioImage:(NSInteger)miniLength
@@ -126,6 +106,27 @@
                                                     }
                                                 }];
     return data;
+}
+
+- (UIImage *)thumbnailImageWithMaxPixelSize:(CGFloat)maxPixelSize
+{
+    UIImage *image;
+    if (self.dimensions.height > self.dimensions.width) {
+        if (self.dimensions.height > maxPixelSize) {
+            image = [self imageAspectFitWithSize:CGSizeMake(self.dimensions.width / self.dimensions.height * maxPixelSize, maxPixelSize)];
+        } else {
+            image = [UIImage imageWithData:[self originalImageData]];
+        }
+    }
+    else {
+        if (self.dimensions.width > maxPixelSize) {
+            image = [self imageAspectFitWithSize:CGSizeMake(maxPixelSize, self.dimensions.width / self.dimensions.height * maxPixelSize)];
+        } else {
+            image = [UIImage imageWithData:[self originalImageData]];
+        }
+    }
+    
+    return image;
 }
 
 + (instancetype)fetchAssetWithIdentifier:(NSString *)identifier

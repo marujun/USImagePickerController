@@ -351,11 +351,10 @@
 {
     [tableView deselectRowAtIndexPath:indexPath animated:true];
     
-    [self.presentingViewController dismissViewControllerAnimated:true completion:nil];
-    
-    [_actions[indexPath.row] handle:self.numberOfSelectedImages];
-    
-    _actions = nil;
+    [self.presentingViewController dismissViewControllerAnimated:true completion:^{
+        [_actions[indexPath.row] handle:self.numberOfSelectedImages];
+        _actions = nil;
+    }];
 }
 
 #pragma mark - UICollectionViewDataSource

@@ -9,7 +9,6 @@
 #import "ALAsset+ImagePicker.h"
 #import "USImagePickerController.h"
 #import "USImagePickerController+Protect.h"
-#import "PHAsset+ImagePicker.m"
 
 @implementation ALAsset (ImagePicker)
 
@@ -43,6 +42,25 @@
     return [UIImage imageWithCGImage:self.aspectRatioThumbnail];
 }
 
+- (UIImage *)aspectRatioHDImage
+{
+    return [self thumbnailImageWithMaxPixelSize:USAspectRatioHDImageMaxPixelSize];
+}
+
+- (NSData *)originalImageData
+{
+    NSData *data = nil;
+    @autoreleasepool {
+        ALAssetRepresentation *representation = self.defaultRepresentation;
+        Byte *buffer = (Byte*)malloc((size_t)representation.size);
+        
+        NSError *error;
+        NSUInteger buffered = [representation getBytes:buffer fromOffset:0.0 length:(NSUInteger)representation.size error:&error];
+        data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
+    }
+    return data;
+}
+
 static size_t GetAssetBytesCallback(void *info, void *buffer, off_t position, size_t count) {
     ALAssetRepresentation *rep = (__bridge id)info;
     
@@ -59,11 +77,11 @@ static void ReleaseAssetCallback(void *info) {
     CFRelease(info);
 }
 
-- (UIImage *)aspectRatioHDImage
+- (UIImage *)thumbnailImageWithMaxPixelSize:(CGFloat)maxPixelSize
 {
     UIImage *lastImage = nil;
     
-    if (MAX(self.dimensions.width, self.dimensions.height) > USAspectRatioHDImageMaxLength) {
+    if (MAX(self.dimensions.width, self.dimensions.height) > maxPixelSize) {
         ALAssetRepresentation *rep = [self defaultRepresentation];
         
         CGDataProviderDirectCallbacks callbacks = {
@@ -78,12 +96,12 @@ static void ReleaseAssetCallback(void *info) {
         CGImageSourceRef src = CGImageSourceCreateWithDataProvider(provider, NULL);
         
         if (src != NULL) {
-            CFDictionaryRef options = (__bridge CFDictionaryRef) @{
-                                                                   (id) kCGImageSourceCreateThumbnailWithTransform : @YES,
-                                                                   (id) kCGImageSourceCreateThumbnailFromImageAlways : @YES,
-                                                                   (id) kCGImageSourceThumbnailMaxPixelSize : @(USAspectRatioHDImageMaxLength)
-                                                                   };
-            CGImageRef thumbnail = CGImageSourceCreateThumbnailAtIndex(src, 0, options);
+            NSDictionary *options =  @{
+                                       (id) kCGImageSourceCreateThumbnailWithTransform : @YES,
+                                       (id) kCGImageSourceCreateThumbnailFromImageAlways : @YES,
+                                       (id) kCGImageSourceThumbnailMaxPixelSize : @(maxPixelSize)
+                                       };
+            CGImageRef thumbnail = CGImageSourceCreateThumbnailAtIndex(src, 0, (__bridge CFDictionaryRef)options);
             CFRelease(src);
             
             if (thumbnail) {
@@ -98,20 +116,6 @@ static void ReleaseAssetCallback(void *info) {
         lastImage = [UIImage imageWithData:[self originalImageData]];
     }
     return lastImage;
-}
-
-- (NSData *)originalImageData
-{
-    NSData *data = nil;
-    @autoreleasepool {
-        ALAssetRepresentation *representation = self.defaultRepresentation;
-        Byte *buffer = (Byte*)malloc((size_t)representation.size);
-        
-        NSError *error;
-        NSUInteger buffered = [representation getBytes:buffer fromOffset:0.0 length:(NSUInteger)representation.size error:&error];
-        data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
-    }
-    return data;
 }
 
 + (instancetype)fetchAssetWithIdentifier:(NSString *)identifier

@@ -266,12 +266,20 @@
     imageCropVC.delegate = self;
     imageCropVC.dataSource = self;
     imageCropVC.avoidEmptySpaceAroundImage = YES;
+    imageCropVC.portraitMoveAndScaleLabelTopAndCropViewTopVerticalSpace = 40;
     [self.navigationController pushViewController:imageCropVC animated:YES];
     
+    imageCropVC.chooseButton.userInteractionEnabled = NO;
+    imageCropVC.moveAndScaleLabel.text = nil;
+    [imageCropVC.moveAndScaleLabel performSelector:@selector(setText:) withObject:@"图片加载中…" afterDelay:1.f];
+    
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        UIImage *hdImage = (id)[asset fullScreenImage];
+        UIImage *hdImage = [asset thumbnailImageWithMaxPixelSize:USFullScreenImageMaxPixelSize];
         dispatch_async(dispatch_get_main_queue(), ^{
+            imageCropVC.moveAndScaleLabel.alpha = 0;
+            
             imageCropVC.originalImage = hdImage;
+            imageCropVC.chooseButton.userInteractionEnabled = YES;
         });
     });
 }
@@ -298,8 +306,8 @@
         }
         
         if (self.picker.delegate && [self.picker.delegate respondsToSelector:@selector(imagePickerController:didFinishPickingMediaWithImage:)]) {
-            id asset = _allAssets[itemIndex];
-            [self.picker.delegate imagePickerController:self.picker didFinishPickingMediaWithImage:(id)[asset fullScreenImage]];
+            UIImage *selectedImage = [_allAssets[itemIndex] thumbnailImageWithMaxPixelSize:USFullScreenImageMaxPixelSize];
+            [self.picker.delegate imagePickerController:self.picker didFinishPickingMediaWithImage:selectedImage];
         }
     }
 }
