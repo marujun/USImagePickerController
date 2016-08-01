@@ -61,32 +61,6 @@
     return [self imageAspectFitWithSize:targetSize];
 }
 
-- (UIImage *)imageAspectFitWithSize:(CGSize)size
-{
-    __block UIImage *image = nil;
-    
-    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-    options.synchronous  = YES;
-    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-    options.resizeMode   = PHImageRequestOptionsResizeModeExact;
-    
-    options.networkAccessAllowed = YES;
-    options.progressHandler = ^(double progress, NSError *__nullable error, BOOL *stop, NSDictionary *__nullable info) {
-        USPickerLog(@"download image data from iCloud: %.1f%%", 100*progress);
-    };
-    
-    [[PHImageManager defaultManager] requestImageForAsset:self
-                                               targetSize:size
-                                              contentMode:PHImageContentModeAspectFit
-                                                  options:options
-                                            resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
-                                                @autoreleasepool {
-                                                    image = result;
-                                                }
-                                            }];
-    return image;
-}
-
 - (NSData *)originalImageData
 {
     __block NSData *data;
@@ -126,6 +100,32 @@
         }
     }
     
+    return image;
+}
+
+- (UIImage *)imageAspectFitWithSize:(CGSize)size
+{
+    __block UIImage *image = nil;
+    
+    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+    options.synchronous  = YES;
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    options.resizeMode   = PHImageRequestOptionsResizeModeExact;
+    
+    options.networkAccessAllowed = YES;
+    options.progressHandler = ^(double progress, NSError *__nullable error, BOOL *stop, NSDictionary *__nullable info) {
+        USPickerLog(@"download image data from iCloud: %.1f%%", 100*progress);
+    };
+    
+    [[PHImageManager defaultManager] requestImageForAsset:self
+                                               targetSize:size
+                                              contentMode:PHImageContentModeAspectFit
+                                                  options:options
+                                            resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+                                                @autoreleasepool {
+                                                    image = result;
+                                                }
+                                            }];
     return image;
 }
 
