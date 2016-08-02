@@ -24,6 +24,8 @@
 
 - (NSData *)originalImageData;
 
+- (UIImage *)thumbnailImageWithMaxPixelSize:(CGFloat)maxPixelSize;
+
 /**
  *  通过照片的localIdentifier获取对应的PHAsset实例
  *

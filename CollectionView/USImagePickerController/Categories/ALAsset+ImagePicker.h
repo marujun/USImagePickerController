@@ -27,6 +27,8 @@
 
 - (NSData *)originalImageData;
 
+- (UIImage *)thumbnailImageWithMaxPixelSize:(CGFloat)maxPixelSize;
+
 /**
  *  通过照片的路径获取对应的ALAsset实例
  *
