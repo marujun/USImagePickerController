@@ -10,8 +10,6 @@
 
 #define ScreenSize (((NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation))?CGSizeMake([UIScreen mainScreen].bounds.size.height, [UIScreen mainScreen].bounds.size.width):[UIScreen mainScreen].bounds.size)
 
-#define USFullScreenImageMinLength  1500.f
-
 @interface USAssetScrollView () <UIScrollViewDelegate>
 
 @property (nonatomic, strong) id asset;
@@ -27,6 +25,7 @@
     }
     return self;
 }
+
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -64,32 +63,48 @@
     imageView.accessibilityTraits       = UIAccessibilityTraitImage;
     self.imageView = imageView;
     [self addSubview:self.imageView];
-    
-    UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    activityView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.indicatorView = activityView;
-    [self addSubview:self.indicatorView];
-    
-    NSDictionary *views = @{@"frameView":self.indicatorView, @"superView":self};
-    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[frameView]-(<=1)-[superView]"
-                                                                 options:NSLayoutFormatAlignAllCenterY
-                                                                 metrics:nil views:views]];
-    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[frameView]-(<=1)-[superView]"
-                                                                 options:NSLayoutFormatAlignAllCenterX
-                                                                 metrics:nil views:views]];
+}
+
+- (UIActivityIndicatorView *)indicatorView
+{
+    if (!_indicatorView) {
+        UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+        _indicatorView = activityView;
+        _indicatorView.center = self.center;
+        
+        UIViewAutoresizing autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+        _indicatorView.autoresizingMask = autoresizingMask | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
+        [self addSubview:_indicatorView];
+    }
+    return _indicatorView;
+}
+
+- (void)updateDisplayImage:(UIImage *)image
+{
+    self.image = image;
+    self.imageView.image = image;
 }
 
 - (void)initWithImage:(UIImage *)image
 {
     if (!image || ![image isKindOfClass:[UIImage class]]) return;
     
-    _image = image;
+    [self initZoomingViewLayoutWithImageSize:image.size];
     
-    _imageView.image = image;
-    _imageView.bounds = [self boundsOfImage:image forSize:ScreenSize];
-    _imageView.center = CGPointMake(ScreenSize.width/2, ScreenSize.height/2);
+    [self updateDisplayImage:image];
+}
+
+- (CGSize)imageSizeWithDimensions:(CGSize)dimensions maxPixelSize:(CGFloat)maxPixelSize
+{
+    CGSize imageSize = dimensions;
+    if (dimensions.height > dimensions.width && dimensions.height > maxPixelSize) {
+        imageSize = CGSizeMake(floorf(dimensions.width / dimensions.height * maxPixelSize), maxPixelSize);
+    }
+    else if (dimensions.height <= dimensions.width && dimensions.width > maxPixelSize) {
+        imageSize = CGSizeMake(maxPixelSize, floorf(dimensions.height / dimensions.width * maxPixelSize));
+    }
     
-    [self setMaximumZoomScale];
+    return imageSize;
 }
 
 - (void)initWithALAsset:(ALAsset *)asset
@@ -106,17 +121,22 @@
     self.image = nil;
     self.asset = asset;
     
-    [self.indicatorView startAnimating];
+    CGFloat maxPixelSize = MAX([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
+    CGSize imageSize = [self imageSizeWithDimensions:asset.defaultRepresentation.dimensions
+                                        maxPixelSize:maxPixelSize*[UIScreen mainScreen].scale];
+    [self initZoomingViewLayoutWithImageSize:imageSize];
+    
+    [self updateDisplayImage:[UIImage imageWithCGImage:asset.aspectRatioThumbnail]];
     
     __weak USAssetScrollView *weak_self = self;
     
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        
         UIImage *fullImage = [UIImage imageWithCGImage:asset.defaultRepresentation.fullScreenImage];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             if (fullImage) {
-                [weak_self initWithImage:fullImage];
-                [weak_self.indicatorView stopAnimating];
+                [weak_self updateDisplayImage:fullImage];
             }
         });
     });
@@ -143,16 +163,17 @@
     options.resizeMode   = PHImageRequestOptionsResizeModeExact;
     options.networkAccessAllowed = YES;
     
-    CGFloat scale =  MAX(1.0, MIN(asset.pixelWidth, asset.pixelHeight)/USFullScreenImageMinLength);
-    CGSize retinaScreenSize = CGSizeMake(asset.pixelWidth/scale, asset.pixelHeight/scale);
+    CGSize imageSize = [self imageSizeWithDimensions:CGSizeMake(asset.pixelWidth, asset.pixelHeight)
+                                        maxPixelSize:2400.f];
+    [self initZoomingViewLayoutWithImageSize:imageSize];
     
     [[PHImageManager defaultManager] requestImageForAsset:asset
-                                               targetSize:retinaScreenSize
+                                               targetSize:imageSize
                                               contentMode:PHImageContentModeAspectFit
                                                   options:options
                                             resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
                                                 if (result) {
-                                                    [weak_self initWithImage:result];
+                                                    [weak_self updateDisplayImage:result];
                                                 }
                                             }];
 }
@@ -167,18 +188,26 @@
     }
 }
 
-- (void)setMaximumZoomScale
+- (void)setMaximumZoomScaleWithImageSize:(CGSize)imageSize
 {
-    CGFloat scale_screen = [UIScreen mainScreen].scale;
-    float scale = _imageView.image.size.width/(ScreenSize.width*scale_screen);
+    CGFloat scale_screen = 1.5;
+    
+    float scale = imageSize.width/(ScreenSize.width*scale_screen);
     
     self.maximumZoomScale = MAX(scale, 2);
 }
 
-- (CGRect)boundsOfImage:(UIImage *)image forSize:(CGSize)size
+- (void)initZoomingViewLayoutWithImageSize:(CGSize)imageSize
 {
-    CGSize imageSize = image.size;
-    CGSize viewSize = size;
+    _imageView.bounds = [self zoomingViewBoundsForImageSize:imageSize];
+    _imageView.center = CGPointMake(ScreenSize.width/2, ScreenSize.height/2);
+    
+    [self setMaximumZoomScaleWithImageSize:imageSize];
+}
+
+- (CGRect)zoomingViewBoundsForImageSize:(CGSize)imageSize
+{
+    CGSize viewSize = ScreenSize;
     
     CGSize finalSize = CGSizeZero;
     

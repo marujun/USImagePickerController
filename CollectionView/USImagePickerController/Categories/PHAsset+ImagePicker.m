@@ -94,7 +94,7 @@
     }
     else {
         if (self.dimensions.width > maxPixelSize) {
-            image = [self imageAspectFitWithSize:CGSizeMake(maxPixelSize, self.dimensions.width / self.dimensions.height * maxPixelSize)];
+            image = [self imageAspectFitWithSize:CGSizeMake(maxPixelSize, self.dimensions.height / self.dimensions.width * maxPixelSize)];
         } else {
             image = [UIImage imageWithData:[self originalImageData]];
         }

@@ -24,6 +24,4 @@
 
 - (void)doubleTapWithPoint:(CGPoint)point;
 
-- (CGRect)boundsOfImage:(UIImage *)image forSize:(CGSize)size;
-
 @end

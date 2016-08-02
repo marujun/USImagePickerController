@@ -48,16 +48,20 @@
 - (void)setupViews
 {
     _scrollView = [[USAssetScrollView alloc] init];
-    _scrollView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:_scrollView];
     
-    NSDictionary *views = NSDictionaryOfVariableBindings(_scrollView);
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[_scrollView]-0-|" options:0 metrics:nil views:views]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[_scrollView]-0-|" options:0 metrics:nil views:views]];
+    _scrollView.frame = self.view.bounds;
+    _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    
+    //TODO: iOS7系统BUG，所以 UIPageViewController 的所有子view都不能使用 AutoLayout
+    //http://stackoverflow.com/questions/17729336/uipageviewcontroller-auto-layout-rotation-issue
+//    _scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+//    NSDictionary *views = NSDictionaryOfVariableBindings(_scrollView);
+//    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[_scrollView]-0-|" options:0 metrics:nil views:views]];
+//    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[_scrollView]-0-|" options:0 metrics:nil views:views]];
+//    [self.view layoutIfNeeded];
     
     self.view.backgroundColor = [UIColor clearColor];
-    
-    [self.view layoutIfNeeded];
 }
 
 - (void)reloadAssetScrollView
