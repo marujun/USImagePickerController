@@ -45,20 +45,31 @@
 
 - (UIImage *)aspectRatioThumbnailImage
 {
-    return [self aspectRatioImage:200];
+    CGFloat minPixelSize = 256.f;
+    CGFloat maxPixelSize = 1280.f;
+    
+    CGSize imageSize = CGSizeZero;
+    
+    if (self.pixelHeight > self.pixelWidth) {
+        if (self.pixelHeight / self.pixelWidth > maxPixelSize / minPixelSize) {
+            imageSize = CGSizeMake(floorf(maxPixelSize * self.pixelWidth / self.pixelHeight), maxPixelSize);
+        } else {
+            imageSize = CGSizeMake(minPixelSize, ceilf(minPixelSize * self.pixelHeight / self.pixelWidth));
+        }
+    } else {
+        if (self.pixelWidth / self.pixelHeight > maxPixelSize / minPixelSize) {
+            imageSize = CGSizeMake(maxPixelSize, floorf(maxPixelSize * self.pixelHeight / self.pixelWidth));
+        } else {
+            imageSize = CGSizeMake(ceilf(minPixelSize * self.pixelWidth / self.pixelHeight), minPixelSize);
+        }
+    }
+    
+    return [self imageAspectFitWithSize:imageSize];
 }
 
 - (UIImage *)aspectRatioHDImage
 {
     return [self thumbnailImageWithMaxPixelSize:USAspectRatioHDImageMaxPixelSize];
-}
-
-- (UIImage *)aspectRatioImage:(NSInteger)miniLength
-{
-    CGFloat scale = MIN(self.pixelWidth, self.pixelHeight)/(1.f*miniLength);
-    CGSize targetSize = CGSizeMake(MIN(self.pixelWidth/scale, miniLength*4.f), MIN(self.pixelHeight/scale, miniLength*4.f));
-    
-    return [self imageAspectFitWithSize:targetSize];
 }
 
 - (NSData *)originalImageData
