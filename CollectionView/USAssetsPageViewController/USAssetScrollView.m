@@ -99,10 +99,12 @@
 {
     CGSize imageSize = dimensions;
     if (dimensions.height > dimensions.width && dimensions.height > maxPixelSize) {
-        imageSize = CGSizeMake(floorf(dimensions.width / dimensions.height * maxPixelSize), maxPixelSize);
+        imageSize.width = floorf(dimensions.width / dimensions.height * maxPixelSize);
+        imageSize.height = floorf(dimensions.height / dimensions.width * imageSize.width);
     }
     else if (dimensions.height <= dimensions.width && dimensions.width > maxPixelSize) {
-        imageSize = CGSizeMake(maxPixelSize, floorf(dimensions.height / dimensions.width * maxPixelSize));
+        imageSize.height = floorf(dimensions.height / dimensions.width * maxPixelSize);
+        imageSize.width = floorf(dimensions.width / dimensions.height * imageSize.height);
     }
     
     return imageSize;
@@ -165,8 +167,23 @@
     options.resizeMode   = PHImageRequestOptionsResizeModeExact;
     options.networkAccessAllowed = YES;
     
+    CGFloat maxPixelSize = 2400.f;
+    
+    //适配截屏拼接的图片
+    CGFloat maxImgLength = MAX(asset.pixelWidth, asset.pixelHeight);
+    CGFloat minImgLength = MIN(asset.pixelWidth, asset.pixelHeight);
+    if (minImgLength <= 1080.f && maxImgLength/minImgLength > 2.f) {
+        CGFloat minScreenLength = MIN(USScreenSize.width, USScreenSize.height) * [UIScreen mainScreen].scale;
+        CGFloat lastImgMaxLength = 9000.f * 1080.f / minImgLength;
+        CGFloat lastImgMinLength = minImgLength / maxImgLength * lastImgMaxLength;
+        if (lastImgMinLength > minScreenLength) {
+            lastImgMaxLength = minScreenLength / lastImgMinLength * lastImgMaxLength;
+        }
+        maxPixelSize = MAX(maxPixelSize, lastImgMaxLength);
+    }
+    
     _imageSize = [self imageSizeWithDimensions:CGSizeMake(asset.pixelWidth, asset.pixelHeight)
-                                  maxPixelSize:2400.f];
+                                  maxPixelSize:maxPixelSize];
     [self initZoomingViewLayout];
     
     [[PHImageManager defaultManager] requestImageForAsset:asset
@@ -187,15 +204,17 @@
         [self setZoomScale:1 animated:YES];
     }
     else {
-        CGFloat scale_screen = [UIScreen mainScreen].scale;
-        CGFloat image_width = _imageSize.width/scale_screen;
+        CGFloat newScale = 2.4;
+        CGFloat deviation = 20;
         
-        CGFloat newScale = 2.6;
-        if (image_width < USScreenSize.width) {
+        if ((_imageView.frame.size.width+deviation) < USScreenSize.width) {
             newScale = USScreenSize.width/_imageView.frame.size.width;
-            
             newScale -= 0.001; //完全贴合屏幕边缘时滑动切换图片会出现闪屏的现象，所以留一点点距离
         }
+        else if (_imageView.frame.size.height+deviation < MIN(USScreenSize.width, USScreenSize.height)) {
+            newScale = USScreenSize.height/_imageView.frame.size.height;
+        }
+        
         [self zoomToRect:[self zoomRectForScale:newScale withCenter:point] animated:YES];
     }
 }
@@ -222,10 +241,11 @@
 {
     CGFloat screen_scale = [UIScreen mainScreen].scale;
     
-    CGFloat ascale = _imageSize.width / (USScreenSize.width * screen_scale);
-    CGFloat bscale = USScreenSize.width / _imageView.frame.size.width;
+    CGFloat iscale = _imageSize.width / (USScreenSize.width * screen_scale);
+    CGFloat wscale = USScreenSize.width / _imageView.frame.size.width;
+    CGFloat hscale = USScreenSize.height / _imageView.frame.size.height;
     
-    self.maximumZoomScale = MAX(MAX(ascale, bscale), 3.0);
+    self.maximumZoomScale = MAX(MAX(MAX(wscale, hscale), iscale), 3.0);
 }
 
 - (CGRect)zoomingViewBoundsForImageSize:(CGSize)imageSize
