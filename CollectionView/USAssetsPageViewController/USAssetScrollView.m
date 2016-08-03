@@ -8,12 +8,12 @@
 
 #import "USAssetScrollView.h"
 
-#define ScreenSize (((NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation))?CGSizeMake([UIScreen mainScreen].bounds.size.height, [UIScreen mainScreen].bounds.size.width):[UIScreen mainScreen].bounds.size)
+#define USScreenSize (((NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation))?CGSizeMake([UIScreen mainScreen].bounds.size.height, [UIScreen mainScreen].bounds.size.width):[UIScreen mainScreen].bounds.size)
 
 @interface USAssetScrollView () <UIScrollViewDelegate>
 
 @property (nonatomic, strong) id asset;
-@property (nonatomic, strong) UIImage *image;
+@property (nonatomic, assign) CGSize imageSize;
 
 @end
 
@@ -81,7 +81,6 @@
 
 - (void)updateDisplayImage:(UIImage *)image
 {
-    self.image = image;
     self.imageView.image = image;
 }
 
@@ -89,7 +88,9 @@
 {
     if (!image || ![image isKindOfClass:[UIImage class]]) return;
     
-    [self initZoomingViewLayoutWithImageSize:image.size];
+    _imageSize = image.size;
+    
+    [self initZoomingViewLayout];
     
     [self updateDisplayImage:image];
 }
@@ -113,18 +114,19 @@
     
     self.zoomScale = 1.0;
     
-    if ([self.asset isEqual:asset] && self.image) {
-        [self initWithImage:self.image];
+    if ([self.asset isEqual:asset]) {
+        [self initZoomingViewLayout];
+        
         return;
     }
     
-    self.image = nil;
     self.asset = asset;
     
-    CGFloat maxPixelSize = MAX([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
-    CGSize imageSize = [self imageSizeWithDimensions:asset.defaultRepresentation.dimensions
-                                        maxPixelSize:maxPixelSize*[UIScreen mainScreen].scale];
-    [self initZoomingViewLayoutWithImageSize:imageSize];
+    CGFloat maxPixelSize = MAX(USScreenSize.width, USScreenSize.height);
+    
+    _imageSize = [self imageSizeWithDimensions:asset.defaultRepresentation.dimensions
+                                  maxPixelSize:maxPixelSize * [UIScreen mainScreen].scale];
+    [self initZoomingViewLayout];
     
     [self updateDisplayImage:[UIImage imageWithCGImage:asset.aspectRatioThumbnail]];
     
@@ -148,12 +150,12 @@
     
     self.zoomScale = 1.0;
     
-    if ([self.asset isEqual:asset] && self.image) {
-        [self initWithImage:self.image];
+    if ([self.asset isEqual:asset]) {
+        [self initZoomingViewLayout];
+        
         return;
     }
     
-    self.image = nil;
     self.asset = asset;
     
     __weak USAssetScrollView *weak_self = self;
@@ -163,12 +165,12 @@
     options.resizeMode   = PHImageRequestOptionsResizeModeExact;
     options.networkAccessAllowed = YES;
     
-    CGSize imageSize = [self imageSizeWithDimensions:CGSizeMake(asset.pixelWidth, asset.pixelHeight)
-                                        maxPixelSize:2400.f];
-    [self initZoomingViewLayoutWithImageSize:imageSize];
+    _imageSize = [self imageSizeWithDimensions:CGSizeMake(asset.pixelWidth, asset.pixelHeight)
+                                  maxPixelSize:2400.f];
+    [self initZoomingViewLayout];
     
     [[PHImageManager defaultManager] requestImageForAsset:asset
-                                               targetSize:imageSize
+                                               targetSize:_imageSize
                                               contentMode:PHImageContentModeAspectFit
                                                   options:options
                                             resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
@@ -183,31 +185,52 @@
 {
     if (self.zoomScale > 1) {
         [self setZoomScale:1 animated:YES];
-    } else {
-        [self zoomToRect:CGRectMake(point.x, point.y, 1, 1) animated:YES];
+    }
+    else {
+        CGFloat scale_screen = [UIScreen mainScreen].scale;
+        CGFloat image_width = _imageSize.width/scale_screen;
+        
+        CGFloat newScale = 2.6;
+        if (image_width < USScreenSize.width) {
+            newScale = USScreenSize.width/_imageView.frame.size.width;
+            
+            newScale -= 0.001; //完全贴合屏幕边缘时滑动切换图片会出现闪屏的现象，所以留一点点距离
+        }
+        [self zoomToRect:[self zoomRectForScale:newScale withCenter:point] animated:YES];
     }
 }
 
-- (void)setMaximumZoomScaleWithImageSize:(CGSize)imageSize
+- (void)initZoomingViewLayout
 {
-    CGFloat scale_screen = 1.5;
+    _imageView.bounds = [self zoomingViewBoundsForImageSize:_imageSize];
+    _imageView.center = CGPointMake(USScreenSize.width/2, USScreenSize.height/2);
     
-    float scale = imageSize.width/(ScreenSize.width*scale_screen);
-    
-    self.maximumZoomScale = MAX(scale, 2);
+    [self setMaxAndMinZoomScales];
 }
 
-- (void)initZoomingViewLayoutWithImageSize:(CGSize)imageSize
+- (CGRect)zoomRectForScale:(float)scale withCenter:(CGPoint)center
 {
-    _imageView.bounds = [self zoomingViewBoundsForImageSize:imageSize];
-    _imageView.center = CGPointMake(ScreenSize.width/2, ScreenSize.height/2);
+    CGFloat height = self.frame.size.height / scale;
+    CGFloat width  = self.frame.size.width  / scale;
+    CGFloat x = center.x - width * 0.5;
+    CGFloat y = center.y - height * 0.5;
     
-    [self setMaximumZoomScaleWithImageSize:imageSize];
+    return CGRectMake(x, y, width, height);
+}
+
+- (void)setMaxAndMinZoomScales
+{
+    CGFloat screen_scale = [UIScreen mainScreen].scale;
+    
+    CGFloat ascale = _imageSize.width / (USScreenSize.width * screen_scale);
+    CGFloat bscale = USScreenSize.width / _imageView.frame.size.width;
+    
+    self.maximumZoomScale = MAX(MAX(ascale, bscale), 3.0);
 }
 
 - (CGRect)zoomingViewBoundsForImageSize:(CGSize)imageSize
 {
-    CGSize viewSize = ScreenSize;
+    CGSize viewSize = USScreenSize;
     
     CGSize finalSize = CGSizeZero;
     

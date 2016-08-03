@@ -9,7 +9,9 @@
 #import "USAssetItemViewController.h"
 #import "USAssetScrollView.h"
 
-@interface USAssetItemViewController () 
+@interface USAssetItemViewController ()
+
+@property (nonatomic, assign) BOOL displaying;
 
 @end
 
@@ -40,7 +42,23 @@
 {
     [super viewWillAppear:animated];
     
+    if (_displaying) return;
+    
     [self reloadAssetScrollView];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    _displaying = YES;
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    
+    _displaying = NO;
 }
 
 #pragma mark - Setup
