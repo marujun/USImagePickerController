@@ -50,6 +50,8 @@
     [self.view addGestureRecognizer:singleTap];
     
     [singleTap requireGestureRecognizerToFail:doubleTap];
+    
+    if(self.pageIndex == NSNotFound) self.pageIndex = 0;
 }
 
 #pragma mark - 单双击手势触发
@@ -82,6 +84,13 @@
 - (NSInteger)pageIndex
 {
     return [self.assets indexOfObject:self.currentAssetItemViewController.asset];
+}
+
+- (CGRect)imageRect
+{
+    USAssetScrollView *scrollView = self.currentAssetItemViewController.scrollView;
+    
+    return [scrollView convertRect:scrollView.imageView.frame toView:self.view];
 }
 
 - (void)setPageIndex:(NSInteger)pageIndex

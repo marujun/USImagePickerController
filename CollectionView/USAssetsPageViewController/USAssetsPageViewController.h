@@ -15,6 +15,9 @@ typedef void (^USAssetsPageHandler)(NSInteger index);
 /** 当前展示的照片的顺序 */
 @property (nonatomic, assign) NSInteger pageIndex;
 
+/** 当前展示的照片的位置 */
+@property (nonatomic, assign, readonly) CGRect imageRect;
+
 /** 当前展示的照片次序发生变化时的回调处理 */
 @property (nonatomic, copy) USAssetsPageHandler indexChangedHandler;
 
