@@ -33,7 +33,7 @@
 {
     if ([PHPhotoLibrary class]) {
         PHFetchOptions *options = [[PHFetchOptions alloc] init];
-        options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"modificationDate" ascending:NO]];
+        options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
         options.predicate = [NSPredicate predicateWithFormat:@"mediaType = %d",PHAssetMediaTypeImage];
         if ([options respondsToSelector:@selector(fetchLimit)]) {
             options.fetchLimit =  50;

@@ -164,7 +164,7 @@
     if (self.assetCollection) {
         PHFetchOptions *options = [[PHFetchOptions alloc] init];
         options.predicate = [NSPredicate predicateWithFormat:@"mediaType == %d", PHAssetMediaTypeImage];
-        options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"modificationDate" ascending:YES]];
+        //options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"modificationDate" ascending:YES]];
         
         PHAssetCollection *assetCollection = (PHAssetCollection *)self.assetCollection;
         PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:options];

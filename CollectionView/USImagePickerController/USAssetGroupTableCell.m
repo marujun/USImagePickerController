@@ -82,7 +82,7 @@
         self.detailTextLabel.text  = [NSString stringWithFormat:@"%@", @(count)];
         
         //获取预览图需要按时间排序
-        options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"modificationDate" ascending:YES]];
+        //options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"modificationDate" ascending:YES]];
         PHFetchResult *fetchResult = [PHAsset fetchKeyAssetsInAssetCollection:assetCollection options:options];
         
         NSInteger tag = self.tag + 1;
