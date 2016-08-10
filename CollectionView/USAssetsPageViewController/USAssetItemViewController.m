@@ -84,10 +84,7 @@
 
 - (void)reloadAssetScrollView
 {
-    if ([_asset isKindOfClass:[PHAsset class]]) {
-        [self.scrollView initWithPHAsset:_asset];
-    }
-    else if ([_asset isKindOfClass:[ALAsset class]]) {
+    if ([_asset isKindOfClass:[ALAsset class]]) {
         [self.scrollView initWithALAsset:_asset];
     }
     else if ([_asset isKindOfClass:[UIImage class]]) {
@@ -102,6 +99,9 @@
 //            [weak_view initWithImage:image];
 //            [weak_view.indicatorView stopAnimating];
 //        }];
+    }
+    else if ([_asset isKindOfClass:[PHAsset class]]) {
+        [self.scrollView initWithPHAsset:_asset];
     }
 }
 
