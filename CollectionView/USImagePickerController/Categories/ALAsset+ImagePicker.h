@@ -6,8 +6,8 @@
 //  Copyright © 2016年 marujun. All rights reserved.
 //
 
-#import <AssetsLibrary/AssetsLibrary.h>
 #import <UIKit/UIKit.h>
+#import <AssetsLibrary/AssetsLibrary.h>
 
 @interface ALAsset (ImagePicker)
 

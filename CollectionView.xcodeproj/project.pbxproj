@@ -66,6 +66,8 @@
 		0AC5AAA41B723B07007F2DB3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0AC5AAA21B723B07007F2DB3 /* Main.storyboard */; };
 		0AC5AAA61B723B07007F2DB3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0AC5AAA51B723B07007F2DB3 /* Images.xcassets */; };
 		0AC5AAA91B723B07007F2DB3 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0AC5AAA71B723B07007F2DB3 /* LaunchScreen.xib */; };
+		0ADC28D11D631EA7001405F4 /* PHPhotoLibrary+ImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ADC28D01D631EA7001405F4 /* PHPhotoLibrary+ImagePicker.m */; };
+		0ADC28D41D631EEA001405F4 /* ALAssetsLibrary+ImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ADC28D31D631EEA001405F4 /* ALAssetsLibrary+ImagePicker.m */; };
 		0AE4662B1D37241500277357 /* USPicker-Empty-Album@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0AE466291D37241500277357 /* USPicker-Empty-Album@2x.png */; };
 		0AE4662C1D37241500277357 /* USPicker-Empty-Album@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0AE4662A1D37241500277357 /* USPicker-Empty-Album@3x.png */; };
 		0AE4662F1D372BAE00277357 /* USPicker-Assets-Locked@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0AE4662D1D372BAE00277357 /* USPicker-Assets-Locked@2x.png */; };
@@ -173,6 +175,10 @@
 		0AC5AAA31B723B07007F2DB3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		0AC5AAA51B723B07007F2DB3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		0AC5AAA81B723B07007F2DB3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		0ADC28CF1D631EA7001405F4 /* PHPhotoLibrary+ImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PHPhotoLibrary+ImagePicker.h"; sourceTree = "<group>"; };
+		0ADC28D01D631EA7001405F4 /* PHPhotoLibrary+ImagePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PHPhotoLibrary+ImagePicker.m"; sourceTree = "<group>"; };
+		0ADC28D21D631EEA001405F4 /* ALAssetsLibrary+ImagePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ALAssetsLibrary+ImagePicker.h"; sourceTree = "<group>"; };
+		0ADC28D31D631EEA001405F4 /* ALAssetsLibrary+ImagePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ALAssetsLibrary+ImagePicker.m"; sourceTree = "<group>"; };
 		0AE466291D37241500277357 /* USPicker-Empty-Album@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "USPicker-Empty-Album@2x.png"; sourceTree = "<group>"; };
 		0AE4662A1D37241500277357 /* USPicker-Empty-Album@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "USPicker-Empty-Album@3x.png"; sourceTree = "<group>"; };
 		0AE4662D1D372BAE00277357 /* USPicker-Assets-Locked@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "USPicker-Assets-Locked@2x.png"; sourceTree = "<group>"; };
@@ -321,6 +327,10 @@
 				0A7A61DE1D2C998A00A8A07B /* ALAsset+ImagePicker.m */,
 				0A7A61DF1D2C998A00A8A07B /* PHAsset+ImagePicker.h */,
 				0A7A61E01D2C998A00A8A07B /* PHAsset+ImagePicker.m */,
+				0ADC28CF1D631EA7001405F4 /* PHPhotoLibrary+ImagePicker.h */,
+				0ADC28D01D631EA7001405F4 /* PHPhotoLibrary+ImagePicker.m */,
+				0ADC28D21D631EEA001405F4 /* ALAssetsLibrary+ImagePicker.h */,
+				0ADC28D31D631EEA001405F4 /* ALAssetsLibrary+ImagePicker.m */,
 			);
 			path = Categories;
 			sourceTree = "<group>";
@@ -495,6 +505,7 @@
 				0AC5AAA11B723B07007F2DB3 /* ViewController.m in Sources */,
 				0AC5AA981B723B07007F2DB3 /* main.m in Sources */,
 				0A7A62241D2C998A00A8A07B /* USImagePickerController.m in Sources */,
+				0ADC28D11D631EA7001405F4 /* PHPhotoLibrary+ImagePicker.m in Sources */,
 				0A7A61FB1D2C998A00A8A07B /* ImageCollectionViewCell.m in Sources */,
 				0A2248961D361E8C00D7DC06 /* RSKImageScrollView.m in Sources */,
 				0A7A620A1D2C998A00A8A07B /* USAssetScrollView.m in Sources */,
@@ -520,6 +531,7 @@
 				0A7A620B1D2C998A00A8A07B /* USAssetsPageViewController.m in Sources */,
 				0A7A62101D2C998A00A8A07B /* ActivityViewController.m in Sources */,
 				0A7A61FC1D2C998A00A8A07B /* ImagePickerCollectionView.m in Sources */,
+				0ADC28D41D631EEA001405F4 /* ALAssetsLibrary+ImagePicker.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

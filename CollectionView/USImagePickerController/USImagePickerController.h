@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 #import "PHAsset+ImagePicker.h"
 #import "ALAsset+ImagePicker.h"
+#import "PHPhotoLibrary+ImagePicker.h"
+#import "ALAssetsLibrary+ImagePicker.h"
 
 @protocol USImagePickerControllerDelegate;
 
