@@ -7,12 +7,14 @@
 //
 
 #import "ALAssetsLibrary+ImagePicker.h"
+#import "USImagePickerController+Protect.h"
 
 @implementation ALAssetsLibrary (ImagePicker)
 
-- (void)writeImage:(UIImage *)image toAlbum:(NSString *)toAlbum completionHandler:(void (^)(ALAsset *asset, NSError *error))completionHandler
++ (void)writeImage:(UIImage *)image toAlbum:(NSString *)toAlbum completionHandler:(void (^)(ALAsset *asset, NSError *error))completionHandler
 {
-    [self writeImageToSavedPhotosAlbum:image.CGImage orientation:(ALAssetOrientation)image.imageOrientation completionBlock:^(NSURL* assetURL, NSError* error) {
+    ALAssetsLibrary *library = [USImagePickerController defaultAssetsLibrary];
+    [library writeImageToSavedPhotosAlbum:image.CGImage orientation:(ALAssetOrientation)image.imageOrientation completionBlock:^(NSURL* assetURL, NSError* error) {
         if (error!=nil) {
             if(completionHandler) {
                 completionHandler(nil, error);
@@ -25,53 +27,55 @@
     }];
 }
 
-- (void)addAssetURL:(NSURL *)assetURL toAlbum:(NSString *)toAlbum completionHandler:(void (^)(ALAsset *asset, NSError *error))completionHandler
++ (void)addAssetURL:(NSURL *)assetURL toAlbum:(NSString *)toAlbum completionHandler:(void (^)(ALAsset *asset, NSError *error))completionHandler
 {
     __block BOOL albumWasFound = NO;
     
-    [self enumerateGroupsWithTypes:ALAssetsGroupAlbum
-                        usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-                            if ([toAlbum compare:[group valueForProperty:ALAssetsGroupPropertyName]] == NSOrderedSame) {
-                                
-                                albumWasFound = YES;
-                                [self assetForURL:assetURL
-                                      resultBlock:^(ALAsset *asset) {
-                                          [group addAsset:asset];
-                                          
-                                          if(completionHandler) completionHandler(asset, nil);
-                                          
-                                      } failureBlock:^(NSError *error) {
-                                          if(completionHandler) completionHandler(nil, error);
-                                      }];
-                                
-                                return;
-                            }
-                            
-                            if (group==nil && albumWasFound==NO) {
-                                
-                                __weak typeof(self) wself = self;
-                                
-                                [self addAssetsGroupAlbumWithName:toAlbum
-                                                      resultBlock:^(ALAssetsGroup *group) {
-                                                          [wself assetForURL: assetURL
-                                                                 resultBlock:^(ALAsset *asset) {
-                                                                     [group addAsset: asset];
-                                                                     
-                                                                     if(completionHandler) completionHandler(asset, nil);
-                                                                     
-                                                                 } failureBlock:^(NSError *error) {
-                                                                     if(completionHandler) completionHandler(nil, error);
-                                                                 }];
-                                                      }
-                                                     failureBlock:^(NSError *error) {
-                                                         if(completionHandler) completionHandler(nil, error);
-                                                     }];
-                                return;
-                            }
-                            
-                        } failureBlock:^(NSError *error) {
-                            if(completionHandler) completionHandler(nil, error);
-                        }];
+    ALAssetsLibrary *library = [USImagePickerController defaultAssetsLibrary];
+    
+    [library enumerateGroupsWithTypes:ALAssetsGroupAlbum
+                           usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+                               if ([toAlbum compare:[group valueForProperty:ALAssetsGroupPropertyName]] == NSOrderedSame) {
+                                   
+                                   albumWasFound = YES;
+                                   [library assetForURL:assetURL
+                                            resultBlock:^(ALAsset *asset) {
+                                                [group addAsset:asset];
+                                                
+                                                if(completionHandler) completionHandler(asset, nil);
+                                                
+                                            } failureBlock:^(NSError *error) {
+                                                if(completionHandler) completionHandler(nil, error);
+                                            }];
+                                   
+                                   return;
+                               }
+                               
+                               if (group==nil && albumWasFound==NO) {
+                                   
+                                   __weak typeof(library) wlibrary = library;
+                                   
+                                   [library addAssetsGroupAlbumWithName:toAlbum
+                                                            resultBlock:^(ALAssetsGroup *group) {
+                                                                [wlibrary assetForURL: assetURL
+                                                                          resultBlock:^(ALAsset *asset) {
+                                                                              [group addAsset: asset];
+                                                                              
+                                                                              if(completionHandler) completionHandler(asset, nil);
+                                                                              
+                                                                          } failureBlock:^(NSError *error) {
+                                                                              if(completionHandler) completionHandler(nil, error);
+                                                                          }];
+                                                            }
+                                                           failureBlock:^(NSError *error) {
+                                                               if(completionHandler) completionHandler(nil, error);
+                                                           }];
+                                   return;
+                               }
+                               
+                           } failureBlock:^(NSError *error) {
+                               if(completionHandler) completionHandler(nil, error);
+                           }];
 }
 
 @end

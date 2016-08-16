@@ -10,7 +10,7 @@
 
 @implementation PHPhotoLibrary (ImagePicker)
 
-- (void)topLevelUserCollectionWithTitle:(NSString *)title completionHandler:(void(^)(PHAssetCollection *collection, NSError *error))completionHandler
++ (void)topLevelUserCollectionWithTitle:(NSString *)title completionHandler:(void(^)(PHAssetCollection *collection, NSError *error))completionHandler
 {
     PHAssetCollection *collection = [self existingTopLevelUserCollectionWithTitle:title];
     if (collection) {
@@ -38,7 +38,7 @@
     }
 }
 
-- (PHAssetCollection *)existingTopLevelUserCollectionWithTitle:(NSString *)title;
++ (PHAssetCollection *)existingTopLevelUserCollectionWithTitle:(NSString *)title;
 {
     PHFetchOptions *options = [[PHFetchOptions alloc] init];
     options.predicate = [NSPredicate predicateWithFormat:@"localizedTitle == %@", title];
@@ -51,17 +51,17 @@
     return nil;
 }
 
-- (void)writeImage:(UIImage *)image toAlbum:(NSString *)toAlbum completionHandler:(void(^)(PHAsset *asset, NSError *error))completionHandler
++ (void)writeImage:(UIImage *)image toAlbum:(NSString *)toAlbum completionHandler:(void(^)(PHAsset *asset, NSError *error))completionHandler
 {
     [self writeImageWithObject:image toAlbum:toAlbum completionHandler:completionHandler];
 }
 
-- (void)writeImageFromFilePath:(NSString *)filePath toAlbum:(NSString *)toAlbum completionHandler:(void(^)(PHAsset *asset, NSError *error))completionHandler
++ (void)writeImageFromFilePath:(NSString *)filePath toAlbum:(NSString *)toAlbum completionHandler:(void(^)(PHAsset *asset, NSError *error))completionHandler
 {
     [self writeImageWithObject:filePath toAlbum:toAlbum completionHandler:completionHandler];
 }
 
-- (void)writeImageWithObject:(id)object toAlbum:(NSString *)toAlbum completionHandler:(void(^)(PHAsset *asset, NSError *error))completionHandler
++ (void)writeImageWithObject:(id)object toAlbum:(NSString *)toAlbum completionHandler:(void(^)(PHAsset *asset, NSError *error))completionHandler
 {
     [self topLevelUserCollectionWithTitle:toAlbum completionHandler:^(PHAssetCollection *collection, NSError *error) {
         if (error) {
