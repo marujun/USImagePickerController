@@ -147,4 +147,22 @@
     return [PHAsset fetchAssetsWithLocalIdentifiers:@[identifier] options:nil].firstObject;
 }
 
+
+- (void)requestMetadataWithCompletionHandler:(void(^)(NSDictionary *metadata))completionHandler
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        PHContentEditingInputRequestOptions *editOptions = [[PHContentEditingInputRequestOptions alloc]init];
+        editOptions.networkAccessAllowed = YES;
+        
+        [self requestContentEditingInputWithOptions:editOptions completionHandler:^(PHContentEditingInput *contentEditingInput, NSDictionary *info) {
+            CIImage *image = [CIImage imageWithContentsOfURL:contentEditingInput.fullSizeImageURL];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (completionHandler) completionHandler(image.properties);
+            });
+        }];
+    });
+}
+
 @end

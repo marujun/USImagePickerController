@@ -14,7 +14,7 @@
 {
     PHAssetCollection *collection = [self existingTopLevelUserCollectionWithTitle:title];
     if (collection) {
-        completionHandler?completionHandler(collection, nil):nil;
+        if (completionHandler) completionHandler(collection, nil);
     }
     else {
         //使用输入名称创建一个新的相册
@@ -27,11 +27,12 @@
         } completionHandler:^(BOOL success, NSError *error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (!success) {
-                    completionHandler?completionHandler(nil, error):nil;
+                    if (completionHandler) completionHandler(nil, error);
                 }
                 else {
                     PHFetchResult *fetchResult = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[localIdentifier] options:nil];
-                    completionHandler?completionHandler([fetchResult firstObject], nil):nil;
+                    
+                    if (completionHandler) completionHandler([fetchResult firstObject], nil);
                 }
             });
         }];
@@ -47,25 +48,40 @@
     if (fetchResult.count) {
         return fetchResult.firstObject;
     }
-    
     return nil;
 }
 
-+ (void)writeImage:(UIImage *)image toAlbum:(NSString *)toAlbum completionHandler:(void(^)(PHAsset *asset, NSError *error))completionHandler
++ (void)writeImage:(UIImage *)image toAlbum:(NSString *)toAlbum completionHandler:(PHLibraryCompletionHandler)completionHandler
 {
-    [self writeImageWithObject:image toAlbum:toAlbum completionHandler:completionHandler];
+    [self writeImageWithObject:image metadata:nil toAlbum:toAlbum completionHandler:completionHandler];
 }
 
-+ (void)writeImageFromFilePath:(NSString *)filePath toAlbum:(NSString *)toAlbum completionHandler:(void(^)(PHAsset *asset, NSError *error))completionHandler
++ (void)writeImage:(UIImage *)image metadata:(NSDictionary *)metadata toAlbum:(NSString *)toAlbum completionHandler:(PHLibraryCompletionHandler)completionHandler
 {
-    [self writeImageWithObject:filePath toAlbum:toAlbum completionHandler:completionHandler];
+    //把图片保存到临时路径
+    NSString *tempPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
+    tempPath = [tempPath stringByAppendingFormat:@"/camera_%f.jpg",[[NSDate date] timeIntervalSince1970]];
+    
+    NSData *dest_data = [self dataWithImage:image metadata:metadata];
+    [dest_data writeToFile:tempPath atomically:YES];
+    
+    [self writeImageWithObject:tempPath metadata:metadata toAlbum:toAlbum completionHandler:^(PHAsset *asset, NSError *error) {
+        if (completionHandler) completionHandler(asset, error);
+        
+        [[NSFileManager defaultManager] removeItemAtPath:tempPath error:nil];
+    }];
 }
 
-+ (void)writeImageWithObject:(id)object toAlbum:(NSString *)toAlbum completionHandler:(void(^)(PHAsset *asset, NSError *error))completionHandler
++ (void)writeImageFromFilePath:(NSString *)filePath toAlbum:(NSString *)toAlbum completionHandler:(PHLibraryCompletionHandler)completionHandler
+{
+    [self writeImageWithObject:filePath metadata:nil toAlbum:toAlbum completionHandler:completionHandler];
+}
+
++ (void)writeImageWithObject:(id)object metadata:(NSDictionary *)metadata toAlbum:(NSString *)toAlbum completionHandler:(PHLibraryCompletionHandler)completionHandler
 {
     [self topLevelUserCollectionWithTitle:toAlbum completionHandler:^(PHAssetCollection *collection, NSError *error) {
         if (error) {
-            completionHandler?completionHandler(nil, error):nil;
+            if (completionHandler) completionHandler(nil, error);
             return ;
         }
         
@@ -76,10 +92,14 @@
             PHAssetChangeRequest *assetRequest = nil;
             if ([object isKindOfClass:[UIImage class]]) {
                 assetRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:object];
-            } else if ([object isKindOfClass:[NSString class]]) {
+            }
+            else if ([object isKindOfClass:[NSString class]]) {
                 assetRequest = [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:[NSURL fileURLWithPath:object]];
             }
-            assetRequest.creationDate = [NSDate date];
+            
+            if (!metadata) {
+                assetRequest.creationDate = [NSDate date];
+            }
             
             //不提供AssetCollection则默认放到CameraRoll中
             if(collection){
@@ -96,15 +116,45 @@
         } completionHandler:^(BOOL success, NSError *error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (!success) {
-                    completionHandler?completionHandler(nil, error):nil;
+                    if (completionHandler) completionHandler(nil, error);
                 }
                 else {
                     PHFetchResult *fetchResult = [PHAsset fetchAssetsWithLocalIdentifiers:@[localIdentifier] options:nil];
-                    completionHandler?completionHandler([fetchResult firstObject], nil):nil;
+                    
+                    if (completionHandler) completionHandler([fetchResult firstObject], nil);
                 }
             });
         }];
     }];
+}
+
++ (NSMutableData *)dataWithImage:(UIImage *)image metadata:(NSDictionary *)metadata
+{
+    NSData *jpgData = UIImageJPEGRepresentation(image, 1.0);
+    
+    CGImageSourceRef source = CGImageSourceCreateWithData((CFDataRef)jpgData, NULL);
+    CFStringRef UTI = CGImageSourceGetType(source);
+    
+    NSMutableData *dest_data = [NSMutableData data];
+    CGImageDestinationRef destination = CGImageDestinationCreateWithData((CFMutableDataRef)dest_data, UTI, 1, NULL);
+    
+    if(!destination) {
+        dest_data = [jpgData mutableCopy];
+    }
+    else {
+        CGImageDestinationAddImageFromSource(destination, source, 0, (CFDictionaryRef) metadata);
+        BOOL success = CGImageDestinationFinalize(destination);
+        if(!success) {
+            dest_data = [jpgData mutableCopy];
+        }
+    }
+    
+    if(destination) {
+        CFRelease(destination);
+    }
+    CFRelease(source);
+    
+    return dest_data;
 }
 
 @end

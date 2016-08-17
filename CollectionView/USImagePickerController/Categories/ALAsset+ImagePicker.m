@@ -143,4 +143,9 @@ static void ReleaseAssetCallback(void *info) {
     return imageAsset;
 }
 
+- (void)requestMetadataWithCompletionHandler:(void(^)(NSDictionary *metadata))completionHandler
+{
+    if (completionHandler) completionHandler(self.defaultRepresentation.metadata);
+}
+
 @end

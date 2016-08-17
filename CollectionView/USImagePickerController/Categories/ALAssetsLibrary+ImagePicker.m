@@ -11,7 +11,7 @@
 
 @implementation ALAssetsLibrary (ImagePicker)
 
-+ (void)writeImage:(UIImage *)image toAlbum:(NSString *)toAlbum completionHandler:(void (^)(ALAsset *asset, NSError *error))completionHandler
++ (void)writeImage:(UIImage *)image toAlbum:(NSString *)toAlbum completionHandler:(ALLibraryCompletionHandler)completionHandler
 {
     ALAssetsLibrary *library = [USImagePickerController defaultAssetsLibrary];
     [library writeImageToSavedPhotosAlbum:image.CGImage orientation:(ALAssetOrientation)image.imageOrientation completionBlock:^(NSURL* assetURL, NSError* error) {
@@ -27,7 +27,23 @@
     }];
 }
 
-+ (void)addAssetURL:(NSURL *)assetURL toAlbum:(NSString *)toAlbum completionHandler:(void (^)(ALAsset *asset, NSError *error))completionHandler
++ (void)writeImage:(UIImage *)image metadata:(NSDictionary *)metadata toAlbum:(NSString *)toAlbum completionHandler:(ALLibraryCompletionHandler)completionHandler
+{
+    ALAssetsLibrary *library = [USImagePickerController defaultAssetsLibrary];
+    [library writeImageToSavedPhotosAlbum:image.CGImage metadata:metadata completionBlock:^(NSURL* assetURL, NSError* error) {
+        if (error!=nil) {
+            if(completionHandler) {
+                completionHandler(nil, error);
+            }
+            
+            return;
+        }
+        
+        [self addAssetURL:assetURL toAlbum:toAlbum completionHandler:completionHandler];
+    }];
+}
+
++ (void)addAssetURL:(NSURL *)assetURL toAlbum:(NSString *)toAlbum completionHandler:(ALLibraryCompletionHandler)completionHandler
 {
     __block BOOL albumWasFound = NO;
     

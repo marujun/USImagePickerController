@@ -38,4 +38,11 @@
  */
 + (instancetype)fetchAssetWithIdentifier:(NSString *)identifier;
 
+/**
+ *  Get metadata dictionary of an asset (the kind with {Exif}, {GPS}, etc...
+ *
+ *  @param completionHandler This block is passed a dictionary of metadata properties. See ImageIO framework for parsing/reading these. This parameter may be nil.
+ */
+- (void)requestMetadataWithCompletionHandler:(void(^)(NSDictionary *metadata))completionHandler;
+
 @end
