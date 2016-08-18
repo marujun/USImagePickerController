@@ -95,7 +95,7 @@
     NSString *album = @"US";
     [libraryClass writeImage:originalImage metadata:metadata toAlbum:album completionHandler:^(id asset, NSError *error) {
         if (error) return;
-        NSLog(@"照片已成功到相册: %@ Asset: %@",album ,asset);
+        NSLog(@"照片已成功保存到相册: %@ Asset: %@",album ,asset);
     }];
     
     [picker dismissViewControllerAnimated:YES completion:nil];
