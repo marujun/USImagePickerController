@@ -1,8 +1,5 @@
 #照片选择器、图片浏览器 组件的DEMO
 
----
-
-
 ##USImagePickerController 
 
 备注：iOS7~8.0使用ALAsset ----- iOS8.1及以上使用PHAsset
@@ -68,6 +65,43 @@
 	 @brief 是否已选择使用原图，默认为NO
 	 */
 	@property (nonatomic, assign, readonly) BOOL selectedOriginalImage;
+	```
+	
+4. `PHAsset` 和 `ALAsset` 的扩展方法
+
+	```objc
+	/** 尺寸 */
+	- (CGSize)dimensions;
+	
+	/** 最后编辑时间 */
+	- (NSDate *)modifiedDate;
+	
+	/** 原始文件名 */
+	- (NSString *)originalFilename;
+	
+	/** 全屏图 */
+	- (UIImage *)fullScreenImage;
+	
+	/** 唯一标识 */
+	- (NSString *)localIdentifier;
+	
+	/** 原始比例的缩略图 */
+	- (UIImage *)aspectRatioThumbnailImage;
+	
+	/** 原始比例的高清图 */
+	- (UIImage *)aspectRatioHDImage;
+	
+	/** 原始照片数据 */
+	- (NSData *)originalImageData;
+	
+	/** 通过指定宽高的最大像素值来获取对应的缩略图 */
+	- (UIImage *)thumbnailImageWithMaxPixelSize:(CGFloat)maxPixelSize;
+	
+	/** 通过照片的路径获取对应的Asset实例 */
+	+ (instancetype)fetchAssetWithIdentifier:(NSString *)identifier;
+	
+	/**  获取元数据信息, 例如: Exif, GPS, Camera ... */
+	- (void)requestMetadataWithCompletionHandler:(void(^)(NSDictionary *metadata))completionHandler;
 	```
 
 ##ImagePickerSheetController
@@ -160,3 +194,7 @@
 	[self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[view]-0-|" options:0 metrics:nil views:views]];
 	[self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[view]-0-|" options:0 metrics:nil views:views]];
 	```
+
+## License
+
+This project is is available under the MIT license. See the LICENSE file for more info. Attribution by linking to the [project page](https://github.com/ruslanskorb/RSKImageCropper) is appreciated.

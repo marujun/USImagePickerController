@@ -10,20 +10,28 @@
 
 @interface PHAsset (ImagePicker)
 
+/** 尺寸 */
 - (CGSize)dimensions;
 
+/** 最后编辑时间 */
 - (NSDate *)modifiedDate;
 
+/** 原始文件名 */
 - (NSString *)originalFilename;
 
+/** 全屏图 */
 - (UIImage *)fullScreenImage;
 
+/** 原始比例的缩略图 */
 - (UIImage *)aspectRatioThumbnailImage;
 
+/** 原始比例的高清图 */
 - (UIImage *)aspectRatioHDImage;
 
+/** 原始照片数据 */
 - (NSData *)originalImageData;
 
+/** 通过指定宽高的最大像素值来获取对应的缩略图 */
 - (UIImage *)thumbnailImageWithMaxPixelSize:(CGFloat)maxPixelSize;
 
 /**
