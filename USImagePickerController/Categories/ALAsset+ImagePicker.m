@@ -34,7 +34,11 @@
 
 - (UIImage *)fullScreenImage
 {
-    return [UIImage imageWithCGImage:self.defaultRepresentation.fullScreenImage];
+    UIImage *fullImage = [UIImage imageWithCGImage:self.defaultRepresentation.fullScreenImage];
+    if (!fullImage) {
+        fullImage = [self thumbnailImageWithMaxPixelSize:USFullScreenImageMaxPixelSize];
+    }
+    return fullImage;
 }
 
 - (UIImage *)aspectRatioThumbnailImage
