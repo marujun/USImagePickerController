@@ -233,6 +233,7 @@
     }
     else {
         [_lengthMapper setObject:@([self.asset defaultRepresentation].size) forKey:@(_pageIndex)];
+        [self updateDisplay];
     }
 }
 
