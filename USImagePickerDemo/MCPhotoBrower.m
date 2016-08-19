@@ -7,9 +7,10 @@
 //
 
 #import "MCPhotoBrower.h"
+#import "USImagePickerController.h"
 #import "USAssetsPageViewController.h"
-#import <Photos/Photos.h>
-#import <AssetsLibrary/AssetsLibrary.h>
+#import "USImagePickerController+Protect.h"
+#import "USImagePickerController+Macro.h"
 
 @interface MCPhotoBrower ()
 
@@ -31,7 +32,7 @@
 
 - (void)fetchAssets
 {
-    if ([PHPhotoLibrary class]) {
+    if (PHPhotoLibraryClass) {
         PHFetchOptions *options = [[PHFetchOptions alloc] init];
         options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
         options.predicate = [NSPredicate predicateWithFormat:@"mediaType = %d",PHAssetMediaTypeImage];
