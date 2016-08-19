@@ -7,6 +7,7 @@
 //
 
 #import "ImageCollectionViewCell.h"
+#import "USImagePickerController+Protect.h"
 
 @interface ImageCollectionViewCell ()
 
@@ -43,35 +44,9 @@
     _imageView = [[UIImageView alloc] init];
     _imageView.contentMode = UIViewContentModeScaleAspectFill;
     _imageView.clipsToBounds = YES;
+    _imageView.backgroundColor = RGBACOLOR(205, 205, 205, 1);
     
     [self addSubview:_imageView];
-}
-
-- (BOOL)targetSizeNeedsSupportiPad
-{
-    return [(NSString *)[UIDevice currentDevice].model hasPrefix:@"iPad"] && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad == NO;
-}
-
-- (CGSize)targetSizeByCompatibleiPad:(CGSize)targetSize
-{
-    if ([self targetSizeNeedsSupportiPad]) {
-        CGFloat minPixelSize = 500;
-        
-        if (MAX(targetSize.width, targetSize.height) <= 0) return targetSize;
-        if (MIN(targetSize.width, targetSize.height) >= minPixelSize) return targetSize;
-        
-        CGFloat width, height;
-        if (targetSize.width < targetSize.height) {
-            width = minPixelSize;
-            height = targetSize.height / targetSize.width * width;
-        }
-        else {
-            height = minPixelSize;
-            width = targetSize.width / targetSize.height * height;
-        }
-        return CGSizeMake(width, height);
-    }
-    return targetSize;
 }
 
 - (void)updateWithPHAsset:(PHAsset *)phAsset targetSize:(CGSize)targetSize
@@ -79,17 +54,52 @@
     NSInteger tag = self.tag + 1;
     self.tag = tag;
     
-    [_imageManager cancelImageRequest:self.requestID];
+    [_phImageManager cancelImageRequest:self.requestID];
     
-    _requestID = [_imageManager requestImageForAsset:phAsset
-                                          targetSize:[self targetSizeByCompatibleiPad:targetSize]
-                                         contentMode:PHImageContentModeAspectFill
-                                             options:_requestOptions
-                                       resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
-                                           if (self.tag == tag) {
-                                               _imageView.image = result;
-                                           }
-                                       }];
+    _requestID = [_phImageManager requestImageForAsset:phAsset
+                                            targetSize:[PHAsset targetSizeByCompatibleiPad:targetSize]
+                                           contentMode:PHImageContentModeAspectFill
+                                               options:_requestOptions
+                                         resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+                                             if (self.tag == tag && result) {
+                                                 _imageView.image = result;
+                                             }
+                                         }];
+}
+
+- (void)updateWithALAsset:(ALAsset *)alAsset targetSize:(CGSize)targetSize
+{
+    NSInteger tag = self.tag + 1;
+    self.tag = tag;
+    
+    NSString *identifier = [alAsset defaultRepresentation].url.absoluteString;
+    
+    UIImage *image = _alImageManager[identifier];
+    
+    if (image) {
+        _imageView.image = image;
+        return;
+    }
+    
+    _imageView.image = alAsset.aspectRatioThumbnailImage;
+    
+    if (MIN(targetSize.width, targetSize.height) < (MIN(_imageView.image.size.width, _imageView.image.size.height)+20)) {
+        return;
+    }
+    
+    __weak ImageCollectionViewCell *weak_self = self;
+    
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        
+        UIImage *targetImage = [alAsset thumbnailImageWithMaxPixelSize:MAX(targetSize.width, targetSize.height)];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self.tag == tag && targetImage) {
+                weak_self.imageView.image = targetImage;
+                [weak_self.alImageManager setValue:targetImage forKeyPath:identifier];
+            }
+        });
+    });
 }
 
 - (void)prepareForReuse

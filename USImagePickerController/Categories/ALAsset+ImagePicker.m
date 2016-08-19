@@ -39,7 +39,12 @@
 
 - (UIImage *)aspectRatioThumbnailImage
 {
-    return [UIImage imageWithCGImage:self.aspectRatioThumbnail];
+    UIImage *thumbImage = [UIImage imageWithCGImage:self.aspectRatioThumbnail];
+    if (!thumbImage && NSClassFromString(@"PHAsset")) {
+        CGSize thumbSize = [PHAsset thumbnailAspectRatioSize:self.dimensions];
+        thumbImage = [self thumbnailImageWithMaxPixelSize:MAX(thumbSize.width, thumbSize.height)];
+    }
+    return thumbImage;
 }
 
 - (UIImage *)aspectRatioHDImage

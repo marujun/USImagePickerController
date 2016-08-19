@@ -15,6 +15,7 @@
 		0AC5AAA41B723B07007F2DB3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0AC5AAA21B723B07007F2DB3 /* Main.storyboard */; };
 		0AC5AAA61B723B07007F2DB3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0AC5AAA51B723B07007F2DB3 /* Images.xcassets */; };
 		0AC5AAA91B723B07007F2DB3 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0AC5AAA71B723B07007F2DB3 /* LaunchScreen.xib */; };
+		0ACEA8A91D66EF3F003BA5F8 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0ACEA8A81D66EF3F003BA5F8 /* Photos.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		0ADC29B11D655551001405F4 /* AnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ADC295B1D655551001405F4 /* AnimationController.m */; };
 		0ADC29B21D655551001405F4 /* ImageAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ADC295D1D655551001405F4 /* ImageAction.m */; };
 		0ADC29B31D655551001405F4 /* ImageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ADC295F1D655551001405F4 /* ImageCollectionViewCell.m */; };
@@ -80,6 +81,7 @@
 		0AC5AAA31B723B07007F2DB3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		0AC5AAA51B723B07007F2DB3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		0AC5AAA81B723B07007F2DB3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		0ACEA8A81D66EF3F003BA5F8 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		0ADC295A1D655551001405F4 /* AnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationController.h; sourceTree = "<group>"; };
 		0ADC295B1D655551001405F4 /* AnimationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnimationController.m; sourceTree = "<group>"; };
 		0ADC295C1D655551001405F4 /* ImageAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageAction.h; sourceTree = "<group>"; };
@@ -168,6 +170,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0ACEA8A91D66EF3F003BA5F8 /* Photos.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,6 +180,7 @@
 		0AC5AA891B723B07007F2DB3 = {
 			isa = PBXGroup;
 			children = (
+				0ACEA8A81D66EF3F003BA5F8 /* Photos.framework */,
 				0ADC29711D655551001405F4 /* USImagePickerController */,
 				0ADC29591D655551001405F4 /* ImagePickerSheetController */,
 				0AC5AA941B723B07007F2DB3 /* USImagePickerDemo */,

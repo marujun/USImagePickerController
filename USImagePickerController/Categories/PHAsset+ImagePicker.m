@@ -7,9 +7,8 @@
 //
 
 #import "PHAsset+ImagePicker.h"
-#import "USImagePickerController+Macro.h"
-#import "PHAsset+ImagePicker.m"
 #import "USImagePickerController+Protect.h"
+#import "USImagePickerController+Macro.h"
 
 @implementation PHAsset (ImagePicker)
 
@@ -45,24 +44,7 @@
 
 - (UIImage *)aspectRatioThumbnailImage
 {
-    CGFloat minPixelSize = 256.f;
-    CGFloat maxPixelSize = 1280.f;
-    
-    CGSize imageSize = CGSizeZero;
-    
-    if (self.pixelHeight > self.pixelWidth) {
-        if (self.pixelHeight / self.pixelWidth > maxPixelSize / minPixelSize) {
-            imageSize = CGSizeMake(floorf(maxPixelSize * self.pixelWidth / self.pixelHeight), maxPixelSize);
-        } else {
-            imageSize = CGSizeMake(minPixelSize, ceilf(minPixelSize * self.pixelHeight / self.pixelWidth));
-        }
-    } else {
-        if (self.pixelWidth / self.pixelHeight > maxPixelSize / minPixelSize) {
-            imageSize = CGSizeMake(maxPixelSize, floorf(maxPixelSize * self.pixelHeight / self.pixelWidth));
-        } else {
-            imageSize = CGSizeMake(ceilf(minPixelSize * self.pixelWidth / self.pixelHeight), minPixelSize);
-        }
-    }
+    CGSize imageSize = [[self class] thumbnailAspectRatioSize:CGSizeMake(self.pixelWidth, self.pixelHeight)];
     
     return [self imageAspectFitWithSize:imageSize];
 }
@@ -164,9 +146,32 @@
     });
 }
 
++ (CGSize)thumbnailAspectRatioSize:(CGSize)dimensions
+{
+    CGFloat minPixelSize = 256.f;
+    CGFloat maxPixelSize = 1280.f;
+    
+    CGSize imageSize = CGSizeZero;
+    
+    if (dimensions.height > dimensions.width) {
+        if (dimensions.height / dimensions.width > maxPixelSize / minPixelSize) {
+            imageSize = CGSizeMake(floorf(maxPixelSize * dimensions.width / dimensions.height), maxPixelSize);
+        } else {
+            imageSize = CGSizeMake(minPixelSize, ceilf(minPixelSize * dimensions.height / dimensions.width));
+        }
+    } else {
+        if (dimensions.width / dimensions.height > maxPixelSize / minPixelSize) {
+            imageSize = CGSizeMake(maxPixelSize, floorf(maxPixelSize * dimensions.height / dimensions.width));
+        } else {
+            imageSize = CGSizeMake(ceilf(minPixelSize * dimensions.width / dimensions.height), minPixelSize);
+        }
+    }
+    return imageSize;
+}
+
 + (BOOL)targetSizeNeedsSupportiPad
 {
-    return [(NSString *)[UIDevice currentDevice].model hasPrefix:@"iPad"] && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad == NO;
+    return [[UIDevice currentDevice].model hasPrefix:@"iPad"] && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad == NO;
 }
 
 + (CGSize)targetSizeByCompatibleiPad:(CGSize)targetSize

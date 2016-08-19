@@ -12,8 +12,8 @@
 #import "AnimationController.h"
 #import <Photos/Photos.h>
 #import <AVFoundation/AVFoundation.h>
-
-#define PHPhotoLibraryClass NSClassFromString(@"PHPhotoLibrary")
+#import "USImagePickerController+Protect.h"
+#import "USImagePickerController+Macro.h"
 
 @interface ImagePickerSheetController () <UITableViewDataSource, UITableViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIViewControllerTransitioningDelegate>
 {
@@ -374,24 +374,18 @@
     
     id asset = _assets[indexPath.section];
     
+    CGSize targetSize = [self targetSizeForAssetOfSize:[self sizeForAsset:asset]];
+    
     if ([asset isKindOfClass:[PHAsset class]]) {
-        cell.imageManager = _phImageManager;
+        cell.phImageManager = _phImageManager;
         cell.requestOptions = _requestOptions;
-        
-        CGSize targetSize = [self targetSizeForAssetOfSize:[self sizeForAsset:asset]];
         
         [cell updateWithPHAsset:asset targetSize:targetSize];
     }
     else {
-        NSString *identifier = [asset defaultRepresentation].url.absoluteString;
+        cell.alImageManager = _alImageManager;
         
-        UIImage *image = _alImageManager[identifier];
-        if (!image) {
-            image = [UIImage imageWithCGImage:[asset aspectRatioThumbnail]];
-            [_alImageManager setObject:image forKey:identifier];
-        }
-        
-        cell.imageView.image = image;
+        [cell updateWithALAsset:asset targetSize:targetSize];
     }
     
     cell.selected = [_selectedImageIndices containsObject:@(indexPath.section)];

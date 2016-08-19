@@ -129,7 +129,15 @@
     size_t height               = CGImageGetHeight(posterImage);
     float scale                 = height / kThumbnailLength;
     
-    self.imageView.image        = [UIImage imageWithCGImage:posterImage scale:scale orientation:UIImageOrientationUp];
+    if (!posterImage) {
+        self.imageView.contentMode = UIViewContentModeCenter;
+        self.imageView.image = [[UIImage imageNamed:@"USPicker-Empty-Album"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    }
+    else {
+        self.imageView.image        = [UIImage imageWithCGImage:posterImage scale:scale orientation:UIImageOrientationUp];
+        self.imageView.contentMode = UIViewContentModeScaleAspectFill;
+    }
+    
     self.textLabel.text         = [assetsGroup valueForProperty:ALAssetsGroupPropertyName];
     self.detailTextLabel.text   = [NSString stringWithFormat:@"%ld", (long)[assetsGroup numberOfAssets]];
 }

@@ -75,8 +75,13 @@
                                                            [self.imageButton setImage:result forState:UIControlStateNormal];
                                                        }
                                                    }];
-    } else {
-        [self.imageButton setImage:[UIImage imageWithCGImage:self.alAsset.thumbnail] forState:UIControlStateNormal];
+    }
+    else {
+        UIImage *thumbImage = [UIImage imageWithCGImage:self.alAsset.thumbnail];
+        if (!thumbImage) {
+            thumbImage = self.alAsset.aspectRatioThumbnailImage;
+        }
+        [self.imageButton setImage:thumbImage forState:UIControlStateNormal];
     }
     
     self.checkButton.selected = selected;

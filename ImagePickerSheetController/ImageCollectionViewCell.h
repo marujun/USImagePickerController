@@ -14,9 +14,13 @@
 
 @property (nonatomic, strong) UIImageView *imageView;
 
-@property (nonatomic, weak) PHCachingImageManager *imageManager;
+@property (nonatomic, weak) NSMutableDictionary *alImageManager;
+
+@property (nonatomic, weak) PHCachingImageManager *phImageManager;
 @property (nonatomic, weak) PHImageRequestOptions *requestOptions;
 
 - (void)updateWithPHAsset:(PHAsset *)phAsset targetSize:(CGSize)targetSize;
+
+- (void)updateWithALAsset:(ALAsset *)alAsset targetSize:(CGSize)targetSize;
 
 @end
