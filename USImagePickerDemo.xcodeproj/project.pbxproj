@@ -180,10 +180,10 @@
 		0AC5AA891B723B07007F2DB3 = {
 			isa = PBXGroup;
 			children = (
-				0ACEA8A81D66EF3F003BA5F8 /* Photos.framework */,
 				0ADC29711D655551001405F4 /* USImagePickerController */,
 				0ADC29591D655551001405F4 /* ImagePickerSheetController */,
 				0AC5AA941B723B07007F2DB3 /* USImagePickerDemo */,
+				0ACEA8AA1D66F6C4003BA5F8 /* FrameWorks */,
 				0AC5AA931B723B07007F2DB3 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -222,6 +222,14 @@
 				0AC5AA971B723B07007F2DB3 /* main.m */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		0ACEA8AA1D66F6C4003BA5F8 /* FrameWorks */ = {
+			isa = PBXGroup;
+			children = (
+				0ACEA8A81D66EF3F003BA5F8 /* Photos.framework */,
+			);
+			name = FrameWorks;
 			sourceTree = "<group>";
 		};
 		0ADC29591D655551001405F4 /* ImagePickerSheetController */ = {
