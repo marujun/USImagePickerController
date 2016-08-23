@@ -25,6 +25,27 @@
   "project target"设置的是"iPhone mode"，但是在iPad设备上使用的情况下：iPadAir,iPadAir2,iPadPro，iPadMini 无法获取缩略图；在iOS 9.3以上系统获取图片时设置短边大于500可以解决这个问题，但是9.3以下的系统只能通过使用ALAsset来解决
 */
 
+/**
+ Supported Image Formats
+ 
+ Table C-2 lists the image formats supported directly by iOS.
+ 
+ | Format                                   | Filename extensions  |
+ | :--------------------------------------- | :------------------- |
+ | Portable Network Graphic (PNG)           | .png                 |
+ | Tagged Image File Format (TIFF)          | .tiff or .tif        |
+ | Joint Photographic Experts Group (JPEG)  | .jpeg or .jpg        |
+ | Graphic Interchange Format (GIF)         | .gif                 |
+ | Windows Bitmap Format (DIB)              | .bmp or .BMPf        |
+ | Windows Icon Format                      | .ico                 |
+ | Windows Cursor                           | .cur                 |
+ | XWindow bitmap                           | .xbm                 |
+ 
+ Of these formats, the PNG format is the one most recommended for use in your apps.
+ Generally, the image formats that UIKit supports are the same formats supported by the Image I/O framework.
+ 
+ */
+
 #define RGBACOLOR(r,g,b,a)  [UIColor colorWithRed:(r)/255.0f green:(g)/255.0f blue:(b)/255.0f alpha:(a)]
 #define USPickerTintColor   RGBACOLOR(26,178,10,1)  //模仿微信的绿色
 
