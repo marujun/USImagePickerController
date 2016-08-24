@@ -28,7 +28,7 @@
 /** 原始比例的高清图 */
 - (UIImage *)aspectRatioHDImage;
 
-/** 原始照片数据 */
+/** 原始照片数据，谨慎使用！注意：RAW格式的照片【UIImage】无法识别 */
 - (NSData *)originalImageData;
 
 /** 通过指定宽高的最大像素值来获取对应的缩略图 */

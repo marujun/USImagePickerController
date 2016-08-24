@@ -122,7 +122,7 @@ static void ReleaseAssetCallback(void *info) {
     }
     
     if (!lastImage) {
-        lastImage = [UIImage imageWithData:[self originalImageData]];
+        lastImage = [self fullScreenImage];
     }
     return lastImage;
 }

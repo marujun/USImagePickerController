@@ -83,6 +83,8 @@
             image = [self imageAspectFitWithSize:CGSizeMake(self.dimensions.width / self.dimensions.height * maxPixelSize, maxPixelSize)];
         } else {
             image = [UIImage imageWithData:[self originalImageData]];
+            
+            if(!image) image = [self imageAspectFitWithSize:self.dimensions];
         }
     }
     else {
@@ -90,6 +92,8 @@
             image = [self imageAspectFitWithSize:CGSizeMake(maxPixelSize, self.dimensions.height / self.dimensions.width * maxPixelSize)];
         } else {
             image = [UIImage imageWithData:[self originalImageData]];
+            
+            if(!image) image = [self imageAspectFitWithSize:self.dimensions];
         }
     }
     
