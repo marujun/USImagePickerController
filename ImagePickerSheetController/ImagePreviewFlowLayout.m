@@ -90,7 +90,7 @@
     
     if (indexPath) {
         if (self.collectionView) {
-            CGRect frame = [_layoutAttributes[indexPath.section] frame];
+            CGRect frame = [(UICollectionViewLayoutAttributes *)_layoutAttributes[indexPath.section] frame];
             contentOffset.x = CGRectGetMidX(frame) - self.collectionView.frame.size.width/2.0;
             
             contentOffset.x = MAX(contentOffset.x, -self.collectionView.contentInset.left);
