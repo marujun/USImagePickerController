@@ -84,6 +84,14 @@
 
 - (void)reloadAssetScrollView
 {
+    if(self.reloadItemHandler) {
+        __weak typeof(self) weak_self = self;
+        
+        self.reloadItemHandler(weak_self.scrollView, weak_self.asset);
+        
+        return;
+    }
+    
     if ([_asset isKindOfClass:[ALAsset class]]) {
         [self.scrollView initWithALAsset:_asset];
     }
@@ -91,14 +99,7 @@
         [self.scrollView initWithImage:_asset];
     }
     else if ([_asset isKindOfClass:[NSString class]]) {
-        //需要从网络下载图片
-//        __weak USAssetScrollView *weak_view = self.scrollView;
-//        [weak_view.indicatorView startAnimating];
-//        
-//        [UIImage imageWithURL:_asset complete:^(UIImage *image){
-//            [weak_view initWithImage:image];
-//            [weak_view.indicatorView stopAnimating];
-//        }];
+        //需要从网络下载图片 建议实现reloadItemHandler
     }
     else if ([_asset isKindOfClass:[PHAsset class]]) {
         [self.scrollView initWithPHAsset:_asset];

@@ -102,6 +102,7 @@
         PHAsset *asset = self.assets[pageIndex];
         
         USAssetItemViewController *page = [USAssetItemViewController viewControllerForAsset:asset];
+        page.reloadItemHandler = self.reloadItemHandler;
         
         [self setViewControllers:@[page]
                        direction:UIPageViewControllerNavigationDirectionForward
@@ -136,6 +137,7 @@
     if (index > 0) {
         PHAsset *beforeAsset = self.assets[(index - 1)];
         USAssetItemViewController *page = [USAssetItemViewController viewControllerForAsset:beforeAsset];
+        page.reloadItemHandler = self.reloadItemHandler;
         
         return page;
     }
@@ -152,6 +154,7 @@
     if (index < count - 1) {
         PHAsset *afterAsset = self.assets[(index + 1)];
         USAssetItemViewController *page = [USAssetItemViewController viewControllerForAsset:afterAsset];
+        page.reloadItemHandler = self.reloadItemHandler;
         
         return page;
     }

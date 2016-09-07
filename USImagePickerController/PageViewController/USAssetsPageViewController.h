@@ -7,8 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "USAssetScrollView.h"
 
-typedef void (^USAssetsPageHandler)(NSInteger index);
+typedef void (^USAssetsPageIndexHandler)(NSInteger index);
+typedef void (^USAssetsPageReloadHandler)(USAssetScrollView *weak_view, id weak_asset);
 
 @interface USAssetsPageViewController : UIPageViewController
 
@@ -19,10 +21,13 @@ typedef void (^USAssetsPageHandler)(NSInteger index);
 @property (nonatomic, assign, readonly) CGRect imageRect;
 
 /** 当前展示的照片次序发生变化时的回调处理 */
-@property (nonatomic, copy) USAssetsPageHandler indexChangedHandler;
+@property (nonatomic, copy) USAssetsPageIndexHandler indexChangedHandler;
 
 /** 单击屏幕事件的回调处理 */
-@property (nonatomic, copy) USAssetsPageHandler singleTapHandler;
+@property (nonatomic, copy) USAssetsPageIndexHandler singleTapHandler;
+
+/** 重新加载 ItemPageViewController 时的回调处理，TODO: 设置该属性的代码必须在设置pageIndex之前！！！ */
+@property (nonatomic, copy) USAssetsPageReloadHandler reloadItemHandler;
 
 - (instancetype)initWithAssets:(NSArray *)assets;
 
