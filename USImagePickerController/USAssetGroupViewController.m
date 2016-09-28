@@ -66,7 +66,10 @@
 - (void)setupViews
 {
     self.tableView.rowHeight = kThumbnailLength + 20;
-    [self.tableView setContentInset:UIEdgeInsetsMake(64, 0, 0, 0)];
+    
+    if (self.picker.navigationBar.isTranslucent) {
+        [self.tableView setContentInset:UIEdgeInsetsMake(64, 0, 0, 0)];
+    }
     
     UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithTitle:@"取消" style:UIBarButtonItemStylePlain
                                     target:self action:@selector(rightNavButtonAction:)];

@@ -19,6 +19,8 @@
 
 @property (nonatomic, assign, readonly) id asset;
 
+@property (nonatomic, strong) UIColor *selectedColor;
+
 @property (nonatomic, assign) CGSize thumbnailTargetSize;
 @property (nonatomic, weak) PHImageRequestOptions *thumbnailRequestOptions;
 @property (nonatomic, weak) PHCachingImageManager *imageManager;

@@ -127,19 +127,24 @@
     UINib *cellNib = [UINib nibWithNibName:identifier bundle:nil];
     [self.collectionView registerNib:cellNib forCellWithReuseIdentifier:identifier];
     
+    NSInteger topInset = 0;
+    if (self.picker.navigationBar.isTranslucent) {
+        topInset = 64;
+    }
+    
     if(self.picker.allowsMultipleSelection){
         _tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
         [self.collectionView addGestureRecognizer:_tapGestureRecognizer];
         
-        self.countLabel.backgroundColor = USPickerTintColor;
+        self.countLabel.backgroundColor = self.picker.tintColor;
         self.countLabel.layer.cornerRadius = self.countLabel.frame.size.height/2.f;
         self.countLabel.layer.masksToBounds = YES;
-        [self.sendButton setTitleColor:USPickerTintColor forState:UIControlStateNormal];
-        [self.collectionView setContentInset:UIEdgeInsetsMake(64, 0, self.bottomBar.frame.size.height, 0)];
+        [self.sendButton setTitleColor:self.picker.tintColor forState:UIControlStateNormal];
+        [self.collectionView setContentInset:UIEdgeInsetsMake(topInset, 0, self.bottomBar.frame.size.height, 0)];
     }
     else {
         self.bottomBar.hidden = YES;
-        [self.collectionView setContentInset:UIEdgeInsetsMake(64, 0, 0, 0)];
+        [self.collectionView setContentInset:UIEdgeInsetsMake(topInset, 0, 0, 0)];
     }
     
     UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithTitle:@"取消" style:UIBarButtonItemStylePlain
@@ -363,6 +368,7 @@
     NSString *identifier = NSStringFromClass([USAssetCollectionCell class]);
     USAssetCollectionCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
     cell.delegate = self;
+    cell.selectedColor = self.picker.tintColor;
     cell.imageManager = self.imageManager;
     cell.thumbnailTargetSize = self.thumbnailTargetSize;
     cell.thumbnailRequestOptions = self.thumbnailRequestOptions;

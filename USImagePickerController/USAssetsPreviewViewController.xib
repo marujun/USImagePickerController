@@ -9,6 +9,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="USAssetsPreviewViewController">
             <connections>
                 <outlet property="bottomBar" destination="pUu-Ic-eBh" id="tB6-2P-RuB"/>
+                <outlet property="boxContainerView" destination="TGR-Yf-9cx" id="N8w-VX-lCS"/>
                 <outlet property="boxDescLabel" destination="BAF-hj-N7p" id="o7f-Pg-g1M"/>
                 <outlet property="boxFillLabel" destination="hav-bu-ZQ2" id="Nop-vm-yhk"/>
                 <outlet property="boxImageView" destination="51K-bw-Az8" id="vVH-Zl-f4G"/>

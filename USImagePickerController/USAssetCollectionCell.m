@@ -46,7 +46,7 @@
 
 - (void)reloadCheckButtonBgColor
 {
-    self.checkButton.backgroundColor = self.checkButton.selected ? USPickerTintColor : RGBACOLOR(0, 0, 0, 0.2);
+    self.checkButton.backgroundColor = self.checkButton.selected ? self.selectedColor : RGBACOLOR(0, 0, 0, 0.2);
 }
 
 - (void)bind:(id)asset selected:(BOOL)selected

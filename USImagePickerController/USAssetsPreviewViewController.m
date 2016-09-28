@@ -20,6 +20,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *countLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *topHeightConstraint;
 
+@property (weak, nonatomic) IBOutlet UIView *boxContainerView;
 @property (weak, nonatomic) IBOutlet UIImageView *boxImageView;
 @property (weak, nonatomic) IBOutlet UILabel *boxFillLabel;
 @property (weak, nonatomic) IBOutlet UILabel *boxDescLabel;
@@ -158,25 +159,29 @@
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[view]-0-|" options:0 metrics:nil views:views]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[view]-0-|" options:0 metrics:nil views:views]];
     
-    self.countLabel.backgroundColor = USPickerTintColor;
+    self.countLabel.backgroundColor = self.picker.tintColor;
     self.countLabel.layer.cornerRadius = CGRectGetHeight(self.countLabel.frame)/2.f;
     self.countLabel.layer.masksToBounds = YES;
-    [self.sendButton setTitleColor:USPickerTintColor forState:UIControlStateNormal];
+    [self.sendButton setTitleColor:self.picker.tintColor forState:UIControlStateNormal];
     
     self.checkImageView.tintColor = [UIColor whiteColor];
     self.checkImageView.layer.cornerRadius = CGRectGetHeight(self.checkImageView.frame) / 2.0;
     [self.checkImageView setImage:[[UIImage imageNamed:@"USPicker-Checkmark-Selected"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
     [self reloadCheckButtonBgColor];
     
-    self.boxFillLabel.backgroundColor = USPickerTintColor;
+    self.boxFillLabel.backgroundColor = self.picker.tintColor;
     self.boxFillLabel.layer.cornerRadius = CGRectGetHeight(self.boxFillLabel.frame)/2.f;
     self.boxFillLabel.layer.masksToBounds = YES;
     [self.boxImageView setImage:[[UIImage imageNamed:@"USPicker-Checkbox"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
+    
+    if (self.picker.hideOriginalImageCheckbox) {
+        self.boxContainerView.hidden = YES;
+    }
 }
 
 - (void)reloadCheckButtonBgColor
 {
-    self.checkImageView.backgroundColor = _pageSelected ? USPickerTintColor : [UIColor clearColor];
+    self.checkImageView.backgroundColor = _pageSelected ? self.picker.tintColor : [UIColor clearColor];
 }
 
 /** 右上角按钮的点击事件 */

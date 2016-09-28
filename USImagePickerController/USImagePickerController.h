@@ -44,15 +44,27 @@
 
 /*!
  @property
- @brief 是否已选择使用原图，默认为NO
- */
-@property (nonatomic, assign, readonly) BOOL selectedOriginalImage;
-
-/*!
- @property
  @brief 用户自定义flags
  */
 @property (nonatomic, assign) NSInteger flags;
+
+/*!
+ @property
+ @brief 主题颜色，默认使用模仿微信的绿色
+ */
+@property (nonatomic, strong) UIColor *tintColor;
+
+/*!
+ @property
+ @brief 是否隐藏【选择原图】复选框，默认为NO
+ */
+@property (nonatomic, assign) BOOL hideOriginalImageCheckbox;
+
+/*!
+ @property
+ @brief 是否已选择使用原图，默认为NO
+ */
+@property (nonatomic, assign, readonly) BOOL selectedOriginalImage;
 
 @end
 

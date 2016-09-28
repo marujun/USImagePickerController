@@ -47,7 +47,6 @@
  */
 
 #define RGBACOLOR(r,g,b,a)  [UIColor colorWithRed:(r)/255.0f green:(g)/255.0f blue:(b)/255.0f alpha:(a)]
-#define USPickerTintColor   RGBACOLOR(26,178,10,1)  //模仿微信的绿色
 
 #ifdef DEBUG
 #define USPickerLog(fmt,...)    NSLog((@"[%@][%d] " fmt),[[NSString stringWithUTF8String:__FILE__] lastPathComponent], __LINE__,##__VA_ARGS__)

@@ -27,6 +27,7 @@
             _assetsFilter = [ALAssetsFilter allAssets];
         }
         _cropMaskAspectRatio = 1.f;
+        _tintColor = RGBACOLOR(26,178,10,1); //模仿微信的绿色
     }
     
     return self;
