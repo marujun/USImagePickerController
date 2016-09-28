@@ -45,13 +45,27 @@
         [self presentViewController:controller animated:true completion:nil];
     }
     else {
-        USImagePickerController *controller = [[USImagePickerController alloc] init];
-        controller.delegate = self;
-//        controller.allowsEditing = YES;
-//        controller.cropMaskAspectRatio = 0.5;
-        controller.allowsMultipleSelection = YES;
-        controller.maxSelectNumber = 9;
-        [self presentViewController:controller animated:true completion:nil];
+        USImagePickerController *imagePicker = [[USImagePickerController alloc] init];
+        imagePicker.delegate = self;
+//        imagePicker.allowsEditing = YES;
+//        imagePicker.cropMaskAspectRatio = 0.5;
+        imagePicker.allowsMultipleSelection = YES;
+        imagePicker.maxSelectNumber = 9;
+        
+//        imagePicker.tintColor = [UIColor greenColor];
+//        imagePicker.hideOriginalImageCheckbox = YES;
+//        
+//        imagePicker.navigationBar.tintColor = [UIColor whiteColor];
+//        imagePicker.navigationBar.barTintColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5];
+//        imagePicker.navigationBar.translucent = NO;
+//        
+//        NSShadow *shadow = [NSShadow new];
+//        [shadow setShadowColor: [UIColor clearColor]];
+//        NSDictionary * dict = @{NSForegroundColorAttributeName:[UIColor whiteColor],
+//                                NSShadowAttributeName:shadow};
+//        imagePicker.navigationBar.titleTextAttributes = dict;
+        
+        [self presentViewController:imagePicker animated:true completion:nil];
     }
 }
 
