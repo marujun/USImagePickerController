@@ -58,6 +58,8 @@
     [self resetCachedAssetImages];
     
     [self refreshTitle];
+    
+    [self.collectionView layoutIfNeeded];
 }
 
 - (void)viewDidLayoutSubviews
@@ -97,17 +99,19 @@
 
 - (void)setupViews
 {
+    CGFloat containerWidth = self.picker.view.frame.size.width;
+    
     NSInteger lineMaxCount = 1;
-    while ((lineMaxCount*MinAssetItemLength+(lineMaxCount+1)*AssetItemSpace) <= [[UIScreen mainScreen] bounds].size.width) {
+    while ((lineMaxCount*MinAssetItemLength+(lineMaxCount+1)*AssetItemSpace) <= containerWidth) {
         lineMaxCount ++;
     }
     lineMaxCount --;
     
     lineMaxCount = MAX(4, lineMaxCount);  //一排最少4个
-    CGFloat itemLength = ([[UIScreen mainScreen] bounds].size.width-AssetItemSpace*(lineMaxCount-1))/lineMaxCount;
+    CGFloat itemLength = floorf((containerWidth-AssetItemSpace*(lineMaxCount-1))/lineMaxCount);
     
     self.flowLayout.itemSize = CGSizeMake(itemLength, itemLength);
-    self.flowLayout.minimumInteritemSpacing = AssetItemSpace;
+    self.flowLayout.minimumInteritemSpacing = 0;
     self.flowLayout.minimumLineSpacing = AssetItemSpace;
     self.flowLayout.sectionInset = UIEdgeInsetsMake(8, 0, 8, 0);
     
