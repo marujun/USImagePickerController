@@ -66,6 +66,12 @@
  */
 @property (nonatomic, assign, readonly) BOOL selectedOriginalImage;
 
+/*!
+ @property
+ @brief 选完照片之后的确认按钮的标题，默认为“发送”
+ */
+@property (nonatomic, copy) NSString *returnKey;
+
 @end
 
 

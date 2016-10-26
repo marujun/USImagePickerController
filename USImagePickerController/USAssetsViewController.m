@@ -156,6 +156,10 @@
     UIBarButtonItem *negativeSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     negativeSpacer.width = 2;  //向左移动2个像素
     self.navigationItem.rightBarButtonItems = @[negativeSpacer,buttonItem];
+    
+    if (self.picker.returnKey) {
+        [self.sendButton setTitle:self.picker.returnKey forState:UIControlStateNormal];
+    }
 }
 
 - (void)rightNavButtonAction:(UIButton *)sender

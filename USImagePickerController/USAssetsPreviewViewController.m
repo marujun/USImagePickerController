@@ -177,6 +177,10 @@
     if (self.picker.hideOriginalImageCheckbox) {
         self.boxContainerView.hidden = YES;
     }
+    
+    if (self.picker.returnKey) {
+        [self.sendButton setTitle:self.picker.returnKey forState:UIControlStateNormal];
+    }
 }
 
 - (void)reloadCheckButtonBgColor
