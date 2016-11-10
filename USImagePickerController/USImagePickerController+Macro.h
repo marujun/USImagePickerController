@@ -6,13 +6,13 @@
 //  Copyright © 2016年 marujun. All rights reserved.
 //
 
-#define SYSTEM_VERSION_LESS_THAN(v) ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
+#define USSYSTEM_VERSION_LESS_THAN(v) ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 
 /**
  *  8.1以下的系统获取不到相机胶卷，继续使用ALAssetsLibrary
  *  在iPad设备上使用但是"project target"设置的是"iPhone mode"，9.3以下的系统继续使用ALAssetsLibrary
 */
-#define PHPhotoLibraryClass ((SYSTEM_VERSION_LESS_THAN(@"8.1") || ([PHAsset targetSizeNeedsSupportiPad] && SYSTEM_VERSION_LESS_THAN(@"9.3")))?nil:NSClassFromString(@"PHPhotoLibrary"))
+#define PHPhotoLibraryClass ((USSYSTEM_VERSION_LESS_THAN(@"8.1") || ([PHAsset targetSizeNeedsSupportiPad] && USSYSTEM_VERSION_LESS_THAN(@"9.3")))?nil:NSClassFromString(@"PHPhotoLibrary"))
 
 /**
  注意事项：
