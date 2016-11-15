@@ -88,6 +88,8 @@
 {
     if (!image || ![image isKindOfClass:[UIImage class]]) return;
     
+    self.zoomScale = 1.0;
+    
     _imageSize = image.size;
     
     [self initZoomingViewLayout];
