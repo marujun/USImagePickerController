@@ -10,8 +10,6 @@
 
 #define USScreenSize (((NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation))?CGSizeMake([UIScreen mainScreen].bounds.size.height, [UIScreen mainScreen].bounds.size.width):[UIScreen mainScreen].bounds.size)
 
-NSString * const USImageLoadingStatusChangedNotification = @"image.loading.status.changed";
-
 @interface USAssetScrollView () <UIScrollViewDelegate>
 
 @property (nonatomic, strong) id asset;
@@ -67,11 +65,18 @@ NSString * const USImageLoadingStatusChangedNotification = @"image.loading.statu
     _imageView = imageView;
 }
 
-- (void)setIsLoading:(BOOL)isLoading
+- (USTorusIndicatorView *)indicatorView
 {
-    _isLoading = isLoading;
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:USImageLoadingStatusChangedNotification object:nil];
+    if (!_indicatorView) {
+        USTorusIndicatorView *indicatorView = [[USTorusIndicatorView alloc] init];
+        indicatorView.center = self.center;
+        UIViewAutoresizing autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+        indicatorView.autoresizingMask = autoresizingMask | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
+        [self addSubview:indicatorView];
+        
+        _indicatorView = indicatorView;
+    }
+    return _indicatorView;
 }
 
 - (void)updateDisplayImage:(UIImage *)image

@@ -8,13 +8,10 @@
 
 #import "USAssetsPageViewController.h"
 #import "USAssetItemViewController.h"
-#import "USTorusIndicatorView.h"
 
 @interface USAssetsPageViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, CAAnimationDelegate>
 
 @property (nonatomic, copy) NSArray *assets;
-
-@property (nonatomic, strong) USTorusIndicatorView *indicatorView;
 
 @end
 
@@ -55,28 +52,6 @@
     [singleTap requireGestureRecognizerToFail:doubleTap];
     
     if(self.pageIndex == NSNotFound) self.pageIndex = 0;
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(refreshLoadingStatus)
-                                                 name:USImageLoadingStatusChangedNotification
-                                               object:nil];
-}
-
-- (USTorusIndicatorView *)indicatorView
-{
-    if (!_indicatorView) {
-        USTorusIndicatorView *activityView = [[USTorusIndicatorView alloc] init];
-        _indicatorView = activityView;
-        _indicatorView.center = self.view.center;
-
-        UIViewAutoresizing autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-        _indicatorView.autoresizingMask = autoresizingMask | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
-        [self.view addSubview:_indicatorView];
-
-        _indicatorView.layer.opacity = 0.f;
-        [_indicatorView startAnimating];
-    }
-    return _indicatorView;
 }
 
 #pragma mark - 单双击手势触发
@@ -150,38 +125,6 @@
     self.title      = [NSString stringWithFormat:@"%@ / %@", @(index+1), @(self.assets.count)];
     
     if (_indexChangedHandler) _indexChangedHandler(index);
-    
-    [self refreshLoadingStatus];
-}
-
-- (void)refreshLoadingStatus
-{
-    USAssetScrollView *scrollView = self.currentAssetItemViewController.scrollView;
-    static NSString *animationKey = @"opacity";
-    
-    CALayer *layer = self.indicatorView.layer;
-    
-    if (scrollView.isLoading) {
-        [layer removeAnimationForKey:animationKey];
-        
-        layer.opacity = 1.f;
-    }
-    else if (layer.opacity && ![layer animationForKey:animationKey]) {
-        CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"opacity"];
-        animation.toValue = [NSNumber numberWithFloat:0.f];
-        animation.duration = 0.5f;
-        animation.removedOnCompletion = NO;
-        animation.delegate = self;
-        animation.fillMode = kCAFillModeForwards;
-        [layer addAnimation:animation forKey:animationKey];
-    }
-}
-
-- (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag
-{
-    if (flag) {
-        self.indicatorView.layer.opacity = 0.f;
-    }
 }
 
 #pragma mark - Page view controller data source
