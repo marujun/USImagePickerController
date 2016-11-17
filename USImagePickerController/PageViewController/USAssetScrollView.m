@@ -10,6 +10,8 @@
 
 #define USScreenSize (((NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation))?CGSizeMake([UIScreen mainScreen].bounds.size.height, [UIScreen mainScreen].bounds.size.width):[UIScreen mainScreen].bounds.size)
 
+NSString * const USImageLoadingStatusChangedNotification = @"image.loading.status.changed";
+
 @interface USAssetScrollView () <UIScrollViewDelegate>
 
 @property (nonatomic, strong) id asset;
@@ -19,13 +21,12 @@
 
 @implementation USAssetScrollView
 
-- (id)init {
+- (instancetype)init {
     if (self = [super init]) {
         [self initialize];
     }
     return self;
 }
-
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -35,7 +36,7 @@
     return self;
 }
 
-- (id)initWithCoder:(NSCoder *)aDecoder {
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
     if (self = [super initWithCoder:aDecoder]) {
         [self initialize];
     }
@@ -61,22 +62,16 @@
     UIImageView *imageView = [UIImageView new];
     imageView.isAccessibilityElement    = YES;
     imageView.accessibilityTraits       = UIAccessibilityTraitImage;
-    self.imageView = imageView;
-    [self addSubview:self.imageView];
+    [self addSubview:imageView];
+    
+    _imageView = imageView;
 }
 
-- (UIActivityIndicatorView *)indicatorView
+- (void)setIsLoading:(BOOL)isLoading
 {
-    if (!_indicatorView) {
-        UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-        _indicatorView = activityView;
-        _indicatorView.center = self.center;
-        
-        UIViewAutoresizing autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-        _indicatorView.autoresizingMask = autoresizingMask | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
-        [self addSubview:_indicatorView];
-    }
-    return _indicatorView;
+    _isLoading = isLoading;
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:USImageLoadingStatusChangedNotification object:nil];
 }
 
 - (void)updateDisplayImage:(UIImage *)image
@@ -202,6 +197,8 @@
 #pragma mark - 双击手势触发
 - (void)doubleTapWithPoint:(CGPoint)point
 {
+    if (!self.userInteractionEnabled) return;
+    
     if (self.zoomScale > 1) {
         [self setZoomScale:1 animated:YES];
     }

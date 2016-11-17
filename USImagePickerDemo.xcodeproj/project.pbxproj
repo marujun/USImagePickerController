@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0A7A62071D2C998A00A8A07B /* MCPhotoBrower.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A61C51D2C998A00A8A07B /* MCPhotoBrower.m */; };
 		0A7A62081D2C998A00A8A07B /* PickerDemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A7A61C71D2C998A00A8A07B /* PickerDemoViewController.m */; };
+		0AB0E5331DDD7BFE0014044F /* USTorusIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AB0E5321DDD7BFE0014044F /* USTorusIndicatorView.m */; };
 		0AC5AA981B723B07007F2DB3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC5AA971B723B07007F2DB3 /* main.m */; };
 		0AC5AA9B1B723B07007F2DB3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC5AA9A1B723B07007F2DB3 /* AppDelegate.m */; };
 		0AC5AAA11B723B07007F2DB3 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AC5AAA01B723B07007F2DB3 /* ViewController.m */; };
@@ -71,6 +72,8 @@
 		0A7A61C51D2C998A00A8A07B /* MCPhotoBrower.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MCPhotoBrower.m; sourceTree = "<group>"; };
 		0A7A61C61D2C998A00A8A07B /* PickerDemoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PickerDemoViewController.h; sourceTree = "<group>"; };
 		0A7A61C71D2C998A00A8A07B /* PickerDemoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PickerDemoViewController.m; sourceTree = "<group>"; };
+		0AB0E5311DDD7BFE0014044F /* USTorusIndicatorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USTorusIndicatorView.h; sourceTree = "<group>"; };
+		0AB0E5321DDD7BFE0014044F /* USTorusIndicatorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USTorusIndicatorView.m; sourceTree = "<group>"; };
 		0AC5AA921B723B07007F2DB3 /* USImagePickerDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = USImagePickerDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0AC5AA961B723B07007F2DB3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0AC5AA971B723B07007F2DB3 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -320,6 +323,8 @@
 				0ADC297D1D655551001405F4 /* USAssetItemViewController.m */,
 				0ADC297E1D655551001405F4 /* USAssetScrollView.h */,
 				0ADC297F1D655551001405F4 /* USAssetScrollView.m */,
+				0AB0E5311DDD7BFE0014044F /* USTorusIndicatorView.h */,
+				0AB0E5321DDD7BFE0014044F /* USTorusIndicatorView.m */,
 				0ADC29801D655551001405F4 /* USAssetsPageViewController.h */,
 				0ADC29811D655551001405F4 /* USAssetsPageViewController.m */,
 			);
@@ -461,6 +466,7 @@
 			files = (
 				0AC5AA9B1B723B07007F2DB3 /* AppDelegate.m in Sources */,
 				0ADC29B61D655551001405F4 /* ImagePreviewFlowLayout.m in Sources */,
+				0AB0E5331DDD7BFE0014044F /* USTorusIndicatorView.m in Sources */,
 				0ADC29C01D655551001405F4 /* ALAssetsLibrary+ImagePicker.m in Sources */,
 				0ADC29B71D655551001405F4 /* ImagePreviewTableViewCell.m in Sources */,
 				0ADC29C11D655551001405F4 /* PHAsset+ImagePicker.m in Sources */,
