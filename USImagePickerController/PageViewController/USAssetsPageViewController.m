@@ -101,7 +101,7 @@
     {
         PHAsset *asset = self.assets[pageIndex];
         
-        USAssetItemViewController *page = [USAssetItemViewController viewControllerForAsset:asset];
+        USAssetItemViewController *page = [USAssetItemViewController viewControllerForAsset:asset index:pageIndex];
         page.reloadItemHandler = self.reloadItemHandler;
         
         [self setViewControllers:@[page]
@@ -131,12 +131,11 @@
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController
 {
-    id asset = ((USAssetItemViewController *)viewController).asset;
-    NSInteger index = [self.assets indexOfObject:asset];
+    NSInteger index = ((USAssetItemViewController *)viewController).index;
     
     if (index > 0) {
-        PHAsset *beforeAsset = self.assets[(index - 1)];
-        USAssetItemViewController *page = [USAssetItemViewController viewControllerForAsset:beforeAsset];
+        PHAsset *beforeAsset = self.assets[index - 1];
+        USAssetItemViewController *page = [USAssetItemViewController viewControllerForAsset:beforeAsset index:index - 1];
         page.reloadItemHandler = self.reloadItemHandler;
         
         return page;
@@ -147,13 +146,12 @@
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController
 {
-    id asset = ((USAssetItemViewController *)viewController).asset;
-    NSInteger index = [self.assets indexOfObject:asset];
+    NSInteger index = ((USAssetItemViewController *)viewController).index;
     NSInteger count = self.assets.count;
     
     if (index < count - 1) {
-        PHAsset *afterAsset = self.assets[(index + 1)];
-        USAssetItemViewController *page = [USAssetItemViewController viewControllerForAsset:afterAsset];
+        PHAsset *afterAsset = self.assets[index + 1];
+        USAssetItemViewController *page = [USAssetItemViewController viewControllerForAsset:afterAsset index:index + 1];
         page.reloadItemHandler = self.reloadItemHandler;
         
         return page;
@@ -169,9 +167,7 @@
 {
     if (completed) {
         USAssetItemViewController *vc = (id)pageViewController.viewControllers[0];
-        NSInteger index = [self.assets indexOfObject:vc.asset];
-        
-        [self updateTitle:index];
+        [self updateTitle:vc.index];
     }
 }
 

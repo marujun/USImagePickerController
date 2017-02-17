@@ -15,10 +15,12 @@ typedef void (^USAssetsItemReloadHandler)(USAssetScrollView *weak_view, id weak_
 
 @property (nonatomic, strong, readonly) id asset;
 
+@property (nonatomic, assign, readonly) NSInteger index;
+
 @property (nonatomic, strong, readonly) USAssetScrollView *scrollView;
 
 @property (nonatomic, copy) USAssetsItemReloadHandler reloadItemHandler;
 
-+ (instancetype)viewControllerForAsset:(id)asset;
++ (instancetype)viewControllerForAsset:(id)asset index:(NSInteger)index;
 
 @end

@@ -17,15 +17,16 @@
 
 @implementation USAssetItemViewController
 
-+ (instancetype)viewControllerForAsset:(id)asset
++ (instancetype)viewControllerForAsset:(id)asset index:(NSInteger)index
 {
-    return [[self alloc] initWithAsset:asset];
+    return [[self alloc] initWithAsset:asset index:index];
 }
 
-- (instancetype)initWithAsset:(id)asset
+- (instancetype)initWithAsset:(id)asset index:(NSInteger)index
 {
     if (self = [super init]) {
         _asset = asset;
+        _index = index;
     }
     
     return self;
