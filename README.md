@@ -1,13 +1,19 @@
-#照片选择器、图片浏览器 组件的DEMO
+# 照片选择器、图片浏览器 组件的DEMO
 
-##USImagePickerController 
+## CocoaPods
+
+1. 在 Podfile 中添加 `pod 'USImagePickerController'`
+2. 执行 `pod install` 或 `pod update`
+3. 导入对应的头文件
+
+## USImagePickerController 
 
 备注：iOS7~8.0使用ALAsset ----- iOS8.1及以上使用PHAsset
 
 ![screenshot 1](screenshot-1.gif "Screenshot 1")
 ![screenshot 2](screenshot-2.gif "Screenshot 2")
 
-###Usages
+### Usages
 
 1. Import header
 
