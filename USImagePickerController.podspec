@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "USImagePickerController"
-  s.version      = "0.0.1"
+  s.version      = "0.1"
   s.summary      = "A photo picker for iOS 7+."
   s.homepage     = "https://github.com/marujun/USImagePickerController"
   s.license      = { :type => "MIT", :file => "LICENSE" }
