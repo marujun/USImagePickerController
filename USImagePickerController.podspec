@@ -13,7 +13,8 @@ Pod::Spec.new do |s|
   s.public_header_files  = "USImagePickerController/**/*.{h}", "ImagePickerSheetController/**/*.{h}"
   s.resources = "USImagePickerController/Resource/*", "ImagePickerSheetController/Resource/*"
   
-  s.frameworks = 'UIKit', 'CoreFoundation', 'Photos'
+  s.frameworks = 'UIKit', 'AssetsLibrary'
+  s.weak_frameworks = 'Photos'
   s.requires_arc = true
   s.dependency "RSKImageCropper", "~> 1.6.0"
 end
